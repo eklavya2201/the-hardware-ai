@@ -10,6 +10,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { SYNQIT_API_BASE, synqitHandoffUrl } from '@/components/auth/SynqitSignInButton';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
+import { setSynqitProject } from '@/lib/synqitProject';
 
 type SynqitProject = { id: string; name: string; updatedAt?: string };
 type Brief = { entities: unknown; openscad: string; prompt_block: string };
@@ -51,6 +52,8 @@ export function BoardButton({
     setError(null);
     try {
       const brief = await fetchJson<Brief>(`/projects/${encodeURIComponent(id)}/cad-brief`);
+      const ents = brief.entities as { project?: { id?: string; name?: string } } | null;
+      setSynqitProject({ id, name: ents?.project?.name });
       onInsert(`${brief.prompt_block}\n\n\`\`\`openscad\n${brief.openscad}\n\`\`\``);
       setOpen(false);
     } catch (e) {

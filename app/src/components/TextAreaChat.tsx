@@ -1536,7 +1536,7 @@ function TextAreaChat({
               />
             </div>
           </Avatar>
-          <div className="relative grid w-full">
+          <div className="relative grid max-h-56 w-full overflow-y-auto">
             <Textarea
               disabled={isLoading || disabled}
               value={input}

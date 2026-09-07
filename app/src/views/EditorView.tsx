@@ -3,6 +3,7 @@ import { DEFAULT_PARAMETRIC_MODEL } from '@/lib/utils';
 import { ChatSession } from '@/components/chat/ChatSession';
 import { CreateIcon } from '@/components/icons/ui/CreateIcon';
 import { ParameterSection } from '@/components/parameter/ParameterSection';
+import { SynqitPanel } from '@/components/synqit/SynqitPanel';
 import { ParameterSheetContent } from '@/components/parameter/ParameterSheetContent';
 import { Button } from '@/components/ui/button';
 import {
@@ -766,19 +767,23 @@ function ConversationEditor() {
         </div>
       }
       parametersSlot={
-        <div className="relative h-full">
-          <ParameterSection
-            parameters={parameters}
-            onParameterChange={changeParameters}
-            currentOutput={currentOutput}
-            dxfExporter={dxfExporter}
-            code={
-              activePreview?.type === 'artifact'
-                ? activePreview.artifact.code
-                : undefined
-            }
-          />
-        </div>
+        <SynqitPanel
+          parameters={
+            <div className="relative h-full">
+              <ParameterSection
+                parameters={parameters}
+                onParameterChange={changeParameters}
+                currentOutput={currentOutput}
+                dxfExporter={dxfExporter}
+                code={
+                  activePreview?.type === 'artifact'
+                    ? activePreview.artifact.code
+                    : undefined
+                }
+              />
+            </div>
+          }
+        />
       }
       mobileParametersSlot={
         <ParameterSheetContent
