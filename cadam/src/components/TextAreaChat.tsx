@@ -1528,7 +1528,7 @@ function TextAreaChat({
           <Avatar className="mt-1 h-8 w-8">
             <div className="h-full w-full p-1.5">
               <img
-                src={`${import.meta.env.BASE_URL}/Synqit-Logo.png`}
+                src={`${import.meta.env.BASE_URL}/synqit-logo.png`}
                 alt="Synqit Logo"
                 className="h-full w-full object-contain"
               />

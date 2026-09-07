@@ -179,7 +179,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               if (await ensurePermission()) {
                 const notification = new Notification('3D model is ready', {
                   body: 'Your generated 3D model has finished. Click to open.',
-                  icon: `${import.meta.env.BASE_URL}/Synqit-Logo.png`,
+                  icon: `${import.meta.env.BASE_URL}/synqit-logo.png`,
                 });
                 notification.onclick = () => {
                   window.focus();
