@@ -60,9 +60,9 @@ export function RenameDialogDrawer({
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="border-[2px] border-adam-neutral-700 bg-adam-background-1 sm:max-w-[425px]">
+        <DialogContent className="border-[2px] border-sq-neutral-700 bg-sq-background-1 sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle className="text-adam-neutral-100">
+            <DialogTitle className="text-sq-neutral-100">
               Rename Creation
             </DialogTitle>
             <DialogDescription>
@@ -75,7 +75,7 @@ export function RenameDialogDrawer({
               value={newTitle}
               onChange={(e) => onNewTitleChange(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="border-2 border-adam-background-2 bg-adam-background-2 pl-6 text-base shadow-[0_0_0px_rgba(255,50,150,0)] ring-0 transition-[border-color,box-shadow] duration-300 ease-in-out hover:border-adam-background-2 hover:shadow-[0_0_4px_rgba(255,50,150,0.9),0_0_5px_rgba(255,50,150,0.7)] focus:border-adam-blue focus:outline-none"
+              className="border-2 border-sq-background-2 bg-sq-background-2 pl-6 text-base shadow-[0_0_0px_rgba(255,50,150,0)] ring-0 transition-[border-color,box-shadow] duration-300 ease-in-out hover:border-sq-background-2 hover:shadow-[0_0_4px_rgba(255,50,150,0.9),0_0_5px_rgba(255,50,150,0.7)] focus:border-sq-blue focus:outline-none"
               placeholder="Conversation name"
             />
           </div>
@@ -83,13 +83,13 @@ export function RenameDialogDrawer({
             <Button
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="border-adam-neutral-700 bg-adam-background-2 text-adam-neutral-50 [@media(hover:hover)]:hover:bg-adam-neutral-950 [@media(hover:hover)]:hover:text-adam-neutral-50"
+              className="border-sq-neutral-700 bg-sq-background-2 text-sq-neutral-50 [@media(hover:hover)]:hover:bg-sq-neutral-950 [@media(hover:hover)]:hover:text-sq-neutral-50"
             >
               Cancel
             </Button>
             <Button
               onClick={onRename}
-              className="border bg-adam-neutral-50 text-black [@media(hover:hover)]:hover:border-adam-neutral-50 [@media(hover:hover)]:hover:bg-adam-neutral-950 [@media(hover:hover)]:hover:text-adam-neutral-50"
+              className="border bg-sq-neutral-50 text-black [@media(hover:hover)]:hover:border-sq-neutral-50 [@media(hover:hover)]:hover:bg-sq-neutral-950 [@media(hover:hover)]:hover:text-sq-neutral-50"
             >
               Save
             </Button>
@@ -101,9 +101,9 @@ export function RenameDialogDrawer({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="mx-1 border border-adam-neutral-700 bg-adam-background-1">
-        <DrawerHeader className="border-b border-adam-neutral-700 text-center">
-          <DrawerTitle className="text-adam-neutral-100">
+      <DrawerContent className="mx-1 border border-sq-neutral-700 bg-sq-background-1">
+        <DrawerHeader className="border-b border-sq-neutral-700 text-center">
+          <DrawerTitle className="text-sq-neutral-100">
             Rename Creation
           </DrawerTitle>
           <DrawerDescription>
@@ -116,21 +116,21 @@ export function RenameDialogDrawer({
             value={newTitle}
             onChange={(e) => onNewTitleChange(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="border-2 border-adam-background-2 bg-adam-background-2 pl-6 text-base shadow-[0_0_0px_rgba(255,50,150,0)] ring-0 transition-[border-color,box-shadow] duration-300 ease-in-out hover:border-adam-background-2 hover:shadow-[0_0_4px_rgba(255,50,150,0.9),0_0_5px_rgba(255,50,150,0.7)] focus:border-adam-blue focus:outline-none"
+            className="border-2 border-sq-background-2 bg-sq-background-2 pl-6 text-base shadow-[0_0_0px_rgba(255,50,150,0)] ring-0 transition-[border-color,box-shadow] duration-300 ease-in-out hover:border-sq-background-2 hover:shadow-[0_0_4px_rgba(255,50,150,0.9),0_0_5px_rgba(255,50,150,0.7)] focus:border-sq-blue focus:outline-none"
             placeholder="Conversation name"
           />
         </div>
-        <DrawerFooter className="border-t border-adam-neutral-700">
+        <DrawerFooter className="border-t border-sq-neutral-700">
           <Button
             onClick={onRename}
-            className="border bg-adam-neutral-50 text-black [@media(hover:hover)]:hover:border-adam-neutral-50 [@media(hover:hover)]:hover:bg-adam-neutral-950 [@media(hover:hover)]:hover:text-adam-neutral-50"
+            className="border bg-sq-neutral-50 text-black [@media(hover:hover)]:hover:border-sq-neutral-50 [@media(hover:hover)]:hover:bg-sq-neutral-950 [@media(hover:hover)]:hover:text-sq-neutral-50"
           >
             Save
           </Button>
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            className="border-adam-neutral-700 bg-adam-background-2 text-adam-neutral-50 [@media(hover:hover)]:hover:bg-adam-neutral-950 [@media(hover:hover)]:hover:text-adam-neutral-50"
+            className="border-sq-neutral-700 bg-sq-background-2 text-sq-neutral-50 [@media(hover:hover)]:hover:bg-sq-neutral-950 [@media(hover:hover)]:hover:text-sq-neutral-50"
           >
             Cancel
           </Button>

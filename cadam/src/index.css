@@ -50,7 +50,7 @@
      *
      * Without these aliases the Shimmer's bg-clip-text gradient computes
      * to transparent and the "Thinking..." label disappears mid-stream.
-     * Once we run `npx @tailwindcss/upgrade` and port the adam-* palette
+     * Once we run `npx @tailwindcss/upgrade` and port the synqit-* palette
      * into `@theme` blocks, Tailwind v4 will emit these variables
      * automatically. At that point this whole block can be removed.
      */
@@ -91,10 +91,10 @@
     @apply border-border;
   }
   html {
-    @apply bg-adam-bg-dark;
+    @apply bg-sq-bg-dark;
   }
   body {
-    @apply m-0 min-h-dvh w-full bg-adam-bg-dark text-foreground;
+    @apply m-0 min-h-dvh w-full bg-sq-bg-dark text-foreground;
     font-family: 'Inter', sans-serif;
   }
 }
@@ -149,13 +149,13 @@ input::placeholder {
   text-shadow: 0 0 10px rgba(0, 166, 255, 0.3);
 }
 
-.shadow-adam {
+.shadow-sq {
   box-shadow:
     0px 2px 4px 0px rgba(0, 166, 255, 0.25),
     0px 1px 2px 0px rgba(255, 255, 255, 0.15) inset,
     0px 1px 3px 0px rgba(255, 255, 255, 0.25) inset;
 }
-.shadow-adam-card {
+.shadow-sq-card {
   box-shadow:
     0px 1px 2px 0px rgba(255, 255, 255, 0.15) inset,
     0px 1px 3px 0px rgba(255, 255, 255, 0.25) inset;
@@ -1015,7 +1015,7 @@ input::placeholder {
   }
 }
 
-@keyframes adam-bounce {
+@keyframes sq-bounce {
   0%,
   100% {
     transform: translateY(0) scale(1);
@@ -1025,8 +1025,8 @@ input::placeholder {
   }
 }
 
-.animate-adam-bounce {
-  animation: adam-bounce 1.2s ease-in-out infinite;
+.animate-sq-bounce {
+  animation: sq-bounce 1.2s ease-in-out infinite;
 }
 
 @keyframes mesh-dot-pulse {

@@ -26,7 +26,7 @@ interface ChatReasoningProps {
 }
 
 /**
- * CADAM-tailored reasoning block.
+ * Synqit CAD-tailored reasoning block.
  *
  * Wraps the ai-elements `Reasoning` + `ReasoningTrigger` primitives with our
  * own collapsible body so we get:
@@ -36,7 +36,7 @@ interface ChatReasoningProps {
  *  * A native scrollbar contained to the reasoning block itself — the outer
  *    chat ScrollArea is unaffected, so we don't end up with stacked
  *    scrollbars when the chat is also overflowing.
- *  * CADAM-themed muted text colors (the shadcn `text-muted-foreground` /
+ *  * Synqit CAD-themed muted text colors (the shadcn `text-muted-foreground` /
  *    `hover:text-foreground` tokens resolve to near-black on our :root,
  *    which is unreadable on the dark chat panel).
  *
@@ -76,7 +76,7 @@ export function ChatReasoning({
       className={cn('mb-0 mt-1 min-w-0 max-w-full overflow-hidden', className)}
     >
       <ReasoningTrigger
-        className="min-h-9 text-adam-text-secondary hover:text-adam-text-primary"
+        className="min-h-9 text-sq-text-secondary hover:text-sq-text-primary"
         showIcon={false}
         getThinkingMessage={(streaming, duration) => {
           if (streaming || duration === 0) {
@@ -120,7 +120,7 @@ function ChatReasoningBody({
   return (
     <CollapsibleContent
       className={cn(
-        'mt-4 min-w-0 max-w-full overflow-hidden text-sm text-adam-text-secondary outline-none',
+        'mt-4 min-w-0 max-w-full overflow-hidden text-sm text-sq-text-secondary outline-none',
         'data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2',
         'data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-top-2',
         'data-[state=open]:animate-in data-[state=closed]:animate-out',

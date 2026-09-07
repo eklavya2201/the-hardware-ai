@@ -309,10 +309,10 @@ export function HistoryView() {
 
   return (
     <>
-      <div className="flex h-full min-w-0 flex-1 flex-col bg-adam-background-1 pt-8 md:pt-0">
+      <div className="flex h-full min-w-0 flex-1 flex-col bg-sq-background-1 pt-8 md:pt-0">
         <div className="mx-auto w-full max-w-6xl px-6 pb-4 pt-10 md:px-20 md:py-4">
           <div className="flex items-center justify-between py-3">
-            <h1 className="flex items-center gap-2 px-2 text-2xl font-medium text-adam-neutral-10">
+            <h1 className="flex items-center gap-2 px-2 text-2xl font-medium text-sq-neutral-10">
               Past Creations
             </h1>
 
@@ -320,11 +320,11 @@ export function HistoryView() {
             <div
               role="group"
               aria-label="View mode"
-              className="relative grid grid-cols-2 items-center rounded-lg border border-adam-neutral-700 bg-adam-background-2 p-1"
+              className="relative grid grid-cols-2 items-center rounded-lg border border-sq-neutral-700 bg-sq-background-2 p-1"
             >
               <span
                 className={cn(
-                  'pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-md bg-adam-neutral-950 shadow-[0_1px_10px_rgba(0,0,0,0.22)] transition-transform ease-out',
+                  'pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-md bg-sq-neutral-950 shadow-[0_1px_10px_rgba(0,0,0,0.22)] transition-transform ease-out',
                   shouldReduceMotion ? 'duration-0' : 'duration-300',
                   viewMode === 'visual' && 'translate-x-full',
                 )}
@@ -337,8 +337,8 @@ export function HistoryView() {
                 onClick={() => setViewMode('list')}
                 className={`relative z-10 h-8 px-3 transition-colors duration-200 ${
                   viewMode === 'list'
-                    ? 'text-adam-neutral-50 hover:bg-transparent hover:text-adam-neutral-50'
-                    : 'text-adam-neutral-400 hover:bg-adam-neutral-950/40 hover:text-adam-neutral-50'
+                    ? 'text-sq-neutral-50 hover:bg-transparent hover:text-sq-neutral-50'
+                    : 'text-sq-neutral-400 hover:bg-sq-neutral-950/40 hover:text-sq-neutral-50'
                 }`}
               >
                 <List className="mr-2 h-4 w-4" />
@@ -352,8 +352,8 @@ export function HistoryView() {
                 onClick={() => setViewMode('visual')}
                 className={`relative z-10 h-8 px-3 transition-colors duration-200 ${
                   viewMode === 'visual'
-                    ? 'text-adam-neutral-50 hover:bg-transparent hover:text-adam-neutral-50'
-                    : 'text-adam-neutral-400 hover:bg-adam-neutral-950/40 hover:text-adam-neutral-50'
+                    ? 'text-sq-neutral-50 hover:bg-transparent hover:text-sq-neutral-50'
+                    : 'text-sq-neutral-400 hover:bg-sq-neutral-950/40 hover:text-sq-neutral-50'
                 }`}
               >
                 <LayoutGrid className="mr-2 h-4 w-4" />
@@ -367,7 +367,7 @@ export function HistoryView() {
               placeholder="Search generations..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="border-0 bg-adam-background-2 pl-6 text-base shadow-[inset_0_0_10px_0_rgba(0,0,0,0.32),0_0_0_2px_rgba(0,0,0,0)] ring-0 transition-shadow duration-300 ease-in-out hover:shadow-[inset_0_0_4px_0_rgba(0,0,0,0.16),0_0_0_2px_rgba(60,60,60,1)] focus:shadow-[inset_0_0_4px_0_rgba(0,0,0,0.16),0_0_0_2px_#00A6FF] focus:outline-none sm:text-sm"
+              className="border-0 bg-sq-background-2 pl-6 text-base shadow-[inset_0_0_10px_0_rgba(0,0,0,0.32),0_0_0_2px_rgba(0,0,0,0)] ring-0 transition-shadow duration-300 ease-in-out hover:shadow-[inset_0_0_4px_0_rgba(0,0,0,0.16),0_0_0_2px_rgba(60,60,60,1)] focus:shadow-[inset_0_0_4px_0_rgba(0,0,0,0.16),0_0_0_2px_#00A6FF] focus:outline-none sm:text-sm"
             />
           </div>
         </div>
@@ -458,7 +458,7 @@ export function HistoryView() {
                       return (
                         <div key={date} className="space-y-2">
                           {dateString && (
-                            <h2 className="bg-adam-background-1 px-3 py-2 text-sm font-medium text-adam-neutral-100">
+                            <h2 className="bg-sq-background-1 px-3 py-2 text-sm font-medium text-sq-neutral-100">
                               {dateString}
                             </h2>
                           )}
@@ -506,7 +506,7 @@ export function HistoryView() {
         type="button"
         aria-label="Create new item"
         onClick={() => navigate({ to: '/' })}
-        className="fixed bottom-8 right-8 flex h-14 w-14 items-center justify-center rounded-full bg-adam-neutral-100 text-adam-neutral-950 shadow-[0_4px_32px_rgba(0,0,0,0.48)] md:hidden"
+        className="fixed bottom-8 right-8 flex h-14 w-14 items-center justify-center rounded-full bg-sq-neutral-100 text-sq-neutral-950 shadow-[0_4px_32px_rgba(0,0,0,0.48)] md:hidden"
       >
         <Plus className="h-10 w-10 stroke-[2px]" />
       </button>

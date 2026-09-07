@@ -12,7 +12,6 @@ import { Model } from '@shared/types';
 import { MessageItem } from '../types/misc.ts';
 import { LimitReachedMessage } from '@/components/LimitReachedMessage';
 import { LowPromptsWarningMessage } from '@/components/LowPromptsWarningMessage';
-import { NewProductBanner } from '@/components/NewProductBanner';
 import { FreePlanTrialPill } from '@/components/FreePlanTrialPill';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { cn } from '@/lib/utils';
@@ -247,7 +246,7 @@ export function PromptView() {
     >
       <div
         className={cn(
-          'h-full min-h-full bg-adam-bg-secondary-dark',
+          'h-full min-h-full bg-sq-bg-secondary-dark',
           isSidebarOpen &&
             !isMobile &&
             user?.id &&
@@ -288,7 +287,7 @@ export function PromptView() {
               </div>
               <h1
                 className={cn(
-                  'mb-8 text-center text-2xl font-medium text-adam-text-primary md:text-3xl lg:text-4xl',
+                  'mb-8 text-center text-2xl font-medium text-sq-text-primary md:text-3xl lg:text-4xl',
                   'motion-safe:transition-opacity motion-safe:duration-1000 motion-safe:ease-out',
                   isLoaded ? 'opacity-100' : 'opacity-0',
                 )}
@@ -319,7 +318,7 @@ export function PromptView() {
                       return;
                     }
                   }}
-                  placeholder="Start building with Adam..."
+                  placeholder="Start building with Synqit..."
                   type={type}
                   disabled={limitReached || isGenerating}
                   model={model}
@@ -332,7 +331,7 @@ export function PromptView() {
               <div className="relative">
                 {isLoading && (
                   <div className="absolute left-0 right-0 top-0">
-                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-adam-blue border-t-transparent" />
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-sq-blue border-t-transparent" />
                   </div>
                 )}
                 {!isLoading && user && limitReached && (
@@ -356,7 +355,7 @@ export function PromptView() {
                         signInWithSso();
                       }
                     }}
-                    className="!text-adam-blue hover:!text-adam-blue/80"
+                    className="!text-sq-blue hover:!text-sq-blue/80"
                   >
                     Sign in
                   </Link>{' '}
@@ -369,7 +368,7 @@ export function PromptView() {
                         signInWithSso();
                       }
                     }}
-                    className="!text-adam-blue hover:!text-adam-blue/80"
+                    className="!text-sq-blue hover:!text-sq-blue/80"
                   >
                     create an account
                   </Link>{' '}
@@ -384,7 +383,6 @@ export function PromptView() {
               the card centered inside it, instead of glued to bottom-0. */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 top-[55%] flex items-center justify-center px-4 md:px-8">
             <div className="pointer-events-auto w-full max-w-2xl">
-              <NewProductBanner />
             </div>
           </div>
         </main>

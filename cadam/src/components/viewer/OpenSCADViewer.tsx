@@ -247,7 +247,7 @@ export function OpenSCADPreview({
   }, []);
 
   return (
-    <div className="relative h-full w-full bg-adam-neutral-700/50 transition-all duration-300 ease-in-out">
+    <div className="relative h-full w-full bg-sq-neutral-700/50 transition-all duration-300 ease-in-out">
       <div className="h-full w-full">
         {geometry || coloredGroup ? (
           <div className="h-full w-full">
@@ -269,8 +269,8 @@ export function OpenSCADPreview({
           </>
         )}
         {isCompiling && (
-          <div className="absolute inset-0 flex items-center justify-center bg-adam-neutral-700/30 backdrop-blur-sm">
-            <Loader2 className="h-8 w-8 animate-spin text-adam-text-primary/70" />
+          <div className="absolute inset-0 flex items-center justify-center bg-sq-neutral-700/30 backdrop-blur-sm">
+            <Loader2 className="h-8 w-8 animate-spin text-sq-text-primary/70" />
           </div>
         )}
       </div>
@@ -292,15 +292,15 @@ function FixWithAIButton({
     <div className="flex h-full flex-col items-center justify-center gap-4 p-6">
       <div className="flex flex-col items-center gap-3">
         <div className="relative">
-          <div className="absolute inset-0 animate-ping rounded-full bg-adam-blue/20" />
-          <CircleAlert className="h-8 w-8 text-adam-blue" />
+          <div className="absolute inset-0 animate-ping rounded-full bg-sq-blue/20" />
+          <CircleAlert className="h-8 w-8 text-sq-blue" />
         </div>
         <div className="text-center">
-          <p className="text-sm font-medium text-adam-blue">
+          <p className="text-sm font-medium text-sq-blue">
             Error Compiling Model
           </p>
-          <p className="mt-1 text-xs text-adam-text-primary/60">
-            Adam encountered an error while compiling
+          <p className="mt-1 text-xs text-sq-text-primary/60">
+            Synqit encountered an error while compiling
           </p>
         </div>
       </div>
@@ -309,12 +309,12 @@ function FixWithAIButton({
           variant="ghost"
           className={cn(
             'group relative flex items-center gap-2 rounded-lg border',
-            'bg-gradient-to-br from-adam-blue/20 to-adam-neutral-800/70 p-3',
-            'border-adam-blue/30 text-adam-text-primary',
+            'bg-gradient-to-br from-sq-blue/20 to-sq-neutral-800/70 p-3',
+            'border-sq-blue/30 text-sq-text-primary',
             'transition-all duration-300 ease-in-out',
-            'hover:border-adam-blue/70 hover:bg-adam-blue/50 hover:text-white',
+            'hover:border-sq-blue/70 hover:bg-sq-blue/50 hover:text-white',
             'hover:shadow-[0_0_25px_rgba(249,115,184,0.4)]',
-            'focus:outline-none focus:ring-2 focus:ring-adam-blue/30',
+            'focus:outline-none focus:ring-2 focus:ring-sq-blue/30',
           )}
           onClick={() => {
             // error crosses the worker boundary as a plain object, so
@@ -329,7 +329,7 @@ function FixWithAIButton({
             if (isOpenSCADError(error)) fixError?.(error);
           }}
         >
-          <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-adam-blue/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-sq-blue/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
           <Wrench className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
           <span className="relative text-sm font-medium">Fix with AI</span>
         </Button>

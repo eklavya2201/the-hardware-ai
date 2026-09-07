@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UpdatePasswordRouteImport } from './routes/update-password'
 import { Route as TermsOfServiceRouteImport } from './routes/terms-of-service'
+import { Route as SsoRouteImport } from './routes/sso'
 import { Route as SignupEmailRouteImport } from './routes/signup-email'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SigninRouteImport } from './routes/signin'
@@ -21,6 +22,7 @@ import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
 import { Route as AssetsSplatRouteImport } from './routes/assets.$'
 import { Route as ApiTitleGeneratorRouteImport } from './routes/api/title-generator'
+import { Route as ApiSynqitSsoRouteImport } from './routes/api/synqit-sso'
 import { Route as ApiPromptGeneratorRouteImport } from './routes/api/prompt-generator'
 import { Route as ApiParametricChatRouteImport } from './routes/api/parametric-chat'
 import { Route as ApiMeshRouteImport } from './routes/api/mesh'
@@ -48,6 +50,11 @@ const UpdatePasswordRoute = UpdatePasswordRouteImport.update({
 const TermsOfServiceRoute = TermsOfServiceRouteImport.update({
   id: '/terms-of-service',
   path: '/terms-of-service',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SsoRoute = SsoRouteImport.update({
+  id: '/sso',
+  path: '/sso',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignupEmailRoute = SignupEmailRouteImport.update({
@@ -97,6 +104,11 @@ const AssetsSplatRoute = AssetsSplatRouteImport.update({
 const ApiTitleGeneratorRoute = ApiTitleGeneratorRouteImport.update({
   id: '/api/title-generator',
   path: '/api/title-generator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSynqitSsoRoute = ApiSynqitSsoRouteImport.update({
+  id: '/api/synqit-sso',
+  path: '/api/synqit-sso',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPromptGeneratorRoute = ApiPromptGeneratorRouteImport.update({
@@ -198,6 +210,7 @@ export interface FileRoutesByFullPath {
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/signup-email': typeof SignupEmailRoute
+  '/sso': typeof SsoRoute
   '/terms-of-service': typeof TermsOfServiceRoute
   '/update-password': typeof UpdatePasswordRoute
   '/$': typeof LayoutSplatRoute
@@ -211,6 +224,7 @@ export interface FileRoutesByFullPath {
   '/api/mesh': typeof ApiMeshRoute
   '/api/parametric-chat': typeof ApiParametricChatRoute
   '/api/prompt-generator': typeof ApiPromptGeneratorRoute
+  '/api/synqit-sso': typeof ApiSynqitSsoRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
   '/assets/$': typeof AssetsSplatRoute
   '/history': typeof LayoutAuthHistoryRoute
@@ -227,6 +241,7 @@ export interface FileRoutesByTo {
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/signup-email': typeof SignupEmailRoute
+  '/sso': typeof SsoRoute
   '/terms-of-service': typeof TermsOfServiceRoute
   '/update-password': typeof UpdatePasswordRoute
   '/$': typeof LayoutSplatRoute
@@ -241,6 +256,7 @@ export interface FileRoutesByTo {
   '/api/mesh': typeof ApiMeshRoute
   '/api/parametric-chat': typeof ApiParametricChatRoute
   '/api/prompt-generator': typeof ApiPromptGeneratorRoute
+  '/api/synqit-sso': typeof ApiSynqitSsoRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
   '/assets/$': typeof AssetsSplatRoute
   '/history': typeof LayoutAuthHistoryRoute
@@ -259,6 +275,7 @@ export interface FileRoutesById {
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
   '/signup-email': typeof SignupEmailRoute
+  '/sso': typeof SsoRoute
   '/terms-of-service': typeof TermsOfServiceRoute
   '/update-password': typeof UpdatePasswordRoute
   '/_layout/$': typeof LayoutSplatRoute
@@ -273,6 +290,7 @@ export interface FileRoutesById {
   '/api/mesh': typeof ApiMeshRoute
   '/api/parametric-chat': typeof ApiParametricChatRoute
   '/api/prompt-generator': typeof ApiPromptGeneratorRoute
+  '/api/synqit-sso': typeof ApiSynqitSsoRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
   '/assets/$': typeof AssetsSplatRoute
   '/_layout/': typeof LayoutIndexRoute
@@ -293,6 +311,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/signup'
     | '/signup-email'
+    | '/sso'
     | '/terms-of-service'
     | '/update-password'
     | '/$'
@@ -306,6 +325,7 @@ export interface FileRouteTypes {
     | '/api/mesh'
     | '/api/parametric-chat'
     | '/api/prompt-generator'
+    | '/api/synqit-sso'
     | '/api/title-generator'
     | '/assets/$'
     | '/history'
@@ -322,6 +342,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/signup'
     | '/signup-email'
+    | '/sso'
     | '/terms-of-service'
     | '/update-password'
     | '/$'
@@ -336,6 +357,7 @@ export interface FileRouteTypes {
     | '/api/mesh'
     | '/api/parametric-chat'
     | '/api/prompt-generator'
+    | '/api/synqit-sso'
     | '/api/title-generator'
     | '/assets/$'
     | '/history'
@@ -353,6 +375,7 @@ export interface FileRouteTypes {
     | '/signin'
     | '/signup'
     | '/signup-email'
+    | '/sso'
     | '/terms-of-service'
     | '/update-password'
     | '/_layout/$'
@@ -367,6 +390,7 @@ export interface FileRouteTypes {
     | '/api/mesh'
     | '/api/parametric-chat'
     | '/api/prompt-generator'
+    | '/api/synqit-sso'
     | '/api/title-generator'
     | '/assets/$'
     | '/_layout/'
@@ -386,6 +410,7 @@ export interface RootRouteChildren {
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
   SignupEmailRoute: typeof SignupEmailRoute
+  SsoRoute: typeof SsoRoute
   TermsOfServiceRoute: typeof TermsOfServiceRoute
   UpdatePasswordRoute: typeof UpdatePasswordRoute
   ApiBillingCheckoutRoute: typeof ApiBillingCheckoutRoute
@@ -397,6 +422,7 @@ export interface RootRouteChildren {
   ApiMeshRoute: typeof ApiMeshRoute
   ApiParametricChatRoute: typeof ApiParametricChatRoute
   ApiPromptGeneratorRoute: typeof ApiPromptGeneratorRoute
+  ApiSynqitSsoRoute: typeof ApiSynqitSsoRoute
   ApiTitleGeneratorRoute: typeof ApiTitleGeneratorRoute
   AssetsSplatRoute: typeof AssetsSplatRoute
   ApiJacksonPollockSplatRoute: typeof ApiJacksonPollockSplatRoute
@@ -417,6 +443,13 @@ declare module '@tanstack/react-router' {
       path: '/terms-of-service'
       fullPath: '/terms-of-service'
       preLoaderRoute: typeof TermsOfServiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sso': {
+      id: '/sso'
+      path: '/sso'
+      fullPath: '/sso'
+      preLoaderRoute: typeof SsoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signup-email': {
@@ -487,6 +520,13 @@ declare module '@tanstack/react-router' {
       path: '/api/title-generator'
       fullPath: '/api/title-generator'
       preLoaderRoute: typeof ApiTitleGeneratorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/synqit-sso': {
+      id: '/api/synqit-sso'
+      path: '/api/synqit-sso'
+      fullPath: '/api/synqit-sso'
+      preLoaderRoute: typeof ApiSynqitSsoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/prompt-generator': {
@@ -661,6 +701,7 @@ const rootRouteChildren: RootRouteChildren = {
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
   SignupEmailRoute: SignupEmailRoute,
+  SsoRoute: SsoRoute,
   TermsOfServiceRoute: TermsOfServiceRoute,
   UpdatePasswordRoute: UpdatePasswordRoute,
   ApiBillingCheckoutRoute: ApiBillingCheckoutRoute,
@@ -672,6 +713,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiMeshRoute: ApiMeshRoute,
   ApiParametricChatRoute: ApiParametricChatRoute,
   ApiPromptGeneratorRoute: ApiPromptGeneratorRoute,
+  ApiSynqitSsoRoute: ApiSynqitSsoRoute,
   ApiTitleGeneratorRoute: ApiTitleGeneratorRoute,
   AssetsSplatRoute: AssetsSplatRoute,
   ApiJacksonPollockSplatRoute: ApiJacksonPollockSplatRoute,

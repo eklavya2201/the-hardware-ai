@@ -12,7 +12,7 @@ export function LowPromptsWarningMessage({
   layout?: 'inline' | 'stacked';
 }) {
   return (
-    <div className="p-3 text-center text-sm text-adam-text-secondary">
+    <div className="p-3 text-center text-sm text-sq-text-secondary">
       <LowTokensWarningContent
         tokensRemaining={tokensRemaining}
         layout={layout}
@@ -43,7 +43,7 @@ function LowTokensWarningContent({
           href={BILLING_UPGRADE_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-adam-blue hover:underline"
+          className="text-sq-blue hover:underline"
         >
           Upgrade
         </a>{' '}
@@ -63,7 +63,7 @@ function LowTokensWarningContent({
       >
         <span>{tokensText}.</span>
         <TrialDialog>
-          <span className="cursor-pointer text-adam-blue hover:underline">
+          <span className="cursor-pointer text-sq-blue hover:underline">
             Start a free trial of Pro
           </span>
         </TrialDialog>
@@ -75,7 +75,7 @@ function LowTokensWarningContent({
   return (
     <span>
       {tokensText}.{' '}
-      <Link to="/settings" className="text-adam-blue hover:underline">
+      <Link to="/settings" className="text-sq-blue hover:underline">
         Buy more tokens
       </Link>{' '}
       or{' '}
@@ -83,7 +83,7 @@ function LowTokensWarningContent({
         href={BILLING_UPGRADE_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-adam-blue hover:underline"
+        className="text-sq-blue hover:underline"
       >
         upgrade
       </a>

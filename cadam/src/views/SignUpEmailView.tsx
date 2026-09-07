@@ -7,8 +7,8 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
-import { useMutation } from '@tanstack/react-query';
-import { GoogleIcon } from '@/components/icons/CompanyIcons';
+import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
+import { SynqitSignInButton } from '@/components/auth/SynqitSignInButton';
 import { validateRedirectUrl } from '@/lib/utils';
 
 function getAppRedirectUrl(path: string) {
@@ -40,31 +40,6 @@ export function SignUpEmailView() {
     }
   }, [session, user, authLoading, navigate]);
 
-  const { mutate: signInWithGoogle, isPending: isSigningInWithGoogle } =
-    useMutation({
-      mutationFn: async () => {
-        // Use Supabase's built-in redirectTo parameter with validated URL
-        const redirectTo =
-          redirectPath !== '/'
-            ? getAppRedirectUrl(redirectPath)
-            : getAppRedirectUrl('/');
-
-        await supabase.auth.signInWithOAuth({
-          provider: 'google',
-          options: {
-            redirectTo,
-          },
-        });
-      },
-      onError: (error) => {
-        toast({
-          title: 'Whoopsies',
-          description:
-            error instanceof Error ? error.message : 'Something went wrong',
-          variant: 'destructive',
-        });
-      },
-    });
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,13 +89,13 @@ export function SignUpEmailView() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-adam-bg-dark p-4">
+    <div className="flex min-h-screen items-center justify-center bg-sq-bg-dark p-4">
       <div className="w-full max-w-md">
-        <div className="rounded-lg bg-adam-bg-secondary-dark p-8 shadow-md">
+        <div className="rounded-lg bg-sq-bg-secondary-dark p-8 shadow-md">
           <div className="mb-4 flex flex-col items-center justify-center gap-2">
             <img
-              src={`${import.meta.env.BASE_URL}/cadam-logo.svg`}
-              alt="CADAM Logo"
+              src={`${import.meta.env.BASE_URL}/synqit-wordmark.svg`}
+              alt="Synqit CAD Logo"
               className="h-8 w-auto"
             />
             <h1 className="text-2xl font-semibold text-white">
@@ -128,14 +103,8 @@ export function SignUpEmailView() {
             </h1>
           </div>
           <div className="w-full py-2">
-            <Button
-              onClick={() => signInWithGoogle()}
-              className="flex w-full items-center gap-2 hover:bg-adam-blue/10"
-              disabled={isSigningInWithGoogle}
-            >
-              <GoogleIcon className="w-4" />
-              <span>Continue with Google</span>
-            </Button>
+            <GoogleSignInButton redirectPath={redirectPath} />
+            <SynqitSignInButton redirectPath={redirectPath} />
           </div>
 
           <form onSubmit={handleSignUp} className="space-y-6">
@@ -150,7 +119,7 @@ export function SignUpEmailView() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="border-gray-700 bg-adam-bg-dark px-4 text-white placeholder:text-gray-400 max-[430px]:text-base"
+                className="border-gray-700 bg-sq-bg-dark px-4 text-white placeholder:text-gray-400 max-[430px]:text-base"
               />
             </div>
 
@@ -165,7 +134,7 @@ export function SignUpEmailView() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="border-gray-700 bg-adam-bg-dark px-4 text-white placeholder:text-gray-400 max-[430px]:text-base"
+                className="border-gray-700 bg-sq-bg-dark px-4 text-white placeholder:text-gray-400 max-[430px]:text-base"
               />
             </div>
 
@@ -181,7 +150,7 @@ export function SignUpEmailView() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="border-gray-700 bg-adam-bg-dark px-4 text-white placeholder:text-gray-400 max-[430px]:text-base"
+                className="border-gray-700 bg-sq-bg-dark px-4 text-white placeholder:text-gray-400 max-[430px]:text-base"
               />
             </div>
 
@@ -197,7 +166,7 @@ export function SignUpEmailView() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 minLength={6}
-                className="border-gray-700 bg-adam-bg-dark px-4 text-white placeholder:text-gray-400 max-[430px]:text-base"
+                className="border-gray-700 bg-sq-bg-dark px-4 text-white placeholder:text-gray-400 max-[430px]:text-base"
               />
             </div>
 
@@ -216,7 +185,7 @@ export function SignUpEmailView() {
               Already have an account?{' '}
               <Link
                 to="/signin"
-                className="text-adam-blue hover:text-adam-blue/80"
+                className="text-sq-blue hover:text-sq-blue/80"
               >
                 Sign in
               </Link>

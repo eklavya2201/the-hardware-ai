@@ -4,7 +4,7 @@ import { TrialDialog } from '@/components/auth/TrialDialog';
 
 /**
  * "Free plan | Start free trial" pill shown above the greeting for signed-in
- * free-plan users who haven't used their trial yet — the CADAM port of the
+ * free-plan users who haven't used their trial yet — the Synqit CAD port of the
  * workspace pill. It renders nothing until billing has resolved (so it never
  * flashes on a paying user) and disappears once the trial has been used.
  *
@@ -39,7 +39,7 @@ export function FreePlanTrialPill() {
   return (
     <>
       <div className="duration-[350ms] inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm shadow-[0_1px_3px_rgba(0,0,0,0.04)] ease-out animate-in fade-in slide-in-from-bottom-1">
-        <span className="text-adam-text-secondary">Free plan</span>
+        <span className="text-sq-text-secondary">Free plan</span>
         <span className="h-4 w-px bg-white/10" aria-hidden="true" />
         <button
           type="button"
@@ -47,7 +47,7 @@ export function FreePlanTrialPill() {
             setDialogMounted(true);
             setTrialOpen(true);
           }}
-          className="font-medium text-adam-blue transition-colors hover:text-adam-blue/80"
+          className="font-medium text-sq-blue transition-colors hover:text-sq-blue/80"
         >
           Start free trial
         </button>

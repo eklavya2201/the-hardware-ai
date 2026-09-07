@@ -31,7 +31,7 @@ function bearerMatches(presented: string, expected: string): boolean {
  *   - `Authorization: Bearer <ACCOUNT_PURGE_SECRET>` (constant-time compare).
  *     503 if the secret is unconfigured; 401 if missing/mismatched.
  *   - Body: { email: string, subject?: string }. `email` is the cross-system
- *     join key; `subject` is the Adam user id, logging only.
+ *     join key; `subject` is the Synqit user id, logging only.
  *   - Idempotent: 200 { deleted: false } when no matching user exists,
  *     200 { deleted: true } when a user was found and erased. Never 404.
  *   - 500 only on a genuine failure so the worker retries.
@@ -88,7 +88,7 @@ export const Route = createFileRoute('/api/internal/account/delete')({
             functionName: FN,
             apiName: 'internal-account-delete',
             statusCode: 500,
-            // `subject` is the Adam user id (logging only). Email is a PII
+            // `subject` is the Synqit user id (logging only). Email is a PII
             // join key and is intentionally not logged here.
             requestData: subject ? { subject } : undefined,
           });

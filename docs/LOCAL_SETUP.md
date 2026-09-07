@@ -1,8 +1,49 @@
-# Running the CADAM clone locally (verified 2026-09-07, Windows 11)
+# Running Synqit CAD (the CADAM fork) locally — verified 2026-09-08, Windows 11
 
-The app in `cadam/` runs unmodified except for one addition: an **Azure OpenAI
-provider** so it works with the key Synqit already has. Upstream CADAM only
-speaks Anthropic, Google and OpenRouter.
+The app in `cadam/` is upstream CADAM with three changes: an **Azure OpenAI
+provider** (upstream only speaks Anthropic, Google and OpenRouter), a
+**Synqit rebrand**, and **Synqit sign-in** (details in the sections at the
+end).
+
+## Rebrand summary (2026-09-08)
+
+- Base path `/cadam` → `/cad`; package name `synqit-cad`; page title "Synqit CAD".
+- Every user-visible "Adam" / "CADAM" / "AdamCAD" string → "Synqit" / "Synqit CAD"
+  (agent persona included: the system prompt now says "You are Synqit").
+- Tailwind tokens `adam-*` → `sq-*`, button variants `adam_dark*` → `sq_dark*`,
+  localStorage keys `adam-*` → `synqit-*`.
+- Assets: Adam logos, Lottie animation, product banner, GitHub/Discord links and
+  the Adam logo particle cloud removed; `synqit-logo.png` (from the Synqit
+  frontend) and a generated `synqit-wordmark.svg` in their place. Sidebar links
+  go to synqit.in and hello@synqit.in.
+- Terms and Privacy pages now point at synqit.in/terms and synqit.in/privacy
+  instead of carrying Adam's legal text.
+- Env: `ADAM_URL` → `SYNQIT_APP_URL`, `CADAM_BILLING_MULTIPLIER` → `SYNQIT_BILLING_MULTIPLIER`.
+
+## Sign-in shared with Synqit (2026-09-08)
+
+Two paths, both verified locally:
+
+1. **Google, the Synqit way.** `GoogleSignInButton` loads Google Identity
+   Services with the SAME `VITE_GOOGLE_CLIENT_ID` the Synqit frontend uses and
+   exchanges the ID token with `supabase.auth.signInWithIdToken`. No client
+   secret. Requirements: the Google client's "Authorized JavaScript origins"
+   must include the CAD app origin, and the Supabase Google provider must be
+   enabled with that client id — locally `supabase/config.toml` has
+   `skip_nonce_check = true` and the CLI needs `GOOGLE_CLIENT_ID` /
+   `GOOGLE_SECRET` (any value) in its environment at `supabase start`.
+2. **"Continue with Synqit" handoff.** Button → Synqit backend
+   `GET /api/auth/handoff?return_to=<cad>/sso` → (login first if needed) →
+   `/sso?token=…` → CAD server `POST /api/synqit-sso` verifies the token with
+   Synqit (`/auth/handoff/verify`), creates/finds the Supabase user by email,
+   returns a magic-link token hash → client `verifyOtp` → signed in. Synqit-side
+   code is on the `cad-sso` branch of Cursor-for-hardware (not pushed):
+   `backend/app/api/auth.py`, `backend/app/services/auth.py`,
+   `frontend/src/routes/Login.tsx` (`?next=` support). Env on the Synqit side:
+   `CAD_APP_ORIGINS` (allow-list, default `http://localhost:3000`) and
+   `SYNQIT_APP_URL` (login page, default `http://localhost:5173`). Env on the CAD
+   side: `SYNQIT_API_BASE` and `VITE_SYNQIT_API_BASE` (default
+   `http://localhost:8000/api`).
 
 ## What was changed (all in `cadam/`)
 

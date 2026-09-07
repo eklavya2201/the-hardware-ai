@@ -28,7 +28,7 @@ export const ssoProvider = (import.meta.env.VITE_SSO_PROVIDER ||
 // point it anywhere or leave it blank.
 export const accountUrl = (import.meta.env.VITE_ACCOUNT_URL || '') as string;
 
-// The single "Adam owns this profile" flag: true only when SSO is on AND an
+// The single "Synqit owns this profile" flag: true only when SSO is on AND an
 // external account page exists — i.e. name / avatar / password / delete are
 // managed by the provider, not in-app. Every SSO gate (UserAvatar, SettingsView,
 // useProfile) imports THIS constant, so the condition can't drift between them.
@@ -40,7 +40,7 @@ export const ssoManaged = Boolean(ssoProvider && accountUrl);
 // This is the ONE source for provider-owned profile fields (name, picture, …)
 // under SSO — `user_metadata` is NOT refreshed by GoTrue (it keeps the
 // first-login value), so it must never be read for these. Matched by the
-// configured provider, so it's the Adam identity here (and the right provider
+// configured provider, so it's the Synqit identity here (and the right provider
 // for a self-hoster). undefined when SSO isn't managing the profile.
 export function ssoClaims(user: User | null) {
   if (!ssoManaged || !user) return undefined;

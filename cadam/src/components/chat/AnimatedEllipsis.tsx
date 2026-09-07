@@ -10,7 +10,7 @@ interface AnimatedEllipsisProps {
     | 'muted'
     | 'accent'
     | 'gray'
-    | 'adam-neutral';
+    | 'sq-neutral';
 }
 
 export function AnimatedEllipsis({
@@ -33,7 +33,7 @@ export function AnimatedEllipsis({
     muted: 'bg-muted-foreground',
     accent: 'bg-accent',
     gray: 'bg-gray-500',
-    'adam-neutral': 'bg-adam-neutral-500',
+    'sq-neutral': 'bg-sq-neutral-500',
   };
 
   const dotSize = sizeMap[size];
@@ -41,16 +41,16 @@ export function AnimatedEllipsis({
 
   return (
     <>
-      {color === 'adam-neutral' && (
+      {color === 'sq-neutral' && (
         <style
           dangerouslySetInnerHTML={{
             __html: `
-            @keyframes adamNeutralPulse {
+            @keyframes sqNeutralPulse {
               0%, 66.66%, 100% {
-                background-color: rgb(107 114 128); /* adam-neutral-500 */
+                background-color: rgb(107 114 128); /* sq-neutral-500 */
               }
               33.33% {
-                background-color: rgb(245 245 245); /* adam-neutral-100 */
+                background-color: rgb(245 245 245); /* sq-neutral-100 */
               }
             }
           `,
@@ -64,17 +64,17 @@ export function AnimatedEllipsis({
             className={cn(
               'rounded-full',
               dotSize,
-              color === 'adam-neutral'
-                ? 'bg-adam-neutral-500'
+              color === 'sq-neutral'
+                ? 'bg-sq-neutral-500'
                 : `animate-pulse ${dotColor}`,
-              color !== 'adam-neutral' && 'animate-pulse',
+              color !== 'sq-neutral' && 'animate-pulse',
               dotClassName,
             )}
             style={{
-              ...(color === 'adam-neutral' && {
-                animation: `adamNeutralPulse 1.2s ease-in-out ${(2 - i) * -0.4}s infinite`,
+              ...(color === 'sq-neutral' && {
+                animation: `sqNeutralPulse 1.2s ease-in-out ${(2 - i) * -0.4}s infinite`,
               }),
-              ...(color !== 'adam-neutral' && {
+              ...(color !== 'sq-neutral' && {
                 animationDelay: `${i * 200}ms`,
               }),
             }}

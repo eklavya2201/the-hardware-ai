@@ -2,8 +2,8 @@ import { supabase, ssoProvider } from '@/lib/supabase';
 
 // Build an absolute, same-frontend redirect URL for the OAuth return leg.
 // Uses the current origin + Vite base path so the provider sends the user
-// back to whichever frontend initiated the redirect (adam.new/cadam,
-// app.adamcad.com, Vercel previews).
+// back to whichever frontend initiated the redirect (synqit.in/cad,
+// synqit.in, Vercel previews).
 function getAppRedirectUrl(path: string) {
   const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 

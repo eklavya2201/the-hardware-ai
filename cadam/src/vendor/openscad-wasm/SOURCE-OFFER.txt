@@ -10,6 +10,6 @@ Source distribution:
 Upstream source code:
   https://github.com/openscad/openscad
 
-No local modifications were made to these binaries by Adam AI Labs, Inc.
-If the above location becomes unavailable, contact: hello@adam.new
+No local modifications were made to these binaries by Synqit AI Labs, Inc.
+If the above location becomes unavailable, contact: hello@synqit.new
 

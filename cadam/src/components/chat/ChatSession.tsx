@@ -552,7 +552,7 @@ export function ChatSession({
             toast({
               title: "Couldn't save this step",
               description:
-                "The model is shown but the build wasn't saved, so Adam paused. Please retry.",
+                "The model is shown but the build wasn't saved, so Synqit paused. Please retry.",
               variant: 'destructive',
             });
           }
@@ -661,7 +661,7 @@ export function ChatSession({
       }
       const message = error instanceof Error ? error.message : String(error);
       toast({
-        title: 'Adam ran into a problem',
+        title: 'Synqit ran into a problem',
         description: message || 'The model call failed. Please try again.',
         variant: 'destructive',
       });
@@ -911,7 +911,7 @@ export function ChatSession({
         className="relative w-full min-w-0 max-w-full flex-1 self-center overflow-x-hidden px-3 py-0 md:min-h-0 md:p-4 [&_[data-radix-scroll-area-viewport]]:overflow-x-hidden"
         ref={scrollRef}
       >
-        <div className="pointer-events-none sticky left-0 top-0 z-50 h-3 bg-gradient-to-b from-adam-bg-secondary-dark/90 to-transparent md:hidden" />
+        <div className="pointer-events-none sticky left-0 top-0 z-50 h-3 bg-gradient-to-b from-sq-bg-secondary-dark/90 to-transparent md:hidden" />
         <div className="mx-auto flex w-full min-w-0 max-w-3xl flex-col gap-4 pb-6 md:gap-8 md:pb-4">
           {branchNodes.map((node, index) => {
             const isLastMessage = index === branchNodes.length - 1;
@@ -981,7 +981,7 @@ export function ChatSession({
         <TextAreaChat
           type={conversation.type}
           onSubmit={(parts) => void handleSend(parts)}
-          placeholder="Keep iterating with Adam..."
+          placeholder="Keep iterating with Synqit..."
           isLoading={isLoading}
           stopGenerating={stop}
           disabled={isDisabled}

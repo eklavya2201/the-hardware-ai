@@ -57,10 +57,10 @@ export function ShareContent({
   return (
     <div className="flex w-full flex-col gap-6">
       <div className="flex flex-col gap-6">
-        <div className="h-5 font-medium text-adam-neutral-100">
+        <div className="h-5 font-medium text-sq-neutral-100">
           Share public link to chat
         </div>
-        <div className="flex items-center gap-3 text-xs text-adam-text-secondary">
+        <div className="flex items-center gap-3 text-xs text-sq-text-secondary">
           {isPublic ? (
             <div className="ml-1 h-1 w-1 rounded-full bg-[#64D557] outline outline-4 outline-[#79FF6B]/30" />
           ) : (
@@ -81,7 +81,7 @@ export function ShareContent({
         {meshId ? (
           <Suspense
             fallback={
-              <div className="h-56 overflow-hidden rounded-lg border border-adam-neutral-700 bg-adam-neutral-950" />
+              <div className="h-56 overflow-hidden rounded-lg border border-sq-neutral-700 bg-sq-neutral-950" />
             }
           >
             <MeshGifPreview
@@ -95,10 +95,10 @@ export function ShareContent({
         ) : openscadCode ? (
           <Suspense
             fallback={
-              <div className="h-56 overflow-hidden rounded-lg border border-adam-neutral-700 bg-adam-neutral-950" />
+              <div className="h-56 overflow-hidden rounded-lg border border-sq-neutral-700 bg-sq-neutral-950" />
             }
           >
-            <div className="h-56 overflow-hidden rounded-lg border border-adam-neutral-700 bg-adam-neutral-950">
+            <div className="h-56 overflow-hidden rounded-lg border border-sq-neutral-700 bg-sq-neutral-950">
               <OpenSCADGifPreview
                 ref={downloadGifRef}
                 code={openscadCode}
@@ -117,8 +117,8 @@ export function ShareContent({
             !isPublic && 'h-0 opacity-0',
           )}
         >
-          <div className="flex w-full items-center justify-between gap-4 rounded-full bg-adam-neutral-950 py-2 pl-6 pr-3">
-            <span className="line-clamp-1 text-sm text-adam-neutral-100">
+          <div className="flex w-full items-center justify-between gap-4 rounded-full bg-sq-neutral-950 py-2 pl-6 pr-3">
+            <span className="line-clamp-1 text-sm text-sq-neutral-100">
               {shareLink}
             </span>
             <button
@@ -133,7 +133,7 @@ export function ShareContent({
               {justCopied ? 'Copied!' : 'Copy'}
             </button>
           </div>
-          <div className="grid w-full grid-cols-3 justify-between text-adam-neutral-300">
+          <div className="grid w-full grid-cols-3 justify-between text-sq-neutral-300">
             <ShareButton
               label="WhatsApp"
               onClick={() => handleWhatsAppShare(conversationId)}
@@ -207,7 +207,7 @@ function ShareButton({
     <div className="flex flex-col items-center gap-2">
       <button
         onClick={onClick}
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-adam-neutral-950 text-adam-neutral-100"
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-sq-neutral-950 text-sq-neutral-100"
       >
         {icon}
       </button>

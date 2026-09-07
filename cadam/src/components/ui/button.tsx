@@ -10,26 +10,26 @@ const buttonVariants = cva(
     variants: {
       variant: {
         black:
-          'bg-adam-neutral-950 text-adam-neutral-10 hover:bg-adam-neutral-900 duration-150 ease-out',
-        dark: 'bg-adam-neutral-700 text-adam-text-primary hover:bg-adam-neutral-800 duration-150 ease-out',
+          'bg-sq-neutral-950 text-sq-neutral-10 hover:bg-sq-neutral-900 duration-150 ease-out',
+        dark: 'bg-sq-neutral-700 text-sq-text-primary hover:bg-sq-neutral-800 duration-150 ease-out',
         light:
-          'bg-adam-neutral-10 text-adam-neutral-950 hover:bg-adam-neutral-100 duration-150 ease-out',
+          'bg-sq-neutral-10 text-sq-neutral-950 hover:bg-sq-neutral-100 duration-150 ease-out',
         default:
-          'bg-adam-background-2 text-adam-text-primary shadow hover:bg-adam-neutral-800 hover:text-adam-neutral-100',
+          'bg-sq-background-2 text-sq-text-primary shadow hover:bg-sq-neutral-800 hover:text-sq-neutral-100',
         destructive:
           'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
         outline:
-          'border border-adam-neutral-700 bg-adam-bg-secondary-dark text-adam-text-primary shadow-sm hover:bg-adam-neutral-800 hover:text-adam-neutral-100',
+          'border border-sq-neutral-700 bg-sq-bg-secondary-dark text-sq-text-primary shadow-sm hover:bg-sq-neutral-800 hover:text-sq-neutral-100',
         secondary:
           'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
-        adam_dark:
-          'text-adam-text-tertiary border-2 border-transparent transition-all duration-200 ease-in-out [@media(hover:hover)]:hover:bg-adam-neutral-950 [@media(hover:hover)]:hover:text-adam-neutral-10',
-        adam_dark_collapsed:
-          'text-adam-text-tertiary border-2 border-transparent transition-all duration-200 ease-in-out [@media(hover:hover)]:hover:bg-adam-neutral-950 [@media(hover:hover)]:hover:text-adam-neutral-10',
-        adam_dark_collapsed_avatar:
-          'text-adam-text-tertiary border-2 border-transparent transition-all duration-200 ease-in-out [@media(hover:hover)]:hover:bg-adam-neutral-950',
+        sq_dark:
+          'text-sq-text-tertiary border-2 border-transparent transition-all duration-200 ease-in-out [@media(hover:hover)]:hover:bg-sq-neutral-950 [@media(hover:hover)]:hover:text-sq-neutral-10',
+        sq_dark_collapsed:
+          'text-sq-text-tertiary border-2 border-transparent transition-all duration-200 ease-in-out [@media(hover:hover)]:hover:bg-sq-neutral-950 [@media(hover:hover)]:hover:text-sq-neutral-10',
+        sq_dark_collapsed_avatar:
+          'text-sq-text-tertiary border-2 border-transparent transition-all duration-200 ease-in-out [@media(hover:hover)]:hover:bg-sq-neutral-950',
       },
       size: {
         default: 'h-9 px-4 py-2',

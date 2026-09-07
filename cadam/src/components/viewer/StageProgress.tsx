@@ -43,9 +43,9 @@ export function StageProgress({
   return (
     <>
       <div className="h-4 text-xs text-white/60">{title}</div>
-      <div className="h-1.5 w-full overflow-hidden rounded-full bg-adam-neutral-500">
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-sq-neutral-500">
         <div
-          className="h-full rounded-full bg-adam-neutral-100 transition-all duration-300 ease-out"
+          className="h-full rounded-full bg-sq-neutral-100 transition-all duration-300 ease-out"
           style={{
             width: `${getStageProgress(stage, currentStage, progress, modelType)}%`,
           }}

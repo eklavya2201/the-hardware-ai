@@ -128,11 +128,11 @@ function UploadedImage({ id, alt }: { id: string; alt: string }) {
   }
 
   return (
-    <div className="flex h-20 w-20 items-center justify-center rounded-lg bg-adam-neutral-900">
+    <div className="flex h-20 w-20 items-center justify-center rounded-lg bg-sq-neutral-900">
       {isDataError || isUrlError ? (
-        <X className="h-5 w-5 text-adam-text-secondary" />
+        <X className="h-5 w-5 text-sq-text-secondary" />
       ) : (
-        <Loader2 className="h-5 w-5 animate-spin text-adam-text-secondary" />
+        <Loader2 className="h-5 w-5 animate-spin text-sq-text-secondary" />
       )}
     </div>
   );
@@ -239,7 +239,7 @@ function UserBubble({
   return (
     <div className="flex w-full min-w-0 max-w-full justify-start">
       <div className="mr-2 mt-1">
-        <UserAvatar className="h-9 w-9 border border-adam-neutral-700 bg-adam-neutral-950 p-0" />
+        <UserAvatar className="h-9 w-9 border border-sq-neutral-700 bg-sq-neutral-950 p-0" />
       </div>
       <div
         onMouseEnter={handleMouseEnter}
@@ -285,7 +285,7 @@ function UserBubble({
         {meshPreferencesParts.map((part, index) => (
           <span
             key={`pref-${index}`}
-            className="w-fit rounded-full bg-adam-neutral-800 px-2 py-1 text-xs text-adam-text-secondary"
+            className="w-fit rounded-full bg-sq-neutral-800 px-2 py-1 text-xs text-sq-text-secondary"
           >
             {part.data.topology} · {part.data.polygonCount.toLocaleString()}{' '}
             polys
@@ -296,7 +296,7 @@ function UserBubble({
           <div
             className={cn(
               'relative grid w-fit rounded-lg text-white',
-              (hovering || hasAttachments) && 'bg-adam-neutral-800',
+              (hovering || hasAttachments) && 'bg-sq-neutral-800',
             )}
           >
             {isEditing && (
@@ -304,7 +304,7 @@ function UserBubble({
                 value={input}
                 ref={textareaRef}
                 onChange={(e) => setInput(e.target.value)}
-                className="block h-auto min-h-0 w-full resize-none overflow-hidden whitespace-pre-line break-words border-none bg-adam-neutral-800 px-3 py-2 text-sm sm:px-4"
+                className="block h-auto min-h-0 w-full resize-none overflow-hidden whitespace-pre-line break-words border-none bg-sq-neutral-800 px-3 py-2 text-sm sm:px-4"
                 rows={1}
                 style={{ gridArea: '1 / -1' }}
               />
@@ -322,7 +322,7 @@ function UserBubble({
         )}
 
         {showActions && (
-          <div className="absolute bottom-[-1.5rem] right-2 flex items-center gap-0.5 rounded-sm border border-adam-neutral-700 bg-adam-bg-secondary-dark p-0.5">
+          <div className="absolute bottom-[-1.5rem] right-2 flex items-center gap-0.5 rounded-sm border border-sq-neutral-700 bg-sq-bg-secondary-dark p-0.5">
             {!isEditing ? (
               <>
                 {onEditUserText && (
@@ -336,19 +336,19 @@ function UserBubble({
                             'h-6 w-6 rounded-sm p-0',
                             isLoading
                               ? 'cursor-not-allowed opacity-50'
-                              : 'hover:bg-adam-neutral-800',
+                              : 'hover:bg-sq-neutral-800',
                           )}
                           disabled={isLoading}
                           onClick={() => setIsEditing(true)}
                         >
-                          <Pencil className="h-3 w-3 p-0 text-adam-neutral-100" />
+                          <Pencil className="h-3 w-3 p-0 text-sq-neutral-100" />
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>Edit</TooltipContent>
                     </Tooltip>
                     <Separator
                       orientation="vertical"
-                      className="h-4 bg-adam-neutral-700"
+                      className="h-4 bg-sq-neutral-700"
                     />
                   </>
                 )}
@@ -358,13 +358,13 @@ function UserBubble({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-6 w-6 rounded-sm p-0 hover:bg-adam-neutral-800"
+                        className="h-6 w-6 rounded-sm p-0 hover:bg-sq-neutral-800"
                         onClick={handleCopy}
                       >
                         {copied ? (
-                          <Check className="h-3 w-3 p-0 text-adam-neutral-100" />
+                          <Check className="h-3 w-3 p-0 text-sq-neutral-100" />
                         ) : (
-                          <Copy className="h-3 w-3 p-0 text-adam-neutral-100" />
+                          <Copy className="h-3 w-3 p-0 text-sq-neutral-100" />
                         )}
                       </Button>
                     </TooltipTrigger>
@@ -375,7 +375,7 @@ function UserBubble({
                   <>
                     <Separator
                       orientation="vertical"
-                      className="h-4 bg-adam-neutral-700"
+                      className="h-4 bg-sq-neutral-700"
                     />
                     <BranchNavigation
                       branchCount={message.siblings.length}
@@ -393,21 +393,21 @@ function UserBubble({
                   variant="ghost"
                   size="icon"
                   onClick={handleEdit}
-                  className="h-6 w-6 rounded-sm p-0 hover:bg-adam-blue"
+                  className="h-6 w-6 rounded-sm p-0 hover:bg-sq-blue"
                 >
-                  <Check className="h-3 w-3 p-0 text-adam-neutral-100" />
+                  <Check className="h-3 w-3 p-0 text-sq-neutral-100" />
                 </Button>
                 <Separator
                   orientation="vertical"
-                  className="h-4 bg-adam-neutral-700"
+                  className="h-4 bg-sq-neutral-700"
                 />
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-6 w-6 rounded-sm p-0 hover:bg-adam-neutral-800"
+                  className="h-6 w-6 rounded-sm p-0 hover:bg-sq-neutral-800"
                   onClick={handleCancel}
                 >
-                  <X className="h-3 w-3 p-0 text-adam-neutral-100" />
+                  <X className="h-3 w-3 p-0 text-sq-neutral-100" />
                 </Button>
               </>
             )}
@@ -493,11 +493,11 @@ function AssistantBubble({
   return (
     <div className="flex min-w-0 max-w-full justify-start overflow-hidden">
       <div className="mr-2 mt-1 shrink-0">
-        <Avatar className="h-9 w-9 border border-adam-neutral-700 bg-adam-neutral-950">
+        <Avatar className="h-9 w-9 border border-sq-neutral-700 bg-sq-neutral-950">
           <div style={{ padding: '0.6rem 0.5rem 0.5rem 0.55rem' }}>
             <AvatarImage
-              src={`${import.meta.env.BASE_URL}/adam-logo.svg`}
-              alt="Adam"
+              src={`${import.meta.env.BASE_URL}/synqit-logo.png`}
+              alt="Synqit"
             />
           </div>
         </Avatar>
@@ -518,7 +518,7 @@ function AssistantBubble({
             return (
               <div
                 key={index}
-                className="chat-markdown min-w-0 max-w-full overflow-hidden rounded-lg bg-adam-neutral-800 px-3 py-2 text-sm text-adam-text-primary"
+                className="chat-markdown min-w-0 max-w-full overflow-hidden rounded-lg bg-sq-neutral-800 px-3 py-2 text-sm text-sq-text-primary"
               >
                 <Streamdown parseIncompleteMarkdown>{visibleText}</Streamdown>
               </div>
@@ -527,7 +527,7 @@ function AssistantBubble({
 
           if (part.type === 'reasoning') {
             if (!part.text) return null;
-            // CADAM-tailored wrapper around ai-elements' Reasoning primitive
+            // Synqit CAD-tailored wrapper around ai-elements' Reasoning primitive
             // — adds a capped-height scroll body with auto-pin-to-bottom
             // while the model is still streaming reasoning tokens.
             return (
@@ -608,13 +608,13 @@ function AssistantBubble({
                 }
               >
                 {part.state === 'output-error' ? (
-                  <div className="border-b border-adam-neutral-700 p-3 text-xs text-red-300">
+                  <div className="border-b border-sq-neutral-700 p-3 text-xs text-red-300">
                     {part.errorText}
                   </div>
                 ) : null}
                 {artifact?.code ? (
                   <ScrollArea className="h-80 w-full">
-                    <pre className="m-0 whitespace-pre-wrap break-words p-3 text-xs text-adam-neutral-200">
+                    <pre className="m-0 whitespace-pre-wrap break-words p-3 text-xs text-sq-neutral-200">
                       <code>{artifact.code}</code>
                     </pre>
                   </ScrollArea>
@@ -629,7 +629,7 @@ function AssistantBubble({
             return (
               <div
                 key={index}
-                className="chat-markdown min-w-0 max-w-full overflow-hidden rounded-lg bg-adam-neutral-800 px-3 py-2 text-sm text-adam-text-primary"
+                className="chat-markdown min-w-0 max-w-full overflow-hidden rounded-lg bg-sq-neutral-800 px-3 py-2 text-sm text-sq-text-primary"
               >
                 <Streamdown parseIncompleteMarkdown>{answerMessage}</Streamdown>
               </div>
@@ -674,14 +674,14 @@ function AssistantBubble({
                     className={cn(
                       'h-3 w-3',
                       message.rating === 1
-                        ? 'text-adam-blue'
-                        : 'text-adam-neutral-100',
+                        ? 'text-sq-blue'
+                        : 'text-sq-neutral-100',
                     )}
                   />
                 </Button>
                 <Separator
                   orientation="vertical"
-                  className="h-6 bg-adam-neutral-700"
+                  className="h-6 bg-sq-neutral-700"
                 />
                 <Button
                   variant="outline"
@@ -694,8 +694,8 @@ function AssistantBubble({
                     className={cn(
                       'h-3 w-3',
                       message.rating === -1
-                        ? 'text-adam-blue'
-                        : 'text-adam-neutral-100',
+                        ? 'text-sq-blue'
+                        : 'text-sq-neutral-100',
                     )}
                   />
                 </Button>
@@ -712,7 +712,7 @@ function AssistantBubble({
                     onClick={() => navigator.clipboard.writeText(copyText)}
                     aria-label="Copy"
                   >
-                    <Copy className="h-3 w-3 text-adam-neutral-100" />
+                    <Copy className="h-3 w-3 text-sq-neutral-100" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Copy</TooltipContent>
@@ -730,7 +730,7 @@ function AssistantBubble({
                     className="h-6 w-6 rounded-lg p-0"
                     aria-label="Restore this version"
                   >
-                    <History className="h-3 w-3 text-adam-neutral-100" />
+                    <History className="h-3 w-3 text-sq-neutral-100" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Restore</TooltipContent>
@@ -754,7 +754,7 @@ function AssistantBubble({
                       )}
                       aria-label="Retry"
                     >
-                      <RefreshCw className="h-3 w-3 text-adam-neutral-100" />
+                      <RefreshCw className="h-3 w-3 text-sq-neutral-100" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>Retry</TooltipContent>
@@ -774,7 +774,7 @@ function AssistantBubble({
             )}
 
             {onSelectLeaf && message.siblings.length > 1 && (
-              <div className="flex h-6 items-center gap-0.5 rounded-lg border border-adam-neutral-700 bg-adam-bg-secondary-dark">
+              <div className="flex h-6 items-center gap-0.5 rounded-lg border border-sq-neutral-700 bg-sq-bg-secondary-dark">
                 <BranchNavigation
                   branchCount={message.siblings.length}
                   branchIndex={branchIndex}
@@ -819,8 +819,8 @@ function RetryModelDropdown({
           variant="outline"
           disabled={disabled}
           className={cn(
-            'h-6 w-fit gap-1 rounded-lg rounded-l-none px-2 text-xs text-adam-text-primary',
-            isOpen && 'bg-adam-neutral-800',
+            'h-6 w-fit gap-1 rounded-lg rounded-l-none px-2 text-xs text-sq-text-primary',
+            isOpen && 'bg-sq-neutral-800',
           )}
           aria-label="Retry with another model"
         >
@@ -835,12 +835,12 @@ function RetryModelDropdown({
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="w-72 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-lg border border-adam-neutral-700 bg-adam-neutral-800 p-1 [max-height:min(300px,var(--radix-dropdown-menu-content-available-height))]"
+        className="w-72 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-lg border border-sq-neutral-700 bg-sq-neutral-800 p-1 [max-height:min(300px,var(--radix-dropdown-menu-content-available-height))]"
       >
         {modelOptions.map((option) => (
           <DropdownMenuItem
             key={option.id}
-            className="cursor-pointer rounded-md bg-adam-neutral-800 px-2 py-2 text-xs text-adam-text-primary hover:bg-adam-neutral-700 focus:bg-adam-bg-secondary-dark"
+            className="cursor-pointer rounded-md bg-sq-neutral-800 px-2 py-2 text-xs text-sq-text-primary hover:bg-sq-neutral-700 focus:bg-sq-bg-secondary-dark"
             onClick={() => {
               onRetry(option.id);
               setIsOpen(false);
@@ -849,7 +849,7 @@ function RetryModelDropdown({
             <div className="flex w-full items-start gap-2.5">
               <ProviderLogo
                 provider={option.provider}
-                className="mt-px h-3.5 w-3.5 text-adam-text-primary"
+                className="mt-px h-3.5 w-3.5 text-sq-text-primary"
               />
               <div className="min-w-0 flex-1">
                 <span className="font-medium">{option.name}</span>
@@ -889,22 +889,22 @@ function BranchNavigation({
         variant="ghost"
         size="icon"
         disabled={branchIndex === 0 || isLoading}
-        className="h-6 w-6 rounded-sm p-0 hover:bg-adam-neutral-800"
+        className="h-6 w-6 rounded-sm p-0 hover:bg-sq-neutral-800"
         onClick={onPrev}
       >
-        <ChevronLeft className="h-3 w-3 p-0 text-adam-neutral-100" />
+        <ChevronLeft className="h-3 w-3 p-0 text-sq-neutral-100" />
       </Button>
-      <span className="text-xs text-adam-neutral-300">
+      <span className="text-xs text-sq-neutral-300">
         {branchIndex + 1}/{branchCount}
       </span>
       <Button
         variant="ghost"
         size="icon"
         disabled={branchIndex === branchCount - 1 || isLoading}
-        className="h-6 w-6 rounded-sm p-0 hover:bg-adam-neutral-800"
+        className="h-6 w-6 rounded-sm p-0 hover:bg-sq-neutral-800"
         onClick={onNext}
       >
-        <ChevronRight className="h-3 w-3 p-0 text-adam-neutral-100" />
+        <ChevronRight className="h-3 w-3 p-0 text-sq-neutral-100" />
       </Button>
     </>
   );
@@ -938,14 +938,14 @@ function ToolBlock({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="group min-w-0 max-w-full overflow-hidden rounded-lg border border-adam-neutral-700 bg-adam-neutral-900 text-sm text-adam-text-primary">
+    <div className="group min-w-0 max-w-full overflow-hidden rounded-lg border border-sq-neutral-700 bg-sq-neutral-900 text-sm text-sq-text-primary">
       {previewBody ? (
         <div className="min-w-0 max-w-full overflow-hidden">{previewBody}</div>
       ) : null}
       <div
         className={cn(
-          'flex w-full items-stretch hover:bg-adam-neutral-800',
-          previewBody && 'border-t border-adam-neutral-700',
+          'flex w-full items-stretch hover:bg-sq-neutral-800',
+          previewBody && 'border-t border-sq-neutral-700',
         )}
       >
         <button
@@ -983,7 +983,7 @@ function ToolBlock({
         ) : null}
       </div>
       {expanded && children ? (
-        <div className="min-w-0 max-w-full overflow-hidden border-t border-adam-neutral-700">
+        <div className="min-w-0 max-w-full overflow-hidden border-t border-sq-neutral-700">
           {children}
         </div>
       ) : null}
@@ -1106,7 +1106,7 @@ function ParametricImagePreview({
   });
   if (thumbnailUrl) {
     return (
-      <div className="relative aspect-square w-full bg-adam-neutral-950">
+      <div className="relative aspect-square w-full bg-sq-neutral-950">
         <img
           src={thumbnailUrl}
           alt=""
@@ -1118,8 +1118,8 @@ function ParametricImagePreview({
   }
   if (isPending) {
     return (
-      <div className="relative flex aspect-square w-full items-center justify-center bg-adam-neutral-950">
-        <Loader2 className="h-6 w-6 animate-spin text-adam-neutral-500" />
+      <div className="relative flex aspect-square w-full items-center justify-center bg-sq-neutral-950">
+        <Loader2 className="h-6 w-6 animate-spin text-sq-neutral-500" />
       </div>
     );
   }
@@ -1142,15 +1142,15 @@ function MeshContextChip({
 }) {
   const label = filename ?? `mesh ${meshId.slice(0, 6)}`;
   return (
-    <div className="flex items-center gap-2 overflow-hidden rounded-lg border border-adam-neutral-700 bg-adam-neutral-900 p-1.5">
+    <div className="flex items-center gap-2 overflow-hidden rounded-lg border border-sq-neutral-700 bg-sq-neutral-900 p-1.5">
       <div className="h-12 w-12 shrink-0 overflow-hidden rounded-md">
         <MeshImagePreview meshId={meshId} />
       </div>
       <div className="flex min-w-0 flex-col">
-        <span className="truncate text-xs font-medium text-adam-text-primary">
+        <span className="truncate text-xs font-medium text-sq-text-primary">
           {label}
         </span>
-        <span className="text-xs text-adam-text-secondary">
+        <span className="text-xs text-sq-text-secondary">
           {fileType.toUpperCase()}
         </span>
       </div>

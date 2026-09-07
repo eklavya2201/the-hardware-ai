@@ -103,9 +103,9 @@ export function ChatTitle({
               <Input
                 ref={inputRef}
                 className={cn(
-                  'h-8 w-full bg-transparent px-2 text-left text-[17px] font-medium leading-tight tracking-tight text-adam-neutral-10 selection:bg-adam-blue/50 selection:text-white',
-                  'rounded-none border-x-0 border-b-2 border-t-0 border-adam-neutral-500',
-                  'focus:border-adam-neutral-500 focus:outline-none focus:ring-0',
+                  'h-8 w-full bg-transparent px-2 text-left text-[17px] font-medium leading-tight tracking-tight text-sq-neutral-10 selection:bg-sq-blue/50 selection:text-white',
+                  'rounded-none border-x-0 border-b-2 border-t-0 border-sq-neutral-500',
+                  'focus:border-sq-neutral-500 focus:outline-none focus:ring-0',
                   isParametric && isMobile && 'text-center',
                 )}
                 value={titleInput}
@@ -144,10 +144,10 @@ export function ChatTitle({
                       <DropdownMenuTrigger asChild>
                         <div
                           className={cn(
-                            'flex h-8 w-fit cursor-pointer items-center justify-center gap-1 overflow-hidden rounded p-0 px-2 text-[17px] font-medium tracking-tight text-adam-neutral-10 transition-colors duration-200',
+                            'flex h-8 w-fit cursor-pointer items-center justify-center gap-1 overflow-hidden rounded p-0 px-2 text-[17px] font-medium tracking-tight text-sq-neutral-10 transition-colors duration-200',
                             isMenuOpen
-                              ? 'bg-black text-adam-neutral-0'
-                              : 'hover:bg-black hover:text-adam-neutral-0',
+                              ? 'bg-black text-sq-neutral-0'
+                              : 'hover:bg-black hover:text-sq-neutral-0',
                           )}
                         >
                           <span
@@ -166,21 +166,21 @@ export function ChatTitle({
                         onCloseAutoFocus={(e) => e.preventDefault()}
                       >
                         <DropdownMenuItem
-                          className="text-adam-neutral-200 hover:text-adam-neutral-100"
+                          className="text-sq-neutral-200 hover:text-sq-neutral-100"
                           onClick={() => setIsEditingTitle(true)}
                         >
                           <Pencil className="mr-2 h-4 w-4" />
                           Rename
                         </DropdownMenuItem>
                         <DialogTrigger asChild>
-                          <DropdownMenuItem className="text-adam-neutral-200 hover:text-adam-neutral-100">
+                          <DropdownMenuItem className="text-sq-neutral-200 hover:text-sq-neutral-100">
                             <ShareIcon className="mr-2 h-4 w-4" />
                             Share
                           </DropdownMenuItem>
                         </DialogTrigger>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                    <DialogContent className="mx-auto flex max-h-dvh w-[calc(100%-2rem)] flex-col items-center gap-8 rounded-lg border border-adam-neutral-800 text-adam-text-primary">
+                    <DialogContent className="mx-auto flex max-h-dvh w-[calc(100%-2rem)] flex-col items-center gap-8 rounded-lg border border-sq-neutral-800 text-sq-text-primary">
                       <DialogTitle className="hidden">
                         Share public link to chat
                       </DialogTitle>
@@ -198,7 +198,7 @@ export function ChatTitle({
                   </Dialog>
                 ) : (
                   // Desktop view: Click to edit
-                  <div className="flex h-8 w-fit items-center rounded font-medium tracking-tight text-adam-neutral-10 transition-colors duration-200 hover:bg-black hover:text-adam-neutral-0">
+                  <div className="flex h-8 w-fit items-center rounded font-medium tracking-tight text-sq-neutral-10 transition-colors duration-200 hover:bg-black hover:text-sq-neutral-0">
                     <span
                       className={cn(
                         'line-clamp-1 cursor-pointer px-2 text-left text-[17px]',
@@ -213,7 +213,7 @@ export function ChatTitle({
               </>
             ) : (
               // Fallback if no updateConversation (e.g., view-only mode)
-              <div className="flex h-8 w-fit items-center rounded font-medium tracking-tight text-adam-neutral-10">
+              <div className="flex h-8 w-fit items-center rounded font-medium tracking-tight text-sq-neutral-10">
                 <span
                   className={cn(
                     'line-clamp-1 px-2 text-left text-[17px]',

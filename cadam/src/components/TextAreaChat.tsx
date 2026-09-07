@@ -187,10 +187,10 @@ const QuadsButton = ({
       aria-pressed={isQuadsEnabled}
       className={cn(
         'flex h-8 items-center gap-2 rounded-full border px-2 text-sm transition-colors duration-200',
-        'hover:bg-adam-bg-secondary-dark focus:outline-none focus-visible:outline-none focus-visible:ring-0',
+        'hover:bg-sq-bg-secondary-dark focus:outline-none focus-visible:outline-none focus-visible:ring-0',
         'items-center justify-center',
         isQuadsEnabled
-          ? 'border-transparent bg-adam-blue-dark/15 hover:bg-adam-blue-dark/20'
+          ? 'border-transparent bg-sq-blue-dark/15 hover:bg-sq-blue-dark/20'
           : 'border-[#2a2a2a] bg-transparent',
         showFullLabels && 'pr-[8px]',
       )}
@@ -199,7 +199,7 @@ const QuadsButton = ({
       {showFullLabels && (
         <span
           className={cn(
-            'hidden text-xs text-adam-text-primary lg:inline',
+            'hidden text-xs text-sq-text-primary lg:inline',
             isQuadsEnabled && 'text-[#00A6FF]',
           )}
         >
@@ -298,16 +298,16 @@ const PolygonButton = ({
       disabled={isLoading || disabled}
       className={cn(
         'flex h-8 items-center gap-[6px] rounded-full border px-2 text-sm transition-colors duration-200',
-        'hover:bg-adam-bg-secondary-dark focus:outline-none focus-visible:outline-none focus-visible:ring-0',
+        'hover:bg-sq-bg-secondary-dark focus:outline-none focus-visible:outline-none focus-visible:ring-0',
         'items-center justify-center',
         // When popover is open and value is at model-specific default or input is empty while editing,
         // highlight with neutral-800 background
         isPopoverOpen &&
           (!isCustom ||
             (inputState.type === 'editing' && inputState.value === ''))
-          ? 'border-transparent bg-adam-neutral-800 hover:bg-adam-neutral-700'
+          ? 'border-transparent bg-sq-neutral-800 hover:bg-sq-neutral-700'
           : isCustom
-            ? 'border-transparent bg-adam-blue-dark/15 hover:bg-adam-blue-dark/20'
+            ? 'border-transparent bg-sq-blue-dark/15 hover:bg-sq-blue-dark/20'
             : 'border-[#2a2a2a] bg-transparent',
         isCustom && 'pr-[10px]',
       )}
@@ -317,7 +317,7 @@ const PolygonButton = ({
         <span
           className={cn(
             'hidden text-xs lg:inline',
-            isCustom ? 'text-[#00A6FF]' : 'text-adam-text-primary',
+            isCustom ? 'text-[#00A6FF]' : 'text-sq-text-primary',
           )}
         >
           {isCustom ? formatPolygonCount(polygonCount) : 'Polygons'}
@@ -343,7 +343,7 @@ const PolygonButton = ({
   const popoverContent = (
     <PopoverContent
       align="start"
-      className="flex w-56 flex-col items-start gap-3 self-stretch rounded-full border-0 bg-adam-neutral-700 p-2 shadow-none"
+      className="flex w-56 flex-col items-start gap-3 self-stretch rounded-full border-0 bg-sq-neutral-700 p-2 shadow-none"
       onOpenAutoFocus={(e) => e.preventDefault()}
       onInteractOutside={(e) => {
         // Keep popover open if user is dragging or within post-drag guard window
@@ -392,7 +392,7 @@ const PolygonButton = ({
                 (e.target as HTMLInputElement).select();
               }}
               onMouseDown={(e) => e.stopPropagation()}
-              className="h-6 w-12 rounded-md border border-adam-neutral-700 bg-adam-neutral-800 px-1 py-0 text-center text-xs text-adam-text-primary selection:bg-[#70B8FF7A] selection:text-white focus:ring-1 focus:ring-adam-blue/20"
+              className="h-6 w-12 rounded-md border border-sq-neutral-700 bg-sq-neutral-800 px-1 py-0 text-center text-xs text-sq-text-primary selection:bg-[#70B8FF7A] selection:text-white focus:ring-1 focus:ring-sq-blue/20"
             />
             <span className="text-xs">k</span>
           </div>
@@ -463,7 +463,7 @@ function TextAreaChat({
   onSubmit,
   onFocus,
   isLoading = false,
-  placeholder = 'What can Adam help you build today?',
+  placeholder = 'What can Synqit help you build today?',
   type,
   stopGenerating,
   disabled = false,
@@ -507,7 +507,7 @@ function TextAreaChat({
     // Default to 'polys' (quads disabled by default)
     // Only use localStorage if it's explicitly set to 'quads'
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('adam-mesh-topology');
+      const stored = localStorage.getItem('synqit-mesh-topology');
       // Only return 'quads' if explicitly stored, otherwise default to 'polys'
       return stored === 'quads' ? 'quads' : 'polys';
     }
@@ -520,7 +520,7 @@ function TextAreaChat({
   >(() => {
     if (typeof window !== 'undefined') {
       try {
-        const stored = localStorage.getItem('adam-polygon-overrides');
+        const stored = localStorage.getItem('synqit-polygon-overrides');
         if (stored) {
           const parsed = JSON.parse(stored);
           // Validate that it's an object with number values
@@ -537,7 +537,7 @@ function TextAreaChat({
           'Failed to parse polygon overrides from localStorage, resetting:',
           error,
         );
-        localStorage.removeItem('adam-polygon-overrides');
+        localStorage.removeItem('synqit-polygon-overrides');
       }
     }
     return {};
@@ -599,7 +599,7 @@ function TextAreaChat({
   useEffect(() => {
     if (typeof window !== 'undefined') {
       localStorage.setItem(
-        'adam-polygon-overrides',
+        'synqit-polygon-overrides',
         JSON.stringify(polygonOverrides),
       );
     }
@@ -608,7 +608,7 @@ function TextAreaChat({
   // Persist mesh topology to localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('adam-mesh-topology', meshTopology);
+      localStorage.setItem('synqit-mesh-topology', meshTopology);
     }
   }, [meshTopology]);
 
@@ -1327,7 +1327,7 @@ function TextAreaChat({
                   ? 'h-20 border-[#00A6FF] bg-[rgba(0,166,255,0.24)] opacity-100' // Blue, full height
                   : 'h-20 border-[#0077B7] bg-[rgba(0,166,255,0.12)] opacity-100' // Intermediate blue, full height
                 : images.length > 0 || mesh !== null
-                  ? 'h-20 border-adam-neutral-700 bg-adam-neutral-950 opacity-100'
+                  ? 'h-20 border-sq-neutral-700 bg-sq-neutral-950 opacity-100'
                   : 'h-0 border-transparent bg-transparent opacity-0',
         )}
         onDragEnter={(event) => {
@@ -1439,7 +1439,7 @@ function TextAreaChat({
                           </div>
                         )}
                         {!mesh.isUploading && (
-                          <div className="absolute bottom-[-0.50rem] right-[-0.50rem] rounded-full border border-adam-neutral-500 bg-adam-neutral-500 text-white transition-colors duration-200 hover:border-adam-neutral-700 hover:bg-adam-neutral-700">
+                          <div className="absolute bottom-[-0.50rem] right-[-0.50rem] rounded-full border border-sq-neutral-500 bg-sq-neutral-500 text-white transition-colors duration-200 hover:border-sq-neutral-700 hover:bg-sq-neutral-700">
                             <Box className="h-4 w-4 text-white" />
                           </div>
                         )}
@@ -1447,7 +1447,7 @@ function TextAreaChat({
                           onClick={handleMeshRemoved}
                           disabled={mesh.isUploading}
                           className={cn(
-                            'absolute right-[-0.50rem] top-[-0.50rem] rounded-full border border-adam-neutral-500 bg-adam-neutral-500 text-white transition-colors duration-200 hover:border-adam-neutral-700 hover:bg-adam-neutral-700',
+                            'absolute right-[-0.50rem] top-[-0.50rem] rounded-full border border-sq-neutral-500 bg-sq-neutral-500 text-white transition-colors duration-200 hover:border-sq-neutral-700 hover:bg-sq-neutral-700',
                             mesh.isUploading && 'opacity-50',
                           )}
                         >
@@ -1479,7 +1479,7 @@ function TextAreaChat({
                           onClick={() => handleImageRemoved(image)}
                           disabled={image.isUploading}
                           className={cn(
-                            'absolute right-[-0.50rem] top-[-0.50rem] rounded-full border border-adam-neutral-500 bg-adam-neutral-500 text-white transition-colors duration-200 hover:border-adam-neutral-700 hover:bg-adam-neutral-700',
+                            'absolute right-[-0.50rem] top-[-0.50rem] rounded-full border border-sq-neutral-500 bg-sq-neutral-500 text-white transition-colors duration-200 hover:border-sq-neutral-700 hover:bg-sq-neutral-700',
                             image.isUploading && 'opacity-50',
                           )}
                         >
@@ -1499,9 +1499,9 @@ function TextAreaChat({
         className={cn(
           'relative rounded-2xl border-2',
           isFocused
-            ? 'border-adam-blue shadow-[inset_0px_0px_8px_0px_rgba(0,0,0,0.08)]'
-            : 'border-adam-neutral-700 shadow-[inset_0px_0px_8px_0px_rgba(0,0,0,0.08)] hover:border-adam-neutral-400',
-          'bg-adam-background-2 transition-all duration-300',
+            ? 'border-sq-blue shadow-[inset_0px_0px_8px_0px_rgba(0,0,0,0.08)]'
+            : 'border-sq-neutral-700 shadow-[inset_0px_0px_8px_0px_rgba(0,0,0,0.08)] hover:border-sq-neutral-400',
+          'bg-sq-background-2 transition-all duration-300',
         )}
         onDragEnter={(event) => {
           if (isDragging) {
@@ -1528,8 +1528,8 @@ function TextAreaChat({
           <Avatar className="mt-1 h-8 w-8">
             <div className="h-full w-full p-1.5">
               <img
-                src={`${import.meta.env.BASE_URL}/Adam-Logo.png`}
-                alt="Adam Logo"
+                src={`${import.meta.env.BASE_URL}/Synqit-Logo.png`}
+                alt="Synqit Logo"
                 className="h-full w-full object-contain"
               />
             </div>
@@ -1548,7 +1548,7 @@ function TextAreaChat({
                 setInput(e.target.value);
               }}
               placeholder={placeholderAnim}
-              className="hide-scrollbar z-40 block h-auto min-h-10 w-full resize-none overflow-hidden whitespace-pre-line break-words border-none bg-adam-neutral-800 bg-transparent px-3 py-2 text-base leading-6 text-adam-text-primary outline-none transition-all duration-500 placeholder:text-adam-text-secondary placeholder:opacity-[var(--placeholder-opacity)] placeholder:transition-all placeholder:duration-300 placeholder:ease-in-out hover:placeholder:blur-[0.2px] focus:border-0 focus:shadow-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 dark:text-gray-200 sm:px-4 sm:text-sm"
+              className="hide-scrollbar z-40 block h-auto min-h-10 w-full resize-none overflow-hidden whitespace-pre-line break-words border-none bg-sq-neutral-800 bg-transparent px-3 py-2 text-base leading-6 text-sq-text-primary outline-none transition-all duration-500 placeholder:text-sq-text-secondary placeholder:opacity-[var(--placeholder-opacity)] placeholder:transition-all placeholder:duration-300 placeholder:ease-in-out hover:placeholder:blur-[0.2px] focus:border-0 focus:shadow-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 dark:text-gray-200 sm:px-4 sm:text-sm"
               style={
                 {
                   '--placeholder-opacity': placeholderOpacity,
@@ -1571,7 +1571,7 @@ function TextAreaChat({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 rounded-full hover:bg-adam-neutral-800"
+                  className="h-8 w-8 rounded-full hover:bg-sq-neutral-800"
                   onClick={(e) => {
                     e.stopPropagation();
                     generatePrompt();
@@ -1579,7 +1579,7 @@ function TextAreaChat({
                   disabled={isGeneratingPrompt || isLoading || disabled}
                 >
                   {isGeneratingPrompt ? (
-                    <Loader2 className="h-4 w-4 animate-spin text-adam-blue" />
+                    <Loader2 className="h-4 w-4 animate-spin text-sq-blue" />
                   ) : (
                     <Wand2 className="h-4 w-4 text-gray-400 transition-colors duration-200 hover:text-white" />
                   )}
@@ -1603,7 +1603,7 @@ function TextAreaChat({
               >
                 <Button
                   variant="outline"
-                  className="flex h-8 w-8 items-center gap-2 rounded-lg border border-[#2a2a2a] bg-adam-background-2 p-0 text-sm text-adam-text-secondary hover:bg-adam-bg-secondary-dark"
+                  className="flex h-8 w-8 items-center gap-2 rounded-lg border border-[#2a2a2a] bg-sq-background-2 p-0 text-sm text-sq-text-secondary hover:bg-sq-bg-secondary-dark"
                   onClick={(e) => {
                     e.stopPropagation();
                     const input = document.createElement('input');
@@ -1630,10 +1630,10 @@ function TextAreaChat({
                   <Button
                     variant="outline"
                     className={cn(
-                      'flex h-8 items-center gap-1.5 rounded-lg border border-[#2a2a2a] bg-adam-background-2 px-2 text-sm transition-colors',
+                      'flex h-8 items-center gap-1.5 rounded-lg border border-[#2a2a2a] bg-sq-background-2 px-2 text-sm transition-colors',
                       type === 'creative'
-                        ? 'border-adam-blue/50 bg-adam-blue/10 text-adam-blue'
-                        : 'text-adam-text-secondary hover:bg-adam-bg-secondary-dark',
+                        ? 'border-sq-blue/50 bg-sq-blue/10 text-sq-blue'
+                        : 'text-sq-text-secondary hover:bg-sq-bg-secondary-dark',
                     )}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -1699,7 +1699,7 @@ function TextAreaChat({
                 <TooltipTrigger asChild>
                   <button
                     onClick={stopGenerating}
-                    className="flex h-8 w-8 transform items-center justify-center rounded-lg bg-adam-neutral-700 p-1 text-white transition-all duration-300 hover:scale-105 hover:bg-adam-blue/90 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 disabled:hover:bg-adam-blue"
+                    className="flex h-8 w-8 transform items-center justify-center rounded-lg bg-sq-neutral-700 p-1 text-white transition-all duration-300 hover:scale-105 hover:bg-sq-blue/90 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 disabled:hover:bg-sq-blue"
                   >
                     <Square className="h-5 w-5 fill-white" />
                   </button>
@@ -1712,7 +1712,7 @@ function TextAreaChat({
                   handleSubmit();
                 }}
                 className={cn(
-                  'flex h-8 w-8 transform items-center justify-center rounded-lg bg-adam-neutral-700 p-1 text-white transition-all duration-300 hover:scale-105 hover:bg-adam-blue/90 disabled:opacity-50 disabled:hover:scale-100 disabled:hover:bg-adam-blue',
+                  'flex h-8 w-8 transform items-center justify-center rounded-lg bg-sq-neutral-700 p-1 text-white transition-all duration-300 hover:scale-105 hover:bg-sq-blue/90 disabled:opacity-50 disabled:hover:scale-100 disabled:hover:bg-sq-blue',
                   images.some((img) => img.isUploading) && 'opacity-50',
                 )}
                 disabled={

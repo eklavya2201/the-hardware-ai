@@ -1,3 +1,14 @@
+# Synqit CAD
+
+This is the Synqit fork of [CADAM](https://github.com/Adam-CAD/CADAM) (GPL-3.0): the text-to-CAD
+workspace rebranded for Synqit, running on our Azure OpenAI deployment, with sign-in shared with the
+Synqit app (Google Identity Services with the same client id, plus a "Continue with Synqit" handoff).
+Base path is `/cad`. Setup and what is and is not wired up: `../docs/LOCAL_SETUP.md`.
+
+Upstream README follows.
+
+---
+
 <div align="center">
   <a href="https://adam.new/cadam">
     <img src="./public/cadam-launch.gif" alt="CADAM — text-to-CAD live demo" width="100%">

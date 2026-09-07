@@ -236,7 +236,7 @@ export function ConversationView({
         className="relative h-full w-full overflow-hidden bg-[#292828]"
         ref={setContainerRef}
       >
-        <div className="flex h-full min-w-0 flex-col items-center bg-adam-bg-secondary-dark">
+        <div className="flex h-full min-w-0 flex-col items-center bg-sq-bg-secondary-dark">
           {chatPanelSlot}
         </div>
 
@@ -249,7 +249,7 @@ export function ConversationView({
               className={cn(
                 'fixed z-50 shadow-[0_0_10px_rgba(0,0,0,0.5)] transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 data-[state=open]:animate-in data-[state=closed]:animate-out',
                 'inset-x-0 bottom-0 data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom',
-                'rounded-t-3xl bg-adam-bg-secondary-dark',
+                'rounded-t-3xl bg-sq-bg-secondary-dark',
               )}
               style={{ height: mobileSheetHeight }}
             >
@@ -281,7 +281,7 @@ export function ConversationView({
                     stroke="currentColor"
                     strokeLinecap="round"
                     strokeWidth="2"
-                    className="text-adam-neutral-400"
+                    className="text-sq-neutral-400"
                   />
                 </svg>
               </button>
@@ -301,7 +301,7 @@ export function ConversationView({
                 {hasParameters && (
                   <>
                     <div className="w-full px-4">
-                      <Separator className="w-full bg-adam-neutral-700" />
+                      <Separator className="w-full bg-sq-neutral-700" />
                     </div>
                     <div className="min-h-0 w-full flex-1">
                       {mobileParametersSlot ?? parametersSlot}
@@ -335,7 +335,7 @@ export function ConversationView({
           id="chat-panel"
           order={0}
         >
-          <div className="relative flex h-full min-w-0 flex-col border-r border-adam-neutral-700 bg-adam-bg-secondary-dark">
+          <div className="relative flex h-full min-w-0 flex-col border-r border-sq-neutral-700 bg-sq-bg-secondary-dark">
             {chatPanelSlot}
           </div>
         </Panel>
@@ -345,7 +345,7 @@ export function ConversationView({
             <div className="absolute left-1 top-1/2 z-50 -translate-y-1/2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
               <Button
                 variant="ghost"
-                className="rounded-l-none rounded-r-lg border-b border-r border-t border-gray-200/20 bg-adam-bg-secondary-dark p-2 text-adam-text-primary transition-colors [@media(hover:hover)]:hover:bg-adam-neutral-950 [@media(hover:hover)]:hover:text-adam-neutral-10"
+                className="rounded-l-none rounded-r-lg border-b border-r border-t border-gray-200/20 bg-sq-bg-secondary-dark p-2 text-sq-text-primary transition-colors [@media(hover:hover)]:hover:bg-sq-neutral-950 [@media(hover:hover)]:hover:text-sq-neutral-10"
                 onClick={handleChatCollapse}
               >
                 <ChevronsRight className="h-5 w-5 rotate-180" />
@@ -357,7 +357,7 @@ export function ConversationView({
               <Button
                 aria-label="Expand chat panel"
                 onClick={handleChatExpand}
-                className="flex h-[100px] w-9 flex-col items-center rounded-l-none rounded-r-lg bg-adam-bg-secondary-dark px-1.5 py-2 text-adam-text-primary"
+                className="flex h-[100px] w-9 flex-col items-center rounded-l-none rounded-r-lg bg-sq-bg-secondary-dark px-1.5 py-2 text-sq-text-primary"
               >
                 <ChevronsRight className="h-5 w-5 text-white" />
                 <div className="flex flex-1 items-center justify-center">
@@ -399,7 +399,7 @@ export function ConversationView({
             <div className="absolute right-1 top-1/2 z-50 -translate-y-1/2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
               <Button
                 variant="ghost"
-                className="rounded-l-lg rounded-r-none border-b border-l border-t border-gray-200/20 bg-adam-bg-secondary-dark p-2 text-adam-text-primary transition-colors [@media(hover:hover)]:hover:bg-adam-neutral-950 [@media(hover:hover)]:hover:text-adam-neutral-10"
+                className="rounded-l-lg rounded-r-none border-b border-l border-t border-gray-200/20 bg-sq-bg-secondary-dark p-2 text-sq-text-primary transition-colors [@media(hover:hover)]:hover:bg-sq-neutral-950 [@media(hover:hover)]:hover:text-sq-neutral-10"
                 onClick={handleParametersCollapse}
               >
                 <ChevronsRight className="h-5 w-5" />
@@ -411,7 +411,7 @@ export function ConversationView({
               <Button
                 aria-label="Expand parameters panel"
                 onClick={handleParametersExpand}
-                className="flex h-[140px] w-9 flex-col items-center rounded-l-lg rounded-r-none bg-adam-bg-secondary-dark p-2 px-1.5 py-2 text-adam-text-primary"
+                className="flex h-[140px] w-9 flex-col items-center rounded-l-lg rounded-r-none bg-sq-bg-secondary-dark p-2 px-1.5 py-2 text-sq-text-primary"
               >
                 <ChevronsRight className="mb-3 h-5 w-5 rotate-180 text-white" />
                 <div className="flex flex-1 items-center justify-center">

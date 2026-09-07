@@ -7,7 +7,7 @@ const assetUrl = (path: string) =>
 
 export const Route = createRootRoute({
   head: () => ({
-    meta: [{ title: 'CADAM' }],
+    meta: [{ title: 'Synqit CAD' }],
     links: [{ rel: 'stylesheet', href: appCss }],
   }),
   component: RootComponent,
@@ -37,13 +37,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         />
         <link
           rel="icon"
-          type="image/svg+xml"
-          href={assetUrl('cadam-icon.svg')}
+          type="image/png"
+          href={assetUrl('synqit-logo.png')}
         />
         <link
           rel="icon"
-          type="image/x-icon"
-          href={assetUrl('cadam-icon.ico')}
+          type="image/png"
+          href={assetUrl('synqit-logo.png')}
         />
         <HeadContent />
       </head>

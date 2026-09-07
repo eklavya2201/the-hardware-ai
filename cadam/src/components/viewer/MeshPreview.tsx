@@ -735,7 +735,7 @@ export function MeshPreview({ meshId }: { meshId: string }) {
 
   if (!meshData) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-adam-text-primary">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-sq-text-primary">
         <Frown className="h-10 w-10" />
         <span>3D Object Data not found</span>
       </div>
@@ -744,7 +744,7 @@ export function MeshPreview({ meshId }: { meshId: string }) {
 
   if (meshData.status === 'failure' || error) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-adam-text-primary">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-sq-text-primary">
         <HeartCrack className="h-10 w-10" />
         <span>3D Object failed to generate</span>
       </div>
@@ -753,7 +753,7 @@ export function MeshPreview({ meshId }: { meshId: string }) {
 
   if (!mesh) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-adam-text-primary">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-sq-text-primary">
         <Frown className="h-10 w-10" />
         <span>3D Object not found</span>
       </div>
@@ -824,13 +824,13 @@ export function MeshPreview({ meshId }: { meshId: string }) {
           />
         ) : (
           // For fast model, only show wireframe toggle since texture isn't supported
-          <div className="flex items-center gap-2 rounded-full bg-adam-neutral-900 px-3 py-2 shadow-[0px_4px_24px_0px_rgba(0,0,0,0.32)]">
+          <div className="flex items-center gap-2 rounded-full bg-sq-neutral-900 px-3 py-2 shadow-[0px_4px_24px_0px_rgba(0,0,0,0.32)]">
             <button
               onClick={() => handleViewModeChange('textureless')}
               className={cn(
                 'flex h-8 w-8 items-center justify-center rounded-full transition-colors',
                 viewMode === 'textureless' &&
-                  'border-2 border-adam-neutral-500',
+                  'border-2 border-sq-neutral-500',
               )}
               style={{
                 background: 'linear-gradient(135deg, #D9D9D9 0%, #6F6F6F 100%)',
@@ -844,8 +844,8 @@ export function MeshPreview({ meshId }: { meshId: string }) {
               className={cn(
                 'flex h-8 w-8 items-center justify-center rounded-full transition-colors',
                 viewMode === 'wireframe'
-                  ? 'border-2 border-adam-neutral-500 bg-transparent text-adam-neutral-500'
-                  : 'bg-transparent text-adam-neutral-500',
+                  ? 'border-2 border-sq-neutral-500 bg-transparent text-sq-neutral-500'
+                  : 'bg-transparent text-sq-neutral-500',
               )}
               aria-label="Wireframe view"
               title="Wireframe"
@@ -886,7 +886,7 @@ export function MeshPreview({ meshId }: { meshId: string }) {
               >
                 <Button
                   size="lg"
-                  className="mx-auto flex w-[75%] items-center gap-2 px-4 py-2.5 hover:bg-adam-background-2"
+                  className="mx-auto flex w-[75%] items-center gap-2 px-4 py-2.5 hover:bg-sq-background-2"
                 >
                   <Download className="h-4 w-4" />
                   <span>Download</span>
@@ -944,13 +944,13 @@ function ViewModeControl({
   ) => void;
 }) {
   return (
-    <div className="flex items-center gap-2 rounded-full bg-adam-neutral-900 px-3 py-2 shadow-[0px_4px_24px_0px_rgba(0,0,0,0.32)]">
+    <div className="flex items-center gap-2 rounded-full bg-sq-neutral-900 px-3 py-2 shadow-[0px_4px_24px_0px_rgba(0,0,0,0.32)]">
       {/* Textured */}
       <button
         onClick={() => handleViewModeChange('textured')}
         className={cn(
           'flex h-8 w-8 items-center justify-center rounded-full transition-colors',
-          viewMode === 'textured' && 'border-2 border-adam-neutral-500',
+          viewMode === 'textured' && 'border-2 border-sq-neutral-500',
         )}
         style={{
           background: 'linear-gradient(135deg, #FFA3DD 0%, #05AFB8 100%)',
@@ -964,7 +964,7 @@ function ViewModeControl({
         onClick={() => handleViewModeChange('textureless')}
         className={cn(
           'flex h-8 w-8 items-center justify-center rounded-full transition-colors',
-          viewMode === 'textureless' && 'border-2 border-adam-neutral-500',
+          viewMode === 'textureless' && 'border-2 border-sq-neutral-500',
         )}
         style={{
           background: 'linear-gradient(135deg, #D9D9D9 0%, #6F6F6F 100%)',
@@ -979,8 +979,8 @@ function ViewModeControl({
         className={cn(
           'flex h-8 w-8 items-center justify-center rounded-full transition-colors',
           viewMode === 'wireframe'
-            ? 'border-2 border-adam-neutral-500 bg-transparent text-adam-neutral-500'
-            : 'bg-transparent text-adam-neutral-500',
+            ? 'border-2 border-sq-neutral-500 bg-transparent text-sq-neutral-500'
+            : 'bg-transparent text-sq-neutral-500',
         )}
         aria-label="Wireframe view"
         title="Wireframe"

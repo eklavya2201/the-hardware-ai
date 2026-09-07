@@ -29,7 +29,17 @@ import {
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { useQuery } from '@tanstack/react-query';
 import { ConditionalWrapper } from './ConditionalWrapper';
-import { DiscordIcon, GitHubIcon } from './icons/CompanyIcons';
+import { LifeBuoy } from 'lucide-react';
+
+const SYNQIT_HOME = 'https://synqit.in';
+const SYNQIT_SUPPORT = 'mailto:hello@synqit.in';
+const SynqitMark = ({ className }: { className?: string }) => (
+  <img
+    src={`${import.meta.env.BASE_URL}/synqit-logo.png`}
+    alt=""
+    className={cn('object-contain', className)}
+  />
+);
 import { cn } from '@/lib/utils';
 import { Conversation, ConversationSettings } from '@shared/types';
 import { UserAvatar } from '@/components/chat/UserAvatar';
@@ -98,10 +108,10 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
         <div className="flex cursor-pointer items-center space-x-3 rounded-md px-2 py-1.5 transition-colors hover:bg-accent-foreground">
           <UserAvatar />
           <div className="flex flex-col">
-            <span className="text-sm font-medium text-adam-text-primary">
+            <span className="text-sm font-medium text-sq-text-primary">
               {profile?.full_name || user?.email?.split('@')[0] || 'User'}
             </span>
-            <span className="text-xs text-adam-text-tertiary dark:text-gray-400">
+            <span className="text-xs text-sq-text-tertiary dark:text-gray-400">
               {user?.email}
             </span>
           </div>
@@ -111,17 +121,17 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
 
     return (
       <Button
-        variant="adam_dark_collapsed_avatar"
+        variant="sq_dark_collapsed_avatar"
         className="group ml-[1px] h-[46px] w-[46px] px-0 py-6"
       >
-        <UserAvatar className="h-[30px] w-[30px] transition-all duration-200 ease-in-out group-hover:h-[26px] group-hover:w-[26px] group-hover:ring-2 group-hover:ring-adam-neutral-500" />
+        <UserAvatar className="h-[30px] w-[30px] transition-all duration-200 ease-in-out group-hover:h-[26px] group-hover:w-[26px] group-hover:ring-2 group-hover:ring-sq-neutral-500" />
       </Button>
     );
   };
 
   return (
     <div
-      className={`${isSidebarOpen ? 'w-64' : 'w-16'} flex h-full flex-shrink-0 flex-col bg-adam-bg-dark pb-2 transition-all duration-300 ease-in-out dark:bg-gray-950`}
+      className={`${isSidebarOpen ? 'w-64' : 'w-16'} flex h-full flex-shrink-0 flex-col bg-sq-bg-dark pb-2 transition-all duration-300 ease-in-out dark:bg-gray-950`}
     >
       <div className="p-4 dark:border-gray-800">
         <ConditionalWrapper
@@ -145,13 +155,13 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
               <div className="flex w-full">
                 <img
                   className="mx-auto h-8 w-full"
-                  src={`${import.meta.env.BASE_URL}/cadam-logo.svg`}
+                  src={`${import.meta.env.BASE_URL}/synqit-wordmark.svg`}
                   alt="Logo"
                 />
               </div>
             ) : (
               <img
-                src={`${import.meta.env.BASE_URL}/adam-logo.svg`}
+                src={`${import.meta.env.BASE_URL}/synqit-logo.png`}
                 alt="Logo"
                 className="h-8 w-8 min-w-8"
               />
@@ -183,16 +193,16 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
                 variant="secondary"
                 className={` ${
                   isSidebarOpen
-                    ? 'flex w-[216px] items-center justify-start gap-2 rounded-[100px] border border-adam-blue bg-adam-background-1 px-4 py-3 text-[#D7D7D7] hover:bg-adam-blue/40 hover:text-adam-text-primary'
-                    : 'flex h-[30px] w-[30px] items-center justify-center rounded-[8px] border-2 border-adam-blue bg-[#191A1A] p-[2px] text-[#D7D7D7] shadow-[0px_4px_10px_0px_rgba(0,166,255,0.24)] hover:bg-adam-blue/40 hover:text-adam-text-primary'
+                    ? 'flex w-[216px] items-center justify-start gap-2 rounded-[100px] border border-sq-blue bg-sq-background-1 px-4 py-3 text-[#D7D7D7] hover:bg-sq-blue/40 hover:text-sq-text-primary'
+                    : 'flex h-[30px] w-[30px] items-center justify-center rounded-[8px] border-2 border-sq-blue bg-[#191A1A] p-[2px] text-[#D7D7D7] shadow-[0px_4px_10px_0px_rgba(0,166,255,0.24)] hover:bg-sq-blue/40 hover:text-sq-text-primary'
                 } mb-4`}
                 onClick={() => sidebarNavigate('/')}
               >
                 <Plus
-                  className={`h-5 w-5 ${!isSidebarOpen ? 'text-adam-neutral-300 hover:text-adam-text-primary' : ''}`}
+                  className={`h-5 w-5 ${!isSidebarOpen ? 'text-sq-neutral-300 hover:text-sq-text-primary' : ''}`}
                 />
                 {isSidebarOpen && (
-                  <div className="text-sm font-semibold leading-[14px] tracking-[-0.14px] text-adam-neutral-200">
+                  <div className="text-sm font-semibold leading-[14px] tracking-[-0.14px] text-sq-neutral-200">
                     New Creation
                   </div>
                 )}
@@ -226,7 +236,7 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
                 >
                   <Button
                     variant={
-                      isSidebarOpen ? 'adam_dark' : 'adam_dark_collapsed'
+                      isSidebarOpen ? 'sq_dark' : 'sq_dark_collapsed'
                     }
                     onClick={() => sidebarNavigate(href)}
                     className={`${isSidebarOpen ? 'w-full justify-start' : 'ml-[1px] h-[46px] w-[46px] p-0'}`}
@@ -238,7 +248,7 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
                   </Button>
                 </ConditionalWrapper>
                 {isSidebarOpen && submenu && (
-                  <ul className="ml-7 flex list-none flex-col gap-1 border-l border-adam-neutral-500 px-2">
+                  <ul className="ml-7 flex list-none flex-col gap-1 border-l border-sq-neutral-500 px-2">
                     {submenu.map(
                       (
                         conversation: Omit<
@@ -258,7 +268,7 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
                             }}
                           >
                             <li key={conversation.id}>
-                              <span className="line-clamp-1 text-ellipsis text-nowrap rounded-md p-1 text-xs font-medium text-adam-neutral-400 transition-colors duration-200 ease-in-out [@media(hover:hover)]:hover:bg-adam-neutral-950 [@media(hover:hover)]:hover:text-adam-neutral-10">
+                              <span className="line-clamp-1 text-ellipsis text-nowrap rounded-md p-1 text-xs font-medium text-sq-neutral-400 transition-colors duration-200 ease-in-out [@media(hover:hover)]:hover:bg-sq-neutral-950 [@media(hover:hover)]:hover:text-sq-neutral-10">
                                 {conversation.title}
                               </span>
                             </li>
@@ -282,22 +292,22 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <a
-                    href="https://github.com/Adam-CAD/CADAM"
+                    href={SYNQIT_HOME}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     <Button
-                      variant="adam_dark_collapsed"
+                      variant="sq_dark_collapsed"
                       className="mb-0 ml-[1px] h-[46px] w-[46px] p-0"
                     >
-                      <GitHubIcon className="h-[22px] w-[22px]" />
+                      <SynqitMark className="h-[22px] w-[22px]" />
                     </Button>
                   </a>
                 </TooltipTrigger>
                 <TooltipContent side="right" className="flex flex-col">
-                  <span className="font-semibold">GitHub</span>
+                  <span className="font-semibold">Synqit</span>
                   <span className="text-xs text-muted-foreground">
-                    View source code
+                    Schematics, PCB, BOM and enclosure from one prompt
                   </span>
                 </TooltipContent>
               </Tooltip>
@@ -306,16 +316,16 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
             {/* GitHub Button - Expanded state */}
             {isSidebarOpen && (
               <a
-                href="https://github.com/Adam-CAD/CADAM"
+                href={SYNQIT_HOME}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <Button
-                  variant="adam_dark"
+                  variant="sq_dark"
                   className="flex h-10 w-full items-center justify-start gap-2"
                 >
-                  <GitHubIcon className="h-[22px] w-[22px] min-w-[22px]" />
-                  GitHub
+                  <SynqitMark className="h-[22px] w-[22px] min-w-[22px]" />
+                  Synqit
                 </Button>
               </a>
             )}
@@ -324,23 +334,19 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
             {!isSidebarOpen && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <a
-                    href="https://discord.com/invite/HKdXDqAHCs"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                  <a href={SYNQIT_SUPPORT}>
                     <Button
-                      variant="adam_dark_collapsed"
+                      variant="sq_dark_collapsed"
                       className="mb-0 ml-[1px] h-[46px] w-[46px] p-0"
                     >
-                      <DiscordIcon className="h-[22px] w-[22px]" />
+                      <LifeBuoy className="h-[22px] w-[22px]" />
                     </Button>
                   </a>
                 </TooltipTrigger>
                 <TooltipContent side="right" className="flex flex-col">
-                  <span className="font-semibold">Discord</span>
+                  <span className="font-semibold">Support</span>
                   <span className="text-xs text-muted-foreground">
-                    Join our community
+                    hello@synqit.in
                   </span>
                 </TooltipContent>
               </Tooltip>
@@ -348,17 +354,13 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
 
             {/* Discord Button - Expanded state */}
             {isSidebarOpen && (
-              <a
-                href="https://discord.com/invite/HKdXDqAHCs"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href={SYNQIT_SUPPORT}>
                 <Button
-                  variant="adam_dark"
+                  variant="sq_dark"
                   className="flex h-10 w-full items-center justify-start gap-2"
                 >
-                  <DiscordIcon className="h-[22px] w-[22px] min-w-[22px]" />
-                  Discord
+                  <LifeBuoy className="h-[22px] w-[22px] min-w-[22px]" />
+                  Support
                 </Button>
               </a>
             )}
@@ -374,7 +376,7 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
               >
                 <div className="flex items-center space-x-2 p-2">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium text-adam-text-primary">
+                    <p className="text-sm font-medium text-sq-text-primary">
                       {profile?.full_name ||
                         user?.email?.split('@')[0] ||
                         'User'}
@@ -385,7 +387,7 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
                   </div>
                 </div>
                 <DropdownMenuSeparator />
-                <DropdownMenuGroup className="text-adam-text-primary">
+                <DropdownMenuGroup className="text-sq-text-primary">
                   <DropdownMenuItem asChild>
                     <Link to="/settings" className="flex items-center">
                       <Settings className="mr-2 h-4 w-4" />
@@ -406,8 +408,8 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut}>
-                  <LogOut className="mr-2 h-4 w-4 text-adam-text-primary" />
-                  <span className="text-adam-text-primary">Sign out</span>
+                  <LogOut className="mr-2 h-4 w-4 text-sq-text-primary" />
+                  <span className="text-sq-text-primary">Sign out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -432,18 +434,18 @@ function MobileSidebar({
         <Button
           variant="ghost"
           size="icon"
-          className="fixed left-2 top-2.5 z-50 hover:bg-adam-neutral-700 md:hidden"
+          className="fixed left-2 top-2.5 z-50 hover:bg-sq-neutral-700 md:hidden"
         >
-          <Menu className="h-5 w-5 text-adam-text-primary" />
+          <Menu className="h-5 w-5 text-sq-text-primary" />
         </Button>
       </SheetTrigger>
       <SheetContent
         side="left"
-        className="bg-adam-bg-dark p-0 [&>button]:text-white"
+        className="bg-sq-bg-dark p-0 [&>button]:text-white"
       >
         {/* For aria stuff */}
         <SheetHeader className="hidden">
-          <SheetTitle className="text-adam-text-primary">AdamCAD</SheetTitle>
+          <SheetTitle className="text-sq-text-primary">Synqit CAD</SheetTitle>
           <SheetDescription>
             AI-powered CAD software for everyone
           </SheetDescription>

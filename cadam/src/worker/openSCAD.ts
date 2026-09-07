@@ -452,7 +452,7 @@ class OpenSCADWrapper {
       // problem (syntax error, unknown module) while the thrown value is often
       // just an opaque number from the wasm runtime.
       throw new OpenSCADError(
-        'Adam exited with an error' +
+        'Synqit exited with an error' +
           (error instanceof Error ? ': ' + error.message : ''),
         code,
         this.log.stdErr,
@@ -464,9 +464,9 @@ class OpenSCADWrapper {
         output = instance.FS.readFile(outputFile, { encoding: 'binary' });
       } catch (error) {
         if (error instanceof Error) {
-          throw new Error('Adam cannot read created file: ' + error.message);
+          throw new Error('Synqit cannot read created file: ' + error.message);
         } else {
-          throw new Error('Adam cannot read created file');
+          throw new Error('Synqit cannot read created file');
         }
       }
 
@@ -479,7 +479,7 @@ class OpenSCADWrapper {
       }
     } else {
       throw new OpenSCADError(
-        'Adam did not exit correctly',
+        'Synqit did not exit correctly',
         code,
         this.log.stdErr,
       );

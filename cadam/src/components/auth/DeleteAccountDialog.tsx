@@ -157,7 +157,7 @@ export const DeleteAccountDialog = ({
             </AlertDialogHeader>
             <div className="space-y-4">
               <p>Deleting your account means:</p>
-              <div className="rounded-lg bg-adam-neutral-950 p-4 text-adam-neutral-100">
+              <div className="rounded-lg bg-sq-neutral-950 p-4 text-sq-neutral-100">
                 <ul className="list-disc space-y-2 pl-5 text-sm">
                   <li>
                     Deleting your account is permanent and cannot be undone.
@@ -176,7 +176,7 @@ export const DeleteAccountDialog = ({
                 to confirm
               </p>
               <Input
-                className="rounded-none border-x-0 border-b border-t-0 border-adam-neutral-200 shadow-none ring-0 focus:border-adam-neutral-200 focus:ring-0"
+                className="rounded-none border-x-0 border-b border-t-0 border-sq-neutral-200 shadow-none ring-0 focus:border-sq-neutral-200 focus:ring-0"
                 value={confirmText}
                 onChange={(e) => setConfirmText(e.target.value)}
                 placeholder="DELETE"

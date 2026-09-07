@@ -6,7 +6,7 @@ import path from 'path';
 import react from '@vitejs/plugin-react';
 import { defineConfig, type Plugin } from 'vite';
 
-const appBase = '/cadam';
+const appBase = '/cad';
 const normalizedAppBase = appBase.replace(/\/$/, '');
 
 function serveOpenScadWasmInDev(): Plugin {
@@ -59,8 +59,8 @@ export default defineConfig({
     }),
     react(),
     sentryVitePlugin({
-      org: 'adamcad',
-      project: 'adamcad',
+      org: 'synqit',
+      project: 'synqit-cad',
     }),
   ],
   resolve: {
@@ -72,7 +72,7 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 1000,
 
-    outDir: 'dist/cadam',
+    outDir: 'dist/cad',
     emptyOutDir: true,
 
     sourcemap: true,
@@ -80,7 +80,7 @@ export default defineConfig({
   environments: {
     client: {
       build: {
-        outDir: 'dist/cadam',
+        outDir: 'dist/cad',
         rollupOptions: {
           output: {
             manualChunks(id) {

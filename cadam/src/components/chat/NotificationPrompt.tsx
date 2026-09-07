@@ -91,16 +91,16 @@ export function NotificationPrompt({
 
   return (
     <div className="absolute top-4 z-10 mx-4 duration-500 animate-in fade-in slide-in-from-top-2">
-      <div className="flex items-center gap-3 rounded-full border border-adam-neutral-700/50 bg-adam-neutral-800/95 py-2 pl-4 pr-3 shadow-lg backdrop-blur-sm">
-        <Bell className="h-4 w-4 text-adam-neutral-100" />
-        <span className="text-sm text-adam-neutral-100">
+      <div className="flex items-center gap-3 rounded-full border border-sq-neutral-700/50 bg-sq-neutral-800/95 py-2 pl-4 pr-3 shadow-lg backdrop-blur-sm">
+        <Bell className="h-4 w-4 text-sq-neutral-100" />
+        <span className="text-sm text-sq-neutral-100">
           Get notified when your model is ready?
         </span>
         <div className="flex gap-2">
           <Button
             size="sm"
-            variant="adam_dark"
-            className="h-7 rounded-full px-3 text-xs text-adam-neutral-100"
+            variant="sq_dark"
+            className="h-7 rounded-full px-3 text-xs text-sq-neutral-100"
             onClick={handleDismiss}
             disabled={isEnablingNotifications}
           >

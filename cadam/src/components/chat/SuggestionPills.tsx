@@ -22,7 +22,7 @@ export function SuggestionPills({
           variant="outline"
           size="sm"
           className={cn(
-            'shrink-0 rounded-full border border-adam-neutral-700 bg-adam-neutral-800 text-xs text-white hover:text-white hover:opacity-80',
+            'shrink-0 rounded-full border border-sq-neutral-700 bg-sq-neutral-800 text-xs text-white hover:text-white hover:opacity-80',
             disabled ? 'opacity-50' : '',
           )}
           onClick={() => onSelect(suggestion)}

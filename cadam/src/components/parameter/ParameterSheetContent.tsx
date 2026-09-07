@@ -124,7 +124,7 @@ export function ParameterSheetContent({
         description:
           error instanceof Error
             ? error.message
-            : 'Adam could not export this model as DXF.',
+            : 'Synqit could not export this model as DXF.',
         variant: 'destructive',
       });
     } finally {
@@ -163,12 +163,12 @@ export function ParameterSheetContent({
         </div>
       </ScrollArea>
       <div className="flex w-full flex-col gap-4 p-4">
-        <div className="flex border-t border-adam-neutral-700 pt-2">
+        <div className="flex border-t border-sq-neutral-700 pt-2">
           <Button
             onClick={handleDownload}
             disabled={isDownloadDisabled}
             aria-label={`download ${selectedFormat.toUpperCase()} file`}
-            className="flex-1 rounded-r-none bg-adam-neutral-50 text-adam-neutral-800 hover:bg-adam-neutral-100 hover:text-adam-neutral-900"
+            className="flex-1 rounded-r-none bg-sq-neutral-50 text-sq-neutral-800 hover:bg-sq-neutral-100 hover:text-sq-neutral-900"
           >
             {isExporting ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -182,7 +182,7 @@ export function ParameterSheetContent({
               <Button
                 disabled={!isAnyFormatAvailable}
                 aria-label="select download format"
-                className="rounded-l-none border-l border-adam-neutral-300 bg-adam-neutral-50 px-2 text-adam-neutral-800 hover:bg-adam-neutral-100 hover:text-adam-neutral-900"
+                className="rounded-l-none border-l border-sq-neutral-300 bg-sq-neutral-50 px-2 text-sq-neutral-800 hover:bg-sq-neutral-100 hover:text-sq-neutral-900"
               >
                 <ChevronUp className="h-4 w-4" />
               </Button>
@@ -191,30 +191,30 @@ export function ParameterSheetContent({
               <DropdownMenuItem
                 onClick={() => setSelectedFormat('stl')}
                 disabled={!formatAvailable.stl}
-                className="grid cursor-pointer grid-cols-3 text-adam-text-primary"
+                className="grid cursor-pointer grid-cols-3 text-sq-text-primary"
               >
                 <span className="text-sm">.STL</span>
-                <span className="col-span-2 text-xs text-adam-text-primary/60">
+                <span className="col-span-2 text-xs text-sq-text-primary/60">
                   3D Printing
                 </span>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSelectedFormat('scad')}
                 disabled={!formatAvailable.scad}
-                className="grid cursor-pointer grid-cols-3 text-adam-text-primary"
+                className="grid cursor-pointer grid-cols-3 text-sq-text-primary"
               >
                 <span className="text-sm">.SCAD</span>
-                <span className="col-span-2 text-xs text-adam-text-primary/60">
+                <span className="col-span-2 text-xs text-sq-text-primary/60">
                   OpenSCAD Code
                 </span>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSelectedFormat('dxf')}
                 disabled={!formatAvailable.dxf}
-                className="grid cursor-pointer grid-cols-3 text-adam-text-primary"
+                className="grid cursor-pointer grid-cols-3 text-sq-text-primary"
               >
                 <span className="text-sm">.DXF</span>
-                <span className="col-span-2 text-xs text-adam-text-primary/60">
+                <span className="col-span-2 text-xs text-sq-text-primary/60">
                   2D Projection to the (x,y) plane
                 </span>
               </DropdownMenuItem>

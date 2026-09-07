@@ -128,10 +128,10 @@ export function VisualCard({
   return (
     <div
       ref={cardRef}
-      className="group relative overflow-hidden rounded-xl border-2 border-adam-neutral-700 bg-adam-background-2 transition-all duration-200 hover:border-adam-blue hover:shadow-[0_0_20px_rgba(0,166,255,0.3)]"
+      className="group relative overflow-hidden rounded-xl border-2 border-sq-neutral-700 bg-sq-background-2 transition-all duration-200 hover:border-sq-blue hover:shadow-[0_0_20px_rgba(0,166,255,0.3)]"
     >
       <Link to="/editor/$id" params={{ id: conversation.id }}>
-        <div className="relative aspect-square w-full overflow-hidden bg-gradient-to-br from-adam-background-1 to-adam-background-2">
+        <div className="relative aspect-square w-full overflow-hidden bg-gradient-to-br from-sq-background-1 to-sq-background-2">
           {thumbnailUrl ? (
             <img
               src={thumbnailUrl}
@@ -141,24 +141,24 @@ export function VisualCard({
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center">
-              <Box className="text-adam-neutral-600 h-16 w-16 opacity-30" />
+              <Box className="text-sq-neutral-600 h-16 w-16 opacity-30" />
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-adam-background-2/90 via-transparent to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+          <div className="absolute inset-0 bg-gradient-to-t from-sq-background-2/90 via-transparent to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
         </div>
 
         <div className="p-4">
           <div className="mb-2 flex items-center gap-2">
-            <h3 className="line-clamp-2 text-base font-medium text-adam-neutral-50">
+            <h3 className="line-clamp-2 text-base font-medium text-sq-neutral-50">
               {conversation.title}
             </h3>
             {conversation.privacy === 'public' ? (
-              <GoodEarth className="h-3.5 w-3.5 shrink-0 text-adam-neutral-400" />
+              <GoodEarth className="h-3.5 w-3.5 shrink-0 text-sq-neutral-400" />
             ) : (
-              <LockKeyhole className="h-3.5 w-3.5 shrink-0 text-adam-neutral-400" />
+              <LockKeyhole className="h-3.5 w-3.5 shrink-0 text-sq-neutral-400" />
             )}
           </div>
-          <div className="flex items-center gap-3 text-xs text-adam-neutral-400">
+          <div className="flex items-center gap-3 text-xs text-sq-neutral-400">
             <span className="flex items-center">
               <Clock className="mr-1 h-3 w-3" />
               {formatDistanceToNow(new Date(conversation.updated_at), {
@@ -179,10 +179,10 @@ export function VisualCard({
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="h-8 w-8 rounded-full bg-adam-background-1/80 p-0 backdrop-blur-sm transition-colors duration-200 hover:bg-adam-neutral-950"
+                className="h-8 w-8 rounded-full bg-sq-background-1/80 p-0 backdrop-blur-sm transition-colors duration-200 hover:bg-sq-neutral-950"
                 onClick={(e) => e.stopPropagation()}
               >
-                <MoreVertical className="h-4 w-4 text-adam-neutral-50" />
+                <MoreVertical className="h-4 w-4 text-sq-neutral-50" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-[#191A1A]">
@@ -191,7 +191,7 @@ export function VisualCard({
                   e.stopPropagation();
                   onRename(conversation.id, conversation.title);
                 }}
-                className="text-adam-neutral-50 hover:cursor-pointer hover:bg-adam-neutral-950 focus:bg-adam-neutral-950"
+                className="text-sq-neutral-50 hover:cursor-pointer hover:bg-sq-neutral-950 focus:bg-sq-neutral-950"
               >
                 <Pencil className="mr-2 h-4 w-4" />
                 Rename
@@ -202,7 +202,7 @@ export function VisualCard({
                     e.stopPropagation();
                     onTogglePrivacy(conversation.id, 'public');
                   }}
-                  className="text-adam-neutral-50 hover:cursor-pointer hover:bg-adam-neutral-950 focus:bg-adam-neutral-950"
+                  className="text-sq-neutral-50 hover:cursor-pointer hover:bg-sq-neutral-950 focus:bg-sq-neutral-950"
                 >
                   <GoodEarth className="mr-2 h-4 w-4" />
                   Make Public
@@ -213,23 +213,23 @@ export function VisualCard({
                     e.stopPropagation();
                     onTogglePrivacy(conversation.id, 'private');
                   }}
-                  className="text-adam-neutral-50 hover:cursor-pointer hover:bg-adam-neutral-950 focus:bg-adam-neutral-950"
+                  className="text-sq-neutral-50 hover:cursor-pointer hover:bg-sq-neutral-950 focus:bg-sq-neutral-950"
                 >
                   <LockKeyhole className="mr-2 h-4 w-4" />
                   Make Private
                 </DropdownMenuItem>
               )}
               <AlertDialogTrigger asChild onClick={(e) => e.stopPropagation()}>
-                <DropdownMenuItem className="text-adam-neutral-50 hover:cursor-pointer hover:bg-adam-neutral-950 hover:text-red-500 focus:bg-adam-neutral-950 focus:text-red-500">
+                <DropdownMenuItem className="text-sq-neutral-50 hover:cursor-pointer hover:bg-sq-neutral-950 hover:text-red-500 focus:bg-sq-neutral-950 focus:text-red-500">
                   <Trash2 className="mr-2 h-4 w-4" />
                   Delete
                 </DropdownMenuItem>
               </AlertDialogTrigger>
             </DropdownMenuContent>
           </DropdownMenu>
-          <AlertDialogContent className="border-[2px] border-adam-neutral-700 bg-adam-background-1">
+          <AlertDialogContent className="border-[2px] border-sq-neutral-700 bg-sq-background-1">
             <AlertDialogHeader>
-              <AlertDialogTitle className="text-adam-neutral-100">
+              <AlertDialogTitle className="text-sq-neutral-100">
                 Delete Creation
               </AlertDialogTitle>
               <AlertDialogDescription>

@@ -127,14 +127,14 @@ export function ModelSelector({
           }}
           variant="ghost"
           className={cn(
-            'flex h-8 w-auto items-center gap-1.5 rounded-lg px-3 text-sm transition-all duration-200 hover:border-[#333333] hover:bg-adam-neutral-800',
+            'flex h-8 w-auto items-center gap-1.5 rounded-lg px-3 text-sm transition-all duration-200 hover:border-[#333333] hover:bg-sq-neutral-800',
             focused
               ? 'text-white hover:text-white'
-              : 'text-adam-text-secondary hover:text-adam-text-primary',
+              : 'text-sq-text-secondary hover:text-sq-text-primary',
             isDropdownOpen &&
               (focused
-                ? 'bg-adam-neutral-800 text-white'
-                : 'bg-adam-neutral-800 text-adam-text-primary'),
+                ? 'bg-sq-neutral-800 text-white'
+                : 'bg-sq-neutral-800 text-sq-text-primary'),
             className,
           )}
           disabled={!!disabled}
@@ -175,7 +175,7 @@ export function ModelSelector({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="flex w-80 max-w-[calc(100vw-2rem)] flex-col gap-1 overflow-y-auto rounded-lg bg-adam-neutral-700 p-1 [max-height:min(340px,var(--radix-dropdown-menu-content-available-height))]"
+        className="flex w-80 max-w-[calc(100vw-2rem)] flex-col gap-1 overflow-y-auto rounded-lg bg-sq-neutral-700 p-1 [max-height:min(340px,var(--radix-dropdown-menu-content-available-height))]"
         align="end"
         // Radix fires this just before it tries to refocus the trigger.
         // We intercept the event: if the menu was opened with a pointer we
@@ -194,8 +194,8 @@ export function ModelSelector({
           <DropdownMenuItem
             key={model.id}
             className={cn(
-              'cursor-pointer rounded-md bg-adam-neutral-700 px-3 py-2.5 transition-colors duration-150 focus:bg-adam-bg-secondary-dark',
-              selectedModel === model.id && 'bg-adam-neutral-800',
+              'cursor-pointer rounded-md bg-sq-neutral-700 px-3 py-2.5 transition-colors duration-150 focus:bg-sq-bg-secondary-dark',
+              selectedModel === model.id && 'bg-sq-neutral-800',
               !!model.disabled && 'cursor-not-allowed opacity-50',
             )}
             onClick={(event) => {
@@ -210,14 +210,14 @@ export function ModelSelector({
                 provider={model.provider}
                 className={cn(
                   'mt-0.5',
-                  focused ? 'text-white' : 'text-adam-text-primary',
+                  focused ? 'text-white' : 'text-sq-text-primary',
                 )}
               />
               <div className="min-w-0 flex-1">
                 <span
                   className={cn(
                     'text-sm font-medium',
-                    focused ? 'text-white' : 'text-adam-text-primary',
+                    focused ? 'text-white' : 'text-sq-text-primary',
                   )}
                 >
                   {model.name}
@@ -237,7 +237,7 @@ export function ModelSelector({
                 <Check
                   className={cn(
                     'mt-0.5 h-4 w-4 shrink-0',
-                    focused ? 'text-white' : 'text-adam-text-primary',
+                    focused ? 'text-white' : 'text-sq-text-primary',
                   )}
                 />
               )}

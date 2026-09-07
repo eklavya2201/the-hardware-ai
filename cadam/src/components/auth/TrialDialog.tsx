@@ -63,11 +63,11 @@ export function TrialDialog({
         }}
       >
         <DialogHeader className="w-full">
-          <DialogTitle className="text-center text-xl text-adam-text-primary md:text-2xl">
-            Here's 7 days of <span className="text-adam-blue">Adam Pro</span>
+          <DialogTitle className="text-center text-xl text-sq-text-primary md:text-2xl">
+            Here's 7 days of <span className="text-sq-blue">Synqit Pro</span>
           </DialogTitle>
         </DialogHeader>
-        <DialogDescription className="w-full text-sm text-adam-neutral-100">
+        <DialogDescription className="w-full text-sm text-sq-neutral-100">
           Experience all Pro features for 7 days, completely free.
         </DialogDescription>
 
@@ -82,31 +82,31 @@ export function TrialDialog({
 
         <ul className="space-y-3 text-sm md:text-base">
           <li className="flex items-center gap-2">
-            <Check className="h-4 w-4 text-adam-neutral-100" />
-            <span className="text-adam-neutral-100">
+            <Check className="h-4 w-4 text-sq-neutral-100" />
+            <span className="text-sq-neutral-100">
               {proCredits !== undefined
                 ? `${proCredits.toLocaleString()} credits per month`
                 : 'Monthly Pro credits'}
             </span>
           </li>
           <li className="flex items-center gap-2">
-            <Check className="h-4 w-4 text-adam-neutral-100" />
-            <span className="text-adam-neutral-100">
+            <Check className="h-4 w-4 text-sq-neutral-100" />
+            <span className="text-sq-neutral-100">
               Phone number of founders
             </span>
           </li>
           <li className="flex items-center gap-2">
-            <Check className="h-4 w-4 text-adam-neutral-100" />
-            <span className="text-adam-neutral-100">
+            <Check className="h-4 w-4 text-sq-neutral-100" />
+            <span className="text-sq-neutral-100">
               Exclusive access to new features
             </span>
           </li>
           <li className="flex items-center gap-2">
-            <Check className="h-4 w-4 text-adam-neutral-100" />
-            <span className="text-adam-neutral-100">Good vibes</span>
+            <Check className="h-4 w-4 text-sq-neutral-100" />
+            <span className="text-sq-neutral-100">Good vibes</span>
           </li>
         </ul>
-        <p className="mt-4 w-full text-center text-xs text-adam-neutral-200">
+        <p className="mt-4 w-full text-center text-xs text-sq-neutral-200">
           Cancel anytime
         </p>
       </DialogContent>

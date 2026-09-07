@@ -164,7 +164,7 @@ export function useChangeRatingMutation({
 }
 
 /**
- * "Restore" an old assistant message — matches the legacy CADAM behavior
+ * "Restore" an old assistant message — matches the legacy Synqit CAD behavior
  * exactly: insert a fresh row that COPIES the message's role, parts,
  * metadata, and `parent_message_id`, then point the conversation's
  * `current_message_leaf_id` at the new copy. Because the copy shares the

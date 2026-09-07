@@ -159,7 +159,7 @@ export const AvatarUpdateDialog = () => {
           onClick={() => fileInputRef.current?.click()}
           className="group relative cursor-pointer"
         >
-          <UserAvatar className="h-9 w-9 border border-adam-neutral-700 bg-adam-neutral-950 p-0" />
+          <UserAvatar className="h-9 w-9 border border-sq-neutral-700 bg-sq-neutral-950 p-0" />
           <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
             {isUploadingAvatar ? (
               <Loader2 className="h-4 w-4 animate-spin text-white" />
@@ -175,9 +175,9 @@ export const AvatarUpdateDialog = () => {
           open ? setIsCropOpen(true) : handleCropCancel()
         }
       >
-        <DialogContent className="border-adam-neutral-800 sm:max-w-[480px] sm:rounded-3xl">
+        <DialogContent className="border-sq-neutral-800 sm:max-w-[480px] sm:rounded-3xl">
           <DialogHeader>
-            <DialogTitle className="text-adam-neutral-50">
+            <DialogTitle className="text-sq-neutral-50">
               Crop profile picture
             </DialogTitle>
           </DialogHeader>
@@ -197,7 +197,7 @@ export const AvatarUpdateDialog = () => {
             )}
           </div>
           <div className="mt-4">
-            <div className="mb-2 text-xs text-adam-neutral-200">Zoom</div>
+            <div className="mb-2 text-xs text-sq-neutral-200">Zoom</div>
             <Slider
               value={[zoom]}
               min={1}

@@ -1,23 +1,15 @@
-import { useLottie } from 'lottie-react';
 import { useEffect, useRef } from 'react';
-import adamLoading from '@/assets/adam-loading.json';
 import { useSharedSpinnerVerb } from '@/hooks/useSharedSpinnerVerb';
 
 type Props = {
   showLoadingText?: boolean;
 };
 
+/** Pulsing Synqit mark plus the shared "verb…" line. No Lottie dependency. */
 const Loader = ({ showLoadingText = false }: Props) => {
   const dot2 = useRef<HTMLSpanElement>(null);
   const dot3 = useRef<HTMLSpanElement>(null);
   const sharedVerb = useSharedSpinnerVerb(showLoadingText);
-  const { View: loadingAnimation } = useLottie(
-    {
-      animationData: adamLoading,
-      loop: true,
-    },
-    { width: '100%', height: '100%' },
-  );
 
   useEffect(() => {
     // ANIMATE LAST TWO DOTS WITH DELAYS AND INTERVALS
@@ -37,24 +29,21 @@ const Loader = ({ showLoadingText = false }: Props) => {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <div className="relative h-32 w-32">{loadingAnimation}</div>
+      <div className="relative flex h-32 w-32 items-center justify-center">
+        <div className="absolute inset-0 animate-ping rounded-full bg-sq-blue/10" />
+        <img
+          src={`${import.meta.env.BASE_URL}/synqit-logo.png`}
+          alt="Synqit"
+          className="h-16 w-16 animate-pulse object-contain"
+        />
+      </div>
       {showLoadingText && (
-        <p className="mt-4 text-base text-adam-text-primary">
+        <div className="mt-2 text-sm text-sq-text-secondary">
           {sharedVerb}
           <span>.</span>
-          <span
-            ref={dot2}
-            className="opacity-0 transition-opacity duration-200"
-          >
-            .
-          </span>
-          <span
-            ref={dot3}
-            className="opacity-0 transition-opacity duration-200"
-          >
-            .
-          </span>
-        </p>
+          <span ref={dot2}>.</span>
+          <span ref={dot3}>.</span>
+        </div>
       )}
     </div>
   );

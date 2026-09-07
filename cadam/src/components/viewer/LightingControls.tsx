@@ -210,16 +210,16 @@ export function LightingControls({
   };
 
   return (
-    <div className="absolute right-4 top-4 w-20 overflow-hidden rounded-lg border border-adam-neutral-800/40 bg-adam-background-2/95 shadow-lg backdrop-blur-sm transition-all lg:w-64">
+    <div className="absolute right-4 top-4 w-20 overflow-hidden rounded-lg border border-sq-neutral-800/40 bg-sq-background-2/95 shadow-lg backdrop-blur-sm transition-all lg:w-64">
       <div
         onClick={() => setIsOpen(!isOpen)}
-        className="from-adam-background-3/80 to-adam-background-3/40 flex cursor-pointer items-center justify-between border-b border-adam-neutral-800/20 bg-gradient-to-r px-2 py-2 xl:px-4 xl:py-3"
+        className="from-sq-background-3/80 to-sq-background-3/40 flex cursor-pointer items-center justify-between border-b border-sq-neutral-800/20 bg-gradient-to-r px-2 py-2 xl:px-4 xl:py-3"
       >
         <div className="flex items-center gap-1 xl:gap-2">
-          <div className="rounded-full bg-adam-blue/20 p-1.5">
-            <Settings className="h-3.5 w-3.5 text-adam-blue" />
+          <div className="rounded-full bg-sq-blue/20 p-1.5">
+            <Settings className="h-3.5 w-3.5 text-sq-blue" />
           </div>
-          <div className="hidden text-sm font-medium text-adam-text-primary/90 lg:block">
+          <div className="hidden text-sm font-medium text-sq-text-primary/90 lg:block">
             controls
           </div>
         </div>
@@ -228,7 +228,7 @@ export function LightingControls({
             <Button
               variant="ghost"
               size="icon"
-              className="hidden h-6 w-6 rounded-md bg-adam-background-2/70 p-1 text-adam-text-primary/70 hover:bg-adam-blue/20 hover:text-adam-blue xl:flex"
+              className="hidden h-6 w-6 rounded-md bg-sq-background-2/70 p-1 text-sq-text-primary/70 hover:bg-sq-blue/20 hover:text-sq-blue xl:flex"
               onClick={(e) => {
                 e.stopPropagation();
                 handleReset();
@@ -240,7 +240,7 @@ export function LightingControls({
           )}
           <ChevronDown
             className={cn(
-              'h-4 w-4 text-adam-text-primary/60 transition-transform',
+              'h-4 w-4 text-sq-text-primary/60 transition-transform',
               isOpen ? 'rotate-180' : '',
             )}
           />
@@ -252,47 +252,47 @@ export function LightingControls({
           {/* Small screen version - ultra compact vertical stack for w-20 */}
           <div className="space-y-2 py-3 xl:hidden">
             <div className="flex flex-col items-center space-y-1">
-              <Sun className="h-3.5 w-3.5 text-adam-text-primary/70" />
+              <Sun className="h-3.5 w-3.5 text-sq-text-primary/70" />
               <Input
                 type="text"
                 value={brightnessInput}
                 onChange={handleBrightnessInputChange}
                 onBlur={applyBrightnessInput}
                 onKeyDown={(e) => handleKeyDown(e, applyBrightnessInput)}
-                className="focus:bg-adam-background-3/80 h-6 w-12 rounded border border-adam-neutral-500 bg-neutral-700 px-1 py-0 text-center text-xs text-adam-text-primary shadow-none focus:ring-1 focus:ring-adam-blue/20"
+                className="focus:bg-sq-background-3/80 h-6 w-12 rounded border border-sq-neutral-500 bg-neutral-700 px-1 py-0 text-center text-xs text-sq-text-primary shadow-none focus:ring-1 focus:ring-sq-blue/20"
               />
             </div>
 
             <div className="flex flex-col items-center space-y-1">
-              <Gem className="h-3.5 w-3.5 text-adam-text-primary/70" />
+              <Gem className="h-3.5 w-3.5 text-sq-text-primary/70" />
               <Input
                 type="text"
                 value={roughnessInput}
                 onChange={handleRoughnessInputChange}
                 onBlur={applyRoughnessInput}
                 onKeyDown={(e) => handleKeyDown(e, applyRoughnessInput)}
-                className="focus:bg-adam-background-3/80 h-6 w-12 rounded border border-adam-neutral-500 bg-neutral-700 px-1 py-0 text-center text-xs text-adam-text-primary shadow-none focus:ring-1 focus:ring-adam-blue/20"
+                className="focus:bg-sq-background-3/80 h-6 w-12 rounded border border-sq-neutral-500 bg-neutral-700 px-1 py-0 text-center text-xs text-sq-text-primary shadow-none focus:ring-1 focus:ring-sq-blue/20"
               />
             </div>
 
             {showNormalIntensityControl && (
               <div className="flex flex-col items-center space-y-1">
-                <Waves className="h-3.5 w-3.5 text-adam-text-primary/70" />
+                <Waves className="h-3.5 w-3.5 text-sq-text-primary/70" />
                 <Input
                   type="text"
                   value={normalIntensityInput}
                   onChange={handleNormalIntensityInputChange}
                   onBlur={applyNormalIntensityInput}
                   onKeyDown={(e) => handleKeyDown(e, applyNormalIntensityInput)}
-                  className="focus:bg-adam-background-3/80 h-6 w-12 rounded border border-adam-neutral-500 bg-neutral-700 px-1 py-0 text-center text-xs text-adam-text-primary shadow-none focus:ring-1 focus:ring-adam-blue/20"
+                  className="focus:bg-sq-background-3/80 h-6 w-12 rounded border border-sq-neutral-500 bg-neutral-700 px-1 py-0 text-center text-xs text-sq-text-primary shadow-none focus:ring-1 focus:ring-sq-blue/20"
                 />
               </div>
             )}
 
             {polygonCount !== undefined && (
               <div className="flex flex-col items-center space-y-1">
-                <Hash className="h-3.5 w-3.5 text-adam-text-primary/70" />
-                <div className="text-center text-[10px] leading-tight text-adam-text-primary/80">
+                <Hash className="h-3.5 w-3.5 text-sq-text-primary/70" />
+                <div className="text-center text-[10px] leading-tight text-sq-text-primary/80">
                   {formatPolygonCount(polygonCount)}
                 </div>
               </div>
@@ -304,8 +304,8 @@ export function LightingControls({
             <div className="space-y-1">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Sun className="h-3.5 w-3.5 text-adam-text-primary/70" />
-                  <div className="text-xs lowercase text-adam-text-primary/80">
+                  <Sun className="h-3.5 w-3.5 text-sq-text-primary/70" />
+                  <div className="text-xs lowercase text-sq-text-primary/80">
                     brightness
                   </div>
                 </div>
@@ -314,7 +314,7 @@ export function LightingControls({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-6 w-6 rounded-md bg-adam-background-2/70 p-1 text-adam-text-primary/70 hover:bg-adam-blue/20 hover:text-adam-blue"
+                      className="h-6 w-6 rounded-md bg-sq-background-2/70 p-1 text-sq-text-primary/70 hover:bg-sq-blue/20 hover:text-sq-blue"
                       onClick={resetBrightness}
                       title="Reset brightness"
                     >
@@ -327,7 +327,7 @@ export function LightingControls({
                     onChange={handleBrightnessInputChange}
                     onBlur={applyBrightnessInput}
                     onKeyDown={(e) => handleKeyDown(e, applyBrightnessInput)}
-                    className="focus:bg-adam-background-3/80 h-6 w-14 rounded border border-adam-neutral-500 bg-neutral-700 px-2 py-0 text-center text-xs text-adam-text-primary shadow-none focus:ring-1 focus:ring-adam-blue/20"
+                    className="focus:bg-sq-background-3/80 h-6 w-14 rounded border border-sq-neutral-500 bg-neutral-700 px-2 py-0 text-center text-xs text-sq-text-primary shadow-none focus:ring-1 focus:ring-sq-blue/20"
                   />
                 </div>
               </div>
@@ -349,8 +349,8 @@ export function LightingControls({
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Gem className="h-3.5 w-3.5 text-adam-text-primary/70" />
-                  <div className="text-xs lowercase text-adam-text-primary/80">
+                  <Gem className="h-3.5 w-3.5 text-sq-text-primary/70" />
+                  <div className="text-xs lowercase text-sq-text-primary/80">
                     roughness
                   </div>
                 </div>
@@ -359,7 +359,7 @@ export function LightingControls({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-6 w-6 rounded-md bg-adam-background-2/70 p-1 text-adam-text-primary/70 hover:bg-adam-blue/20 hover:text-adam-blue"
+                      className="h-6 w-6 rounded-md bg-sq-background-2/70 p-1 text-sq-text-primary/70 hover:bg-sq-blue/20 hover:text-sq-blue"
                       onClick={resetRoughness}
                       title="Reset roughness"
                     >
@@ -372,7 +372,7 @@ export function LightingControls({
                     onChange={handleRoughnessInputChange}
                     onBlur={applyRoughnessInput}
                     onKeyDown={(e) => handleKeyDown(e, applyRoughnessInput)}
-                    className="focus:bg-adam-background-3/80 h-6 w-14 rounded border border-adam-neutral-500 bg-neutral-700 px-2 py-0 text-center text-xs text-adam-text-primary shadow-none focus:ring-1 focus:ring-adam-blue/20"
+                    className="focus:bg-sq-background-3/80 h-6 w-14 rounded border border-sq-neutral-500 bg-neutral-700 px-2 py-0 text-center text-xs text-sq-text-primary shadow-none focus:ring-1 focus:ring-sq-blue/20"
                   />
                 </div>
               </div>
@@ -395,8 +395,8 @@ export function LightingControls({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Waves className="h-3.5 w-3.5 text-adam-text-primary/70" />
-                    <div className="text-xs lowercase text-adam-text-primary/80">
+                    <Waves className="h-3.5 w-3.5 text-sq-text-primary/70" />
+                    <div className="text-xs lowercase text-sq-text-primary/80">
                       normal intensity
                     </div>
                   </div>
@@ -405,7 +405,7 @@ export function LightingControls({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-6 w-6 rounded-md bg-adam-background-2/70 p-1 text-adam-text-primary/70 hover:bg-adam-blue/20 hover:text-adam-blue"
+                        className="h-6 w-6 rounded-md bg-sq-background-2/70 p-1 text-sq-text-primary/70 hover:bg-sq-blue/20 hover:text-sq-blue"
                         onClick={resetNormalIntensity}
                         title="Reset normal intensity"
                       >
@@ -420,7 +420,7 @@ export function LightingControls({
                       onKeyDown={(e) =>
                         handleKeyDown(e, applyNormalIntensityInput)
                       }
-                      className="focus:bg-adam-background-3/80 h-6 w-14 rounded border border-adam-neutral-500 bg-neutral-700 px-2 py-0 text-center text-xs text-adam-text-primary shadow-none focus:ring-1 focus:ring-adam-blue/20"
+                      className="focus:bg-sq-background-3/80 h-6 w-14 rounded border border-sq-neutral-500 bg-neutral-700 px-2 py-0 text-center text-xs text-sq-text-primary shadow-none focus:ring-1 focus:ring-sq-blue/20"
                     />
                   </div>
                 </div>
@@ -446,12 +446,12 @@ export function LightingControls({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Hash className="h-3.5 w-3.5 text-adam-text-primary/70" />
-                    <div className="text-xs lowercase text-adam-text-primary/80">
+                    <Hash className="h-3.5 w-3.5 text-sq-text-primary/70" />
+                    <div className="text-xs lowercase text-sq-text-primary/80">
                       polygons
                     </div>
                   </div>
-                  <div className="font-mono text-xs text-adam-text-primary/90">
+                  <div className="font-mono text-xs text-sq-text-primary/90">
                     {formatPolygonCount(polygonCount)}
                   </div>
                 </div>

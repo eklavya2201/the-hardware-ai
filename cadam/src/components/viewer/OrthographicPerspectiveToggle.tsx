@@ -23,12 +23,12 @@ export function OrthographicPerspectiveToggle({
         <Tooltip>
           <TooltipTrigger asChild>
             <div className="cursor-help">
-              <OrthographicCube className="h-4 w-4 text-adam-text-primary" />
+              <OrthographicCube className="h-4 w-4 text-sq-text-primary" />
             </div>
           </TooltipTrigger>
           <TooltipContent
             side="top"
-            className="border-adam-neutral-700 bg-adam-background-2 text-adam-text-primary"
+            className="border-sq-neutral-700 bg-sq-background-2 text-sq-text-primary"
           >
             <p>Orthographic View</p>
           </TooltipContent>
@@ -44,12 +44,12 @@ export function OrthographicPerspectiveToggle({
         <Tooltip>
           <TooltipTrigger asChild>
             <div className="cursor-help">
-              <PerspectiveCube className="h-4 w-4 text-adam-text-primary" />
+              <PerspectiveCube className="h-4 w-4 text-sq-text-primary" />
             </div>
           </TooltipTrigger>
           <TooltipContent
             side="top"
-            className="border-adam-neutral-700 bg-adam-background-2 text-adam-text-primary"
+            className="border-sq-neutral-700 bg-sq-background-2 text-sq-text-primary"
           >
             <p>Perspective View</p>
           </TooltipContent>

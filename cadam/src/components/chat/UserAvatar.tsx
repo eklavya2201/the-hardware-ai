@@ -20,9 +20,9 @@ export function UserAvatar({ className }: { className?: string }) {
     ? claims.picture || claims.avatar_url
     : metadata?.avatar_url || metadata?.picture;
 
-  // When Adam owns the profile (shared `ssoManaged` flag) the provider photo is
-  // the single source of truth and wins, so a stale CADAM-local upload can't
-  // diverge from the Adam photo. In self-host mode the self-uploaded avatar wins.
+  // When Synqit owns the profile (shared `ssoManaged` flag) the provider photo is
+  // the single source of truth and wins, so a stale Synqit CAD-local upload can't
+  // diverge from the Synqit photo. In self-host mode the self-uploaded avatar wins.
   const src = ssoManaged
     ? providerAvatar || avatarUrl || undefined
     : avatarUrl || providerAvatar || undefined;

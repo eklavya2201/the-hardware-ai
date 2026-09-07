@@ -38,13 +38,13 @@ export function ResetPasswordView() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-adam-bg-dark p-4">
+    <div className="flex min-h-screen items-center justify-center bg-sq-bg-dark p-4">
       <div className="w-full max-w-md">
-        <div className="rounded-lg bg-adam-bg-secondary-dark p-8 shadow-md">
+        <div className="rounded-lg bg-sq-bg-secondary-dark p-8 shadow-md">
           <div className="mb-4 flex flex-col items-center justify-center gap-2">
             <img
-              src={`${import.meta.env.BASE_URL}/cadam-logo.svg`}
-              alt="CADAM Logo"
+              src={`${import.meta.env.BASE_URL}/synqit-wordmark.svg`}
+              alt="Synqit CAD Logo"
               className="h-8 w-auto"
             />
             <h1 className="text-2xl font-semibold text-white">
@@ -64,7 +64,7 @@ export function ResetPasswordView() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="border-gray-700 bg-adam-bg-dark text-white placeholder:text-gray-400"
+                  className="border-gray-700 bg-sq-bg-dark text-white placeholder:text-gray-400"
                 />
               </div>
 
@@ -81,7 +81,7 @@ export function ResetPasswordView() {
 
               <Link
                 to="/signin"
-                className="flex w-full items-center justify-center text-adam-blue hover:text-adam-blue/80"
+                className="flex w-full items-center justify-center text-sq-blue hover:text-sq-blue/80"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 <p className="text-sm">Back to Sign In</p>
@@ -94,7 +94,7 @@ export function ResetPasswordView() {
               </p>
               <Link
                 to="/signin"
-                className="flex w-full items-center justify-center text-adam-blue hover:text-adam-blue/80"
+                className="flex w-full items-center justify-center text-sq-blue hover:text-sq-blue/80"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 <p className="text-sm">Back to Sign In</p>

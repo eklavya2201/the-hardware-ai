@@ -11,6 +11,7 @@ enable_signup = true
 enabled = true
 client_id = "env(GOOGLE_CLIENT_ID)"
 secret = "env(GOOGLE_SECRET)"
+skip_nonce_check = true
 
 [storage.buckets.meshes]
 public = false

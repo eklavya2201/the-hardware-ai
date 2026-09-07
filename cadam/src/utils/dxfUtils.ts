@@ -8,8 +8,8 @@
 export function createDXFProjectionCode(code: string): string {
   const { imports, body } = extractTopLevelLibraryImports(code);
   const importBlock = imports.join('\n');
-  const sourceModule = `module __cadam_dxf_source__() {\n${body.trim()}\n}`;
-  const projection = 'projection(cut = false) __cadam_dxf_source__();';
+  const sourceModule = `module __synqit_dxf_source__() {\n${body.trim()}\n}`;
+  const projection = 'projection(cut = false) __synqit_dxf_source__();';
 
   return [importBlock, sourceModule, projection].filter(Boolean).join('\n\n');
 }

@@ -34,7 +34,7 @@ export function MeshImagePreview({ meshId }: { meshId: string }) {
 
   if (!isMeshDataLoading && !meshData) {
     return (
-      <div className="flex aspect-square w-full items-center justify-center rounded-lg bg-adam-neutral-950">
+      <div className="flex aspect-square w-full items-center justify-center rounded-lg bg-sq-neutral-950">
         <Frown className="h-6 w-6 text-white" />
       </div>
     );
@@ -42,7 +42,7 @@ export function MeshImagePreview({ meshId }: { meshId: string }) {
 
   if (meshData?.status === 'failure') {
     return (
-      <div className="flex aspect-square w-full items-center justify-center rounded-lg bg-adam-neutral-950">
+      <div className="flex aspect-square w-full items-center justify-center rounded-lg bg-sq-neutral-950">
         <HeartCrack className="h-6 w-6 text-white" />
       </div>
     );
@@ -50,7 +50,7 @@ export function MeshImagePreview({ meshId }: { meshId: string }) {
 
   return (
     <div
-      className={`relative aspect-square w-full overflow-hidden rounded-lg bg-adam-neutral-950 ${
+      className={`relative aspect-square w-full overflow-hidden rounded-lg bg-sq-neutral-950 ${
         meshPreview ? '' : 'animate-pulse'
       }`}
     >

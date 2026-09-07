@@ -3,8 +3,8 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
-import { useMutation } from '@tanstack/react-query';
-import { GoogleIcon } from '@/components/icons/CompanyIcons';
+import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
+import { SynqitSignInButton } from '@/components/auth/SynqitSignInButton';
 import { useEffect } from 'react';
 import { validateRedirectUrl } from '@/lib/utils';
 
@@ -32,62 +32,31 @@ export function SignUpView() {
     }
   }, [session, user, authLoading, navigate]);
 
-  const { mutate: signInWithGoogle, isPending: isSigningInWithGoogle } =
-    useMutation({
-      mutationFn: async () => {
-        // Use Supabase's built-in redirectTo parameter with validated URL
-        const redirectTo =
-          redirectPath !== '/'
-            ? getAppRedirectUrl(redirectPath)
-            : getAppRedirectUrl('/');
-
-        await supabase.auth.signInWithOAuth({
-          provider: 'google',
-          options: {
-            redirectTo,
-          },
-        });
-      },
-      onError: (error) => {
-        toast({
-          title: 'Whoopsies',
-          description:
-            error instanceof Error ? error.message : 'Something went wrong',
-          variant: 'destructive',
-        });
-      },
-    });
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-adam-bg-dark p-4">
+    <div className="flex min-h-screen items-center justify-center bg-sq-bg-dark p-4">
       <div className="w-full max-w-md">
-        <div className="rounded-lg bg-adam-bg-secondary-dark p-8 shadow-md">
+        <div className="rounded-lg bg-sq-bg-secondary-dark p-8 shadow-md">
           <div className="mb-4 flex flex-col items-center justify-center gap-2">
             <img
-              src={`${import.meta.env.BASE_URL}/cadam-logo.svg`}
-              alt="CADAM Logo"
+              src={`${import.meta.env.BASE_URL}/synqit-wordmark.svg`}
+              alt="Synqit CAD Logo"
               className="h-8 w-auto"
             />
           </div>
           <div className="w-full py-2">
-            <Button
-              onClick={() => signInWithGoogle()}
-              className="flex w-full items-center gap-2 p-6 md:hover:bg-adam-blue/10"
-              disabled={isSigningInWithGoogle}
-            >
-              <GoogleIcon className="w-4" />
-              <span>Continue with Google</span>
-            </Button>
+            <GoogleSignInButton redirectPath={redirectPath} />
+            <SynqitSignInButton redirectPath={redirectPath} />
           </div>
-          <div className="pt-4 text-center text-sm text-adam-text-secondary">
+          <div className="pt-4 text-center text-sm text-sq-text-secondary">
             <Link
               to="/signup-email"
-              className="text-adam-text-primary hover:underline"
+              className="text-sq-text-primary hover:underline"
             >
               Sign up with email
             </Link>
             {' or '}
-            <Link to="/signin" className="text-adam-blue hover:underline">
+            <Link to="/signin" className="text-sq-blue hover:underline">
               Sign in
             </Link>
           </div>

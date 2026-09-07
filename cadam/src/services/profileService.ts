@@ -4,9 +4,9 @@ import { supabase, ssoClaims } from '@/lib/supabase';
 import { Profile } from '@shared/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-// Under SSO the display name is owned by the identity provider (Adam): the live
+// Under SSO the display name is owned by the identity provider (Synqit): the live
 // `name` claim from ssoClaims (GoTrue refreshes it every sign-in). NOT the
-// `full_name` claim — Adam's identity_data carries a stale full_name while
+// `full_name` claim — Synqit's identity_data carries a stale full_name while
 // `name` is current. undefined off-SSO → the local profiles mirror wins.
 function ssoDisplayName(user: User | null): string | undefined {
   return ssoClaims(user)?.name || undefined;

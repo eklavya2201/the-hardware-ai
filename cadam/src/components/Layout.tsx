@@ -36,8 +36,8 @@ export function Layout() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-adam-bg-secondary-dark">
-        <Loader2 className="h-8 w-8 animate-spin text-adam-blue" />
+      <div className="flex min-h-screen items-center justify-center bg-sq-bg-secondary-dark">
+        <Loader2 className="h-8 w-8 animate-spin text-sq-blue" />
       </div>
     );
   }
@@ -63,7 +63,7 @@ export function Layout() {
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
         />
-        <div className="relative flex-1 overflow-auto bg-adam-bg-dark">
+        <div className="relative flex-1 overflow-auto bg-sq-bg-dark">
           {/* Credits button — home page only. Mirrors the sidebar-toggle's
               movement: eases inward when the sidebar opens (so it lands
               inside the rounded panel) and back to the edge when it closes.
@@ -84,7 +84,7 @@ export function Layout() {
             <Button
               variant="ghost"
               size="icon"
-              className={`bg-adam-neutral-3000 fixed z-10 h-7 w-7 rounded-md text-gray-400 transition-all duration-300 [@media(hover:hover)]:hover:bg-adam-neutral-950 [@media(hover:hover)]:hover:text-adam-neutral-10 ${
+              className={`bg-sq-neutral-3000 fixed z-10 h-7 w-7 rounded-md text-gray-400 transition-all duration-300 [@media(hover:hover)]:hover:bg-sq-neutral-950 [@media(hover:hover)]:hover:text-sq-neutral-10 ${
                 isSidebarOpen ? 'left-[272px]' : 'left-20'
               } ${
                 location.pathname === '/' && isSidebarOpen
@@ -96,7 +96,7 @@ export function Layout() {
               <PanelLeft className="h-4 w-4" />
             </Button>
           )}
-          <div className="h-full bg-adam-bg-dark">
+          <div className="h-full bg-sq-bg-dark">
             <LayoutContext.Provider value={{ isSidebarOpen }}>
               <Outlet />
             </LayoutContext.Provider>

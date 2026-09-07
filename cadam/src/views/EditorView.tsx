@@ -131,7 +131,7 @@ export default function EditorView() {
 
   if (isConversationLoading) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-adam-bg-secondary-dark text-adam-text-primary">
+      <div className="flex h-full w-full items-center justify-center bg-sq-bg-secondary-dark text-sq-text-primary">
         <Loader2 className="h-10 w-10 animate-spin" />
       </div>
     );
@@ -139,7 +139,7 @@ export default function EditorView() {
 
   if (!conversation) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center bg-adam-bg-secondary-dark text-adam-text-primary">
+      <div className="flex h-full w-full flex-col items-center justify-center bg-sq-bg-secondary-dark text-sq-text-primary">
         <span className="text-2xl font-medium">404</span>
         <span className="text-sm">Conversation not found</span>
       </div>
@@ -614,7 +614,7 @@ function ConversationEditor() {
   // first frame.
   if (!areMessagesFetched) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-adam-bg-secondary-dark text-adam-text-primary">
+      <div className="flex h-full w-full items-center justify-center bg-sq-bg-secondary-dark text-sq-text-primary">
         <Loader2 className="h-10 w-10 animate-spin" />
       </div>
     );
@@ -658,7 +658,7 @@ function ConversationEditor() {
                 <PopoverTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="flex h-8 items-center gap-2 rounded-full px-3 text-adam-text-primary hover:bg-adam-neutral-950 hover:text-adam-neutral-10 focus-visible:ring-0"
+                    className="flex h-8 items-center gap-2 rounded-full px-3 text-sq-text-primary hover:bg-sq-neutral-950 hover:text-sq-neutral-10 focus-visible:ring-0"
                   >
                     <Share className="h-[14px] w-[14px] min-w-[14px]" />
                     <span>Share</span>
@@ -666,7 +666,7 @@ function ConversationEditor() {
                 </PopoverTrigger>
                 <PopoverContent
                   align="end"
-                  className="w-72 rounded-xl bg-adam-background-1 p-3"
+                  className="w-72 rounded-xl bg-sq-background-1 p-3"
                 >
                   <ShareContent
                     conversationId={conversation.id}
@@ -696,7 +696,7 @@ function ConversationEditor() {
                 }}
                 aria-label="New Creation"
               >
-                <CreateIcon className="h-5 w-5 text-adam-text-primary" />
+                <CreateIcon className="h-5 w-5 text-sq-text-primary" />
               </Button>
             </div>
           </div>
@@ -723,7 +723,7 @@ function ConversationEditor() {
         </>
       }
       previewSlot={
-        <div className="flex h-full w-full items-center justify-center bg-adam-neutral-700">
+        <div className="flex h-full w-full items-center justify-center bg-sq-neutral-700">
           {isChatStreaming ? (
             <Loader showLoadingText />
           ) : activePreview?.type === 'artifact' ? (
@@ -736,14 +736,14 @@ function ConversationEditor() {
           ) : activePreview?.type === 'mesh' ? (
             <MeshPreview meshId={activePreview.meshId} />
           ) : (
-            <div className="text-sm text-adam-text-secondary">
+            <div className="text-sm text-sq-text-secondary">
               Send a message to start creating
             </div>
           )}
         </div>
       }
       mobilePreviewSlot={
-        <div className="flex h-full w-full items-center justify-center bg-adam-bg-secondary-dark">
+        <div className="flex h-full w-full items-center justify-center bg-sq-bg-secondary-dark">
           {isChatStreaming ? (
             <Loader showLoadingText />
           ) : activePreview?.type === 'artifact' ? (
@@ -758,7 +758,7 @@ function ConversationEditor() {
           ) : activePreview?.type === 'mesh' ? (
             <MeshPreview meshId={activePreview.meshId} />
           ) : (
-            <div className="text-sm text-adam-text-secondary">
+            <div className="text-sm text-sq-text-secondary">
               Send a message to start creating
             </div>
           )}

@@ -10,7 +10,7 @@ import {
 import { billing } from '@/server/billingClient';
 import { env } from '@/server/env';
 
-const appUrl = () => env('ADAM_URL') || 'https://adam.new/app';
+const appUrl = () => env('SYNQIT_APP_URL') || 'https://synqit.in';
 const MAX_TRIAL_PERIOD_DAYS = 7;
 
 export const Route = createFileRoute('/api/billing-checkout')({

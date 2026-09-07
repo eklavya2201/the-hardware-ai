@@ -100,8 +100,8 @@ export function CreditsButton() {
         aria-label="View credits"
         className={cn(
           'inline-flex items-center gap-1.5 rounded-full',
-          'bg-adam-neutral-950 px-3 py-1.5 text-sm font-medium',
-          'text-adam-neutral-10 shadow-sm',
+          'bg-sq-neutral-950 px-3 py-1.5 text-sm font-medium',
+          'text-sq-neutral-10 shadow-sm',
           'border border-white/5',
         )}
       >
@@ -170,11 +170,11 @@ export function CreditsButton() {
           aria-label="View credits"
           className={cn(
             'inline-flex items-center gap-1.5 rounded-full',
-            'bg-adam-neutral-950 px-3 py-1.5 text-sm font-medium',
-            'text-adam-neutral-10 shadow-sm',
+            'bg-sq-neutral-950 px-3 py-1.5 text-sm font-medium',
+            'text-sq-neutral-10 shadow-sm',
             'border border-white/5',
             'transition-colors',
-            '[@media(hover:hover)]:hover:bg-adam-neutral-900',
+            '[@media(hover:hover)]:hover:bg-sq-neutral-900',
           )}
         >
           <Zap className="h-3.5 w-3.5" fill="currentColor" />
@@ -185,7 +185,7 @@ export function CreditsButton() {
           <div
             className={cn(
               'absolute right-0 top-full z-50 mt-2 w-[320px]',
-              'rounded-md border border-adam-neutral-800 bg-adam-bg-secondary-dark text-adam-neutral-10 shadow-lg',
+              'rounded-md border border-sq-neutral-800 bg-sq-bg-secondary-dark text-sq-neutral-10 shadow-lg',
               'animate-in fade-in-0 zoom-in-95',
             )}
             onMouseEnter={handleEnter}
@@ -199,7 +199,7 @@ export function CreditsButton() {
               <Button
                 size="sm"
                 asChild
-                className="h-8 rounded-full bg-adam-neutral-10 px-4 text-xs font-medium text-adam-bg-dark [@media(hover:hover)]:hover:bg-white [@media(hover:hover)]:hover:text-adam-bg-dark"
+                className="h-8 rounded-full bg-sq-neutral-10 px-4 text-xs font-medium text-sq-bg-dark [@media(hover:hover)]:hover:bg-white [@media(hover:hover)]:hover:text-sq-bg-dark"
               >
                 <a
                   href={BILLING_UPGRADE_URL}
@@ -211,14 +211,14 @@ export function CreditsButton() {
               </Button>
             </div>
 
-            <div className="h-px bg-adam-neutral-800" />
+            <div className="h-px bg-sq-neutral-800" />
 
             {/* Credits breakdown */}
             <div className="px-4 py-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Zap
-                    className="h-4 w-4 text-adam-neutral-10"
+                    className="h-4 w-4 text-sq-neutral-10"
                     fill="currentColor"
                   />
                   <span className="text-sm font-medium">Credits</span>
@@ -228,7 +228,7 @@ export function CreditsButton() {
                 </span>
               </div>
 
-              <div className="mt-2 space-y-1 pl-6 text-xs text-adam-neutral-400">
+              <div className="mt-2 space-y-1 pl-6 text-xs text-sq-neutral-400">
                 {!isFree && (
                   <div className="flex items-center justify-between">
                     <span>Monthly credits</span>
@@ -256,14 +256,14 @@ export function CreditsButton() {
               </div>
             </div>
 
-            <div className="h-px bg-adam-neutral-800" />
+            <div className="h-px bg-sq-neutral-800" />
 
             {/* Footer link */}
             <a
               href={BILLING_UPGRADE_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex w-full items-center justify-between px-4 py-3 text-sm text-adam-neutral-10 [@media(hover:hover)]:hover:bg-adam-neutral-900"
+              className="flex w-full items-center justify-between px-4 py-3 text-sm text-sq-neutral-10 [@media(hover:hover)]:hover:bg-sq-neutral-900"
             >
               <span>View plans</span>
               <span aria-hidden>→</span>

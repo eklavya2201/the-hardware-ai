@@ -4,13 +4,12 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import vertexShader from '@/utils/points.vert?raw';
 import fragmentShader from '@/utils/points.frag?raw';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { adamLogoVertices } from '@/utils/adamLogoVertices';
 import { useIsMobile } from '@/hooks/useIsMobile';
 
 interface GlbPreviewProps {
   /**
    * GLB blob (typically the Hunyuan turbo preview returned during mesh generation).
-   * While undefined, the Adam-logo particle cloud holds. As soon as the blob arrives
+   * While undefined, the Synqit-logo particle cloud holds. As soon as the blob arrives
    * the logo dissolves and the mesh point cloud diffuses into place.
    */
   glbBlob?: Blob;
@@ -203,24 +202,38 @@ export function GlbPreview({ glbBlob }: GlbPreviewProps) {
     meshLoadedRef.current = false;
     pendingMeshVerticesRef.current = null;
 
-    const createAdamLogoPoints = () => {
+    const createPlaceholderPoints = () => {
       const scene = sceneRef.current;
       if (!scene) {
         return;
       }
 
-      const vertices: number[] = adamLogoVertices;
+      // Placeholder cloud shown while the mesh loads: points on a torus,
+      // deterministic so every load looks the same.
+      const vertices: number[] = [];
+      const R = 1.0;
+      const r = 0.42;
+      const N = 2400;
+      for (let i = 0; i < N; i++) {
+        const u = (i / N) * Math.PI * 2 * 13;
+        const v = ((i * 0.618) % 1) * Math.PI * 2;
+        vertices.push(
+          (R + r * Math.cos(v)) * Math.cos(u),
+          r * Math.sin(v),
+          (R + r * Math.cos(v)) * Math.sin(u),
+        );
+      }
 
       createPoints(vertices, scene, 1);
     };
 
-    // Create Adam-logo points immediately (scene is ready now)
-    createAdamLogoPoints();
+    // Create placeholder points immediately (scene is ready now)
+    createPlaceholderPoints();
     logoDissolveStartTimeRef.current = null;
     logoDissolveCompletedRef.current = false;
     diffusionStartTimeRef.current = null;
 
-    // If no glbBlob, just keep the Adam logo indefinitely
+    // If no glbBlob, just keep the Synqit logo indefinitely
     if (!glbBlob) {
       return () => {
         if (pointsRef.current) {
@@ -314,7 +327,7 @@ export function GlbPreview({ glbBlob }: GlbPreviewProps) {
 
         let progress: number;
 
-        // 1. Run the Adam-logo dissolve (triggered only when glbBlob exists)
+        // 1. Run the Synqit-logo dissolve (triggered only when glbBlob exists)
         if (
           !logoDissolveCompletedRef.current &&
           logoDissolveStartTimeRef.current
@@ -326,7 +339,7 @@ export function GlbPreview({ glbBlob }: GlbPreviewProps) {
           );
           progress = 1 - dissolveProgress; // Reverse: 1 → 0
 
-          // Before dissolve starts, show adam logo
+          // Before dissolve starts, show synqit logo
           if (!pendingMeshVerticesRef.current) {
             progress = 1;
           }

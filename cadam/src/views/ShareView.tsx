@@ -78,7 +78,7 @@ export default function ShareView() {
 
   if (isConversationLoading || areMessagesLoading) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-adam-bg-secondary-dark text-adam-text-primary">
+      <div className="flex h-full w-full items-center justify-center bg-sq-bg-secondary-dark text-sq-text-primary">
         <Loader2 className="h-10 w-10 animate-spin" />
       </div>
     );
@@ -86,7 +86,7 @@ export default function ShareView() {
 
   if (!conversation) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center bg-adam-bg-secondary-dark text-adam-text-primary">
+      <div className="flex h-full w-full flex-col items-center justify-center bg-sq-bg-secondary-dark text-sq-text-primary">
         <span className="text-2xl font-medium">404</span>
         <span className="text-sm">Conversation not found</span>
       </div>
@@ -244,7 +244,7 @@ function ConversationShare({ conversation, messages }: ConversationShareProps) {
           </div>
 
           <ScrollArea className="relative w-full max-w-none flex-1 self-center px-3 py-0 md:min-h-0 md:p-4">
-            <div className="pointer-events-none sticky left-0 top-0 z-50 h-3 bg-gradient-to-b from-adam-bg-secondary-dark/90 to-transparent md:hidden" />
+            <div className="pointer-events-none sticky left-0 top-0 z-50 h-3 bg-gradient-to-b from-sq-bg-secondary-dark/90 to-transparent md:hidden" />
             <div className="mx-auto flex max-w-3xl flex-col gap-4 pb-6 md:pb-0">
               {branch.map((node) => (
                 <MessageBubble
@@ -263,7 +263,7 @@ function ConversationShare({ conversation, messages }: ConversationShareProps) {
         </>
       }
       previewSlot={
-        <div className="flex h-full w-full items-center justify-center bg-adam-neutral-700">
+        <div className="flex h-full w-full items-center justify-center bg-sq-neutral-700">
           {activePreview?.type === 'artifact' ? (
             <OpenSCADPreview
               scadCode={activePreview.artifact.code}
@@ -273,14 +273,14 @@ function ConversationShare({ conversation, messages }: ConversationShareProps) {
           ) : activePreview?.type === 'mesh' ? (
             <MeshPreview meshId={activePreview.meshId} />
           ) : (
-            <div className="text-sm text-adam-text-secondary">
+            <div className="text-sm text-sq-text-secondary">
               Nothing to preview yet
             </div>
           )}
         </div>
       }
       mobilePreviewSlot={
-        <div className="flex h-full w-full items-center justify-center bg-adam-bg-secondary-dark">
+        <div className="flex h-full w-full items-center justify-center bg-sq-bg-secondary-dark">
           {activePreview?.type === 'artifact' ? (
             <OpenSCADPreview
               scadCode={activePreview.artifact.code}
@@ -292,7 +292,7 @@ function ConversationShare({ conversation, messages }: ConversationShareProps) {
           ) : activePreview?.type === 'mesh' ? (
             <MeshPreview meshId={activePreview.meshId} />
           ) : (
-            <div className="text-sm text-adam-text-secondary">
+            <div className="text-sm text-sq-text-secondary">
               Nothing to preview yet
             </div>
           )}

@@ -14,8 +14,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { AuthError } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
-import { useMutation } from '@tanstack/react-query';
-import { GoogleIcon } from '@/components/icons/CompanyIcons';
+import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
+import { SynqitSignInButton } from '@/components/auth/SynqitSignInButton';
 import { validateRedirectUrl } from '@/lib/utils';
 
 function getAppRedirectUrl(path: string) {
@@ -66,31 +66,6 @@ export function SignInView() {
     }
   }, [session, user, authLoading, navigate]);
 
-  const { mutate: signInWithGoogle, isPending: isSigningInWithGoogle } =
-    useMutation({
-      mutationFn: async () => {
-        // Use Supabase's built-in redirectTo parameter with validated URL
-        const redirectTo =
-          redirectPath !== '/'
-            ? getAppRedirectUrl(redirectPath)
-            : getAppRedirectUrl('/');
-
-        await supabase.auth.signInWithOAuth({
-          provider: 'google',
-          options: {
-            redirectTo,
-          },
-        });
-      },
-      onError: (error) => {
-        toast({
-          title: 'Whoopsies',
-          description:
-            error instanceof Error ? error.message : 'Something went wrong',
-          variant: 'destructive',
-        });
-      },
-    });
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -164,9 +139,9 @@ export function SignInView() {
 
   if (magicLinkSent) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-adam-bg-dark p-4">
+      <div className="flex min-h-screen items-center justify-center bg-sq-bg-dark p-4">
         <div className="w-full max-w-md">
-          <div className="flex flex-col gap-4 rounded-lg bg-adam-bg-secondary-dark p-8 shadow-md">
+          <div className="flex flex-col gap-4 rounded-lg bg-sq-bg-secondary-dark p-8 shadow-md">
             <button
               onClick={() => {
                 setMagicLinkSent(false);
@@ -181,8 +156,8 @@ export function SignInView() {
             </button>
 
             <div className="flex flex-col items-center gap-2 py-2">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-adam-blue/20">
-                <Mail className="h-6 w-6 text-adam-blue" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-sq-blue/20">
+                <Mail className="h-6 w-6 text-sq-blue" />
               </div>
               <h3 className="text-lg font-semibold text-white">
                 Check your email
@@ -225,30 +200,30 @@ export function SignInView() {
                   <InputOTPGroup className="text-white">
                     <InputOTPSlot
                       index={0}
-                      className="h-11 w-11 border-gray-700 bg-adam-bg-dark"
+                      className="h-11 w-11 border-gray-700 bg-sq-bg-dark"
                     />
                     <InputOTPSlot
                       index={1}
-                      className="h-11 w-11 border-gray-700 bg-adam-bg-dark"
+                      className="h-11 w-11 border-gray-700 bg-sq-bg-dark"
                     />
                     <InputOTPSlot
                       index={2}
-                      className="h-11 w-11 border-gray-700 bg-adam-bg-dark"
+                      className="h-11 w-11 border-gray-700 bg-sq-bg-dark"
                     />
                   </InputOTPGroup>
                   <InputOTPSeparator className="text-gray-500" />
                   <InputOTPGroup className="text-white">
                     <InputOTPSlot
                       index={3}
-                      className="h-11 w-11 border-gray-700 bg-adam-bg-dark"
+                      className="h-11 w-11 border-gray-700 bg-sq-bg-dark"
                     />
                     <InputOTPSlot
                       index={4}
-                      className="h-11 w-11 border-gray-700 bg-adam-bg-dark"
+                      className="h-11 w-11 border-gray-700 bg-sq-bg-dark"
                     />
                     <InputOTPSlot
                       index={5}
-                      className="h-11 w-11 border-gray-700 bg-adam-bg-dark"
+                      className="h-11 w-11 border-gray-700 bg-sq-bg-dark"
                     />
                   </InputOTPGroup>
                 </InputOTP>
@@ -277,27 +252,21 @@ export function SignInView() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-adam-bg-dark p-4">
+    <div className="flex min-h-screen items-center justify-center bg-sq-bg-dark p-4">
       <div className="w-full max-w-md">
-        <div className="flex flex-col gap-4 rounded-lg bg-adam-bg-secondary-dark p-8 shadow-md">
+        <div className="flex flex-col gap-4 rounded-lg bg-sq-bg-secondary-dark p-8 shadow-md">
           <div className="mb-4 flex flex-col items-center justify-center">
             <div>
               <img
-                src={`${import.meta.env.BASE_URL}/cadam-logo.svg`}
-                alt="CADAM Logo"
+                src={`${import.meta.env.BASE_URL}/synqit-wordmark.svg`}
+                alt="Synqit CAD Logo"
                 className="w-32"
               />
             </div>
           </div>
           <div className="w-full">
-            <Button
-              onClick={() => signInWithGoogle()}
-              className="flex w-full items-center gap-2 hover:bg-adam-blue/10"
-              disabled={isSigningInWithGoogle}
-            >
-              <GoogleIcon className="w-4" />
-              <span>Continue with Google</span>
-            </Button>
+            <GoogleSignInButton redirectPath={redirectPath} />
+            <SynqitSignInButton redirectPath={redirectPath} />
           </div>
 
           <form
@@ -321,7 +290,7 @@ export function SignInView() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="border-gray-700 bg-adam-bg-dark px-4 text-white placeholder:text-gray-400 max-[430px]:text-base"
+                className="border-gray-700 bg-sq-bg-dark px-4 text-white placeholder:text-gray-400 max-[430px]:text-base"
               />
             </div>
 
@@ -333,7 +302,7 @@ export function SignInView() {
                   </Label>
                   <Link
                     to="/reset-password"
-                    className="text-sm text-adam-blue hover:text-adam-blue/80"
+                    className="text-sm text-sq-blue hover:text-sq-blue/80"
                   >
                     Forgot password?
                   </Link>
@@ -345,7 +314,7 @@ export function SignInView() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="border-gray-700 bg-adam-bg-dark px-4 text-white placeholder:text-gray-400 max-[430px]:text-base"
+                  className="border-gray-700 bg-sq-bg-dark px-4 text-white placeholder:text-gray-400 max-[430px]:text-base"
                 />
               </div>
             )}
@@ -353,7 +322,7 @@ export function SignInView() {
             <div className="text-center">
               <button
                 type="button"
-                className="text-sm text-adam-blue hover:text-adam-blue/80"
+                className="text-sm text-sq-blue hover:text-sq-blue/80"
                 onClick={() => {
                   setMode(mode === 'password' ? 'magiclink' : 'password');
                   setError(null);
@@ -382,7 +351,7 @@ export function SignInView() {
               Don't have an account?{' '}
               <Link
                 to="/signup"
-                className="text-adam-blue hover:text-adam-blue/80"
+                className="text-sq-blue hover:text-sq-blue/80"
               >
                 Sign up
               </Link>

@@ -5,7 +5,7 @@
 // ("Ignoring unknown module 'cuboid'", syntax errors with line numbers).
 // The promise-based callers (tool builds, thumbnail compiles, exports) used
 // to reject with `new Error(err.message)`, which reduced every failure to
-// "Adam did not exit correctly" — so the AI build loop had nothing to
+// "Synqit did not exit correctly" — so the AI build loop had nothing to
 // self-correct against. Fold stderr into the message here so every consumer
 // of the rejection sees the real diagnostics.
 

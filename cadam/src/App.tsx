@@ -12,7 +12,7 @@ const queryClient = new QueryClient();
 
 function MissingConfig() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-adam-bg-secondary-dark">
+    <div className="flex min-h-screen items-center justify-center bg-sq-bg-secondary-dark">
       <div className="max-w-xl px-4 text-center text-red-500">
         Missing API Keys. Please copy .env.local.template to .env.local and
         restart.

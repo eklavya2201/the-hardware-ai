@@ -10,7 +10,7 @@ import { z } from 'zod';
 
 // Build an absolute, same-frontend redirect URL for Supabase auth emails / OAuth.
 // Uses the current origin + Vite base path so links return to whichever frontend
-// initiated them (adam.new/cadam, app.adamcad.com, Vercel previews) rather than
+// initiated them (synqit.in/cad, synqit.in, Vercel previews) rather than
 // falling back to the project's Site URL (which points at the workspace app).
 function getAppRedirectUrl(path: string) {
   const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -109,8 +109,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  // Poll adam-billing for subscription state + token balances. 30s cadence
-  // matches the prior user_extradata poll — adam-billing is the source of
+  // Poll synqit-billing for subscription state + token balances. 30s cadence
+  // matches the prior user_extradata poll — synqit-billing is the source of
   // truth; no local realtime channel anymore.
   const { data: billing, isLoading: isBillingLoading } = useQuery({
     queryKey: ['billing', 'status'],
@@ -179,7 +179,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               if (await ensurePermission()) {
                 const notification = new Notification('3D model is ready', {
                   body: 'Your generated 3D model has finished. Click to open.',
-                  icon: `${import.meta.env.BASE_URL}/Adam-Logo.png`,
+                  icon: `${import.meta.env.BASE_URL}/Synqit-Logo.png`,
                 });
                 notification.onclick = () => {
                   window.focus();

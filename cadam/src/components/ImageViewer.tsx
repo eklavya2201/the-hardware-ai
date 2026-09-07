@@ -54,7 +54,7 @@ export function ImageViewer({
     return (
       <div
         className={cn(
-          'flex aspect-square h-full w-full flex-col items-center justify-center gap-2 rounded-lg text-adam-text-primary',
+          'flex aspect-square h-full w-full flex-col items-center justify-center gap-2 rounded-lg text-sq-text-primary',
           className,
         )}
       >
@@ -68,7 +68,7 @@ export function ImageViewer({
     return (
       <div
         className={cn(
-          'flex aspect-square w-full items-center justify-center rounded-lg text-adam-text-primary',
+          'flex aspect-square w-full items-center justify-center rounded-lg text-sq-text-primary',
           className,
         )}
       >
@@ -81,7 +81,7 @@ export function ImageViewer({
     return (
       <div
         className={cn(
-          'flex aspect-square h-full w-full items-center justify-center rounded-lg text-adam-text-primary',
+          'flex aspect-square h-full w-full items-center justify-center rounded-lg text-sq-text-primary',
           className,
         )}
       >
@@ -106,7 +106,7 @@ export function ImageViewer({
           onLoad={() => setLoaded(true)}
         />
         {!loaded && (
-          <div className="absolute inset-0 flex items-center justify-center bg-adam-neutral-800/50 text-adam-text-primary">
+          <div className="absolute inset-0 flex items-center justify-center bg-sq-neutral-800/50 text-sq-text-primary">
             <Loader2 className="h-10 w-10 animate-spin" />
           </div>
         )}
@@ -129,7 +129,7 @@ export function ImageViewer({
             </div>
             {/* Selected Image Checkbox */}
             <div
-              className={`absolute left-2 top-2 z-10 rounded-full p-1 ${isSelected ? 'bg-adam-blue' : 'bg-black'} cursor-pointer transition-transform duration-200 hover:scale-110 ${isSelected ? 'opacity-100' : hoverable ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`}
+              className={`absolute left-2 top-2 z-10 rounded-full p-1 ${isSelected ? 'bg-sq-blue' : 'bg-black'} cursor-pointer transition-transform duration-200 hover:scale-110 ${isSelected ? 'opacity-100' : hoverable ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`}
               onClick={(e) => {
                 e.stopPropagation();
                 selectItem(

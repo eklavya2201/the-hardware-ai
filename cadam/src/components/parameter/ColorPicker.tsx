@@ -54,15 +54,15 @@ export function ColorPicker({ color, onChange }: ColorPickerProps) {
         <button
           aria-label="Toggle color picker"
           ref={triggerRef}
-          className="relative inline-flex h-6 w-fit items-center gap-2 overflow-hidden rounded-md bg-adam-neutral-800 pl-2 pr-1 text-xs text-adam-neutral-10 transition-colors duration-200 ease-out focus:outline-none [@media(hover:hover)]:hover:bg-adam-neutral-700"
+          className="relative inline-flex h-6 w-fit items-center gap-2 overflow-hidden rounded-md bg-sq-neutral-800 pl-2 pr-1 text-xs text-sq-neutral-10 transition-colors duration-200 ease-out focus:outline-none [@media(hover:hover)]:hover:bg-sq-neutral-700"
         >
           <div className="flex items-center gap-2">
             <div
-              className="h-3.5 w-3.5 flex-shrink-0 rounded-full shadow-sm ring-1 ring-adam-neutral-700/60"
+              className="h-3.5 w-3.5 flex-shrink-0 rounded-full shadow-sm ring-1 ring-sq-neutral-700/60"
               style={{ backgroundColor: color }}
             />
-            <div className="flex min-w-0 items-center gap-1 font-mono text-xs uppercase text-adam-text-primary">
-              <span className="text-adam-neutral-400">#</span>
+            <div className="flex min-w-0 items-center gap-1 font-mono text-xs uppercase text-sq-text-primary">
+              <span className="text-sq-neutral-400">#</span>
               <input
                 type="text"
                 value={inputValue}
@@ -74,13 +74,13 @@ export function ColorPicker({ color, onChange }: ColorPickerProps) {
                   e.stopPropagation();
                   e.currentTarget.select();
                 }}
-                className="w-[7ch] cursor-text rounded bg-transparent px-1 py-0.5 leading-none text-adam-text-primary outline-none transition-colors duration-200 ease-out selection:bg-[#70B8FF7A] selection:text-white focus:bg-adam-neutral-900 [@media(hover:hover)]:hover:bg-adam-neutral-950/50"
+                className="w-[7ch] cursor-text rounded bg-transparent px-1 py-0.5 leading-none text-sq-text-primary outline-none transition-colors duration-200 ease-out selection:bg-[#70B8FF7A] selection:text-white focus:bg-sq-neutral-900 [@media(hover:hover)]:hover:bg-sq-neutral-950/50"
                 spellCheck="false"
               />
             </div>
           </div>
           <ChevronUp
-            className={`h-3 w-3 flex-shrink-0 text-adam-neutral-300 transition-transform duration-200 ${
+            className={`h-3 w-3 flex-shrink-0 text-sq-neutral-300 transition-transform duration-200 ${
               isOpen ? 'rotate-180' : ''
             }`}
           />
@@ -88,7 +88,7 @@ export function ColorPicker({ color, onChange }: ColorPickerProps) {
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="w-auto rounded-md border-none bg-adam-neutral-800 p-3 shadow-md"
+        className="w-auto rounded-md border-none bg-sq-neutral-800 p-3 shadow-md"
         style={{
           width: popoverWidth ? Math.max(popoverWidth, 180) : undefined,
         }}

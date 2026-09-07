@@ -140,31 +140,31 @@ export default function SettingsView() {
   // or no account URL) keeps the native controls. `ssoManaged` is imported from
   // @/lib/supabase so every SSO gate shares one definition.
 
-  const tierLabel = `Adam ${PLAN_DISPLAY_NAMES[level]}`;
+  const tierLabel = `Synqit ${PLAN_DISPLAY_NAMES[level]}`;
 
   const tierAccent =
     level === 'free'
-      ? 'bg-adam-neutral-700 text-adam-neutral-50'
+      ? 'bg-sq-neutral-700 text-sq-neutral-50'
       : level === 'standard'
-        ? 'bg-adam-blue/15 text-adam-blue'
-        : 'bg-gradient-to-r from-adam-blue/20 to-fuchsia-500/20 text-adam-neutral-50';
+        ? 'bg-sq-blue/15 text-sq-blue'
+        : 'bg-gradient-to-r from-sq-blue/20 to-fuchsia-500/20 text-sq-neutral-50';
 
   return (
-    <div className="flex min-h-full w-full items-center justify-center bg-adam-background-1 px-6 py-10">
+    <div className="flex min-h-full w-full items-center justify-center bg-sq-background-1 px-6 py-10">
       <div className="w-full max-w-xl">
         <header className="mb-8">
-          <h1 className="text-2xl font-medium tracking-tight text-adam-neutral-50">
+          <h1 className="text-2xl font-medium tracking-tight text-sq-neutral-50">
             Settings
           </h1>
-          <p className="mt-1 text-sm text-adam-neutral-200">
+          <p className="mt-1 text-sm text-sq-neutral-200">
             Manage your account, billing, and preferences.
           </p>
         </header>
 
         <div className="flex flex-col gap-4">
           {/* Account */}
-          <section className="rounded-xl border border-adam-neutral-800 bg-adam-background-2 p-6">
-            <h2 className="mb-5 text-sm font-medium text-adam-neutral-50">
+          <section className="rounded-xl border border-sq-neutral-800 bg-sq-background-2 p-6">
+            <h2 className="mb-5 text-sm font-medium text-sq-neutral-50">
               Account
             </h2>
 
@@ -173,20 +173,20 @@ export default function SettingsView() {
                 <div className="flex items-center gap-3">
                   <UserAvatar className="h-10 w-10" />
                   <div className="min-w-0">
-                    <div className="truncate text-sm text-adam-neutral-50">
+                    <div className="truncate text-sm text-sq-neutral-50">
                       {profile?.full_name || user?.email}
                     </div>
-                    <div className="mt-0.5 truncate text-xs text-adam-neutral-200">
+                    <div className="mt-0.5 truncate text-xs text-sq-neutral-200">
                       {user?.email}
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-between gap-4 border-t border-adam-neutral-800 pt-5">
+                <div className="flex items-center justify-between gap-4 border-t border-sq-neutral-800 pt-5">
                   <div className="min-w-0">
-                    <div className="text-sm text-adam-neutral-50">
+                    <div className="text-sm text-sq-neutral-50">
                       Manage account
                     </div>
-                    <div className="mt-0.5 text-xs leading-relaxed text-adam-neutral-200">
+                    <div className="mt-0.5 text-xs leading-relaxed text-sq-neutral-200">
                       Update your name, email, password, and account details in
                       your account.
                     </div>
@@ -204,7 +204,7 @@ export default function SettingsView() {
                 </div>
               </div>
             ) : (
-              <div className="divide-y divide-adam-neutral-800">
+              <div className="divide-y divide-sq-neutral-800">
                 <div className="flex items-center justify-between gap-4 pb-5">
                   <div className="flex min-w-0 flex-1 items-center gap-3">
                     <AvatarUpdateDialog />
@@ -222,7 +222,7 @@ export default function SettingsView() {
                         }}
                       />
                     ) : (
-                      <div className="min-w-0 truncate text-sm text-adam-neutral-50">
+                      <div className="min-w-0 truncate text-sm text-sq-neutral-50">
                         {profile?.full_name || user?.email}
                       </div>
                     )}
@@ -264,16 +264,16 @@ export default function SettingsView() {
                 </div>
 
                 <div className="py-5">
-                  <div className="text-sm text-adam-neutral-50">Email</div>
-                  <div className="mt-0.5 truncate text-xs text-adam-neutral-200">
+                  <div className="text-sm text-sq-neutral-50">Email</div>
+                  <div className="mt-0.5 truncate text-xs text-sq-neutral-200">
                     {user?.email}
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between gap-4 pt-5">
                   <div className="min-w-0">
-                    <div className="text-sm text-adam-neutral-50">Password</div>
-                    <div className="mt-0.5 text-xs text-adam-neutral-200">
+                    <div className="text-sm text-sq-neutral-50">Password</div>
+                    <div className="mt-0.5 text-xs text-sq-neutral-200">
                       Send a reset link to your email
                     </div>
                   </div>
@@ -295,16 +295,16 @@ export default function SettingsView() {
           </section>
 
           {/* Notifications */}
-          <section className="rounded-xl border border-adam-neutral-800 bg-adam-background-2 p-6">
-            <h2 className="mb-5 text-sm font-medium text-adam-neutral-50">
+          <section className="rounded-xl border border-sq-neutral-800 bg-sq-background-2 p-6">
+            <h2 className="mb-5 text-sm font-medium text-sq-neutral-50">
               Notifications
             </h2>
 
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
-                <div className="text-sm text-adam-neutral-50">Responses</div>
-                <div className="mt-0.5 text-xs leading-relaxed text-adam-neutral-200">
-                  Get notified when Adam finishes a long-running request.
+                <div className="text-sm text-sq-neutral-50">Responses</div>
+                <div className="mt-0.5 text-xs leading-relaxed text-sq-neutral-200">
+                  Get notified when Synqit finishes a long-running request.
                 </div>
               </div>
               <Switch
@@ -316,8 +316,8 @@ export default function SettingsView() {
           </section>
 
           {/* Billing */}
-          <section className="rounded-xl border border-adam-neutral-800 bg-adam-background-2 p-6">
-            <h2 className="mb-5 text-sm font-medium text-adam-neutral-50">
+          <section className="rounded-xl border border-sq-neutral-800 bg-sq-background-2 p-6">
+            <h2 className="mb-5 text-sm font-medium text-sq-neutral-50">
               Billing
             </h2>
 
@@ -336,7 +336,7 @@ export default function SettingsView() {
                     {tierLabel}
                   </span>
                   {periodEnd && (
-                    <span className="text-xs text-adam-neutral-300">
+                    <span className="text-xs text-sq-neutral-300">
                       Renews {periodEnd}
                     </span>
                   )}
@@ -377,51 +377,51 @@ export default function SettingsView() {
               <div className="flex flex-col gap-2">
                 {level !== 'free' && (
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-adam-neutral-200">
+                    <span className="text-xs text-sq-neutral-200">
                       Subscription tokens
                     </span>
-                    <span className="text-xs tabular-nums text-adam-neutral-50">
+                    <span className="text-xs tabular-nums text-sq-neutral-50">
                       {subscriptionTokens.toLocaleString()}
                     </span>
                   </div>
                 )}
                 {freeTokens > 0 && (
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-adam-neutral-200">
+                    <span className="text-xs text-sq-neutral-200">
                       Daily free tokens
                     </span>
-                    <span className="text-xs tabular-nums text-adam-neutral-50">
+                    <span className="text-xs tabular-nums text-sq-neutral-50">
                       {freeTokens.toLocaleString()}
                     </span>
                   </div>
                 )}
                 {purchasedTokens > 0 && (
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-adam-neutral-200">
+                    <span className="text-xs text-sq-neutral-200">
                       Purchased tokens
                     </span>
-                    <span className="text-xs tabular-nums text-adam-neutral-50">
+                    <span className="text-xs tabular-nums text-sq-neutral-50">
                       {purchasedTokens.toLocaleString()}
                     </span>
                   </div>
                 )}
-                <div className="mt-1 flex items-center justify-between border-t border-adam-neutral-800 pt-3">
-                  <span className="text-sm text-adam-neutral-50">
+                <div className="mt-1 flex items-center justify-between border-t border-sq-neutral-800 pt-3">
+                  <span className="text-sm text-sq-neutral-50">
                     Total available
                   </span>
-                  <span className="text-sm font-medium tabular-nums text-adam-neutral-50">
+                  <span className="text-sm font-medium tabular-nums text-sq-neutral-50">
                     {totalTokens.toLocaleString()}
                   </span>
                 </div>
               </div>
 
               {tokenPacks.length > 0 && (
-                <div className="flex flex-col gap-2 border-t border-adam-neutral-800 pt-5">
+                <div className="flex flex-col gap-2 border-t border-sq-neutral-800 pt-5">
                   <div className="flex items-baseline justify-between">
-                    <div className="text-sm text-adam-neutral-50">
+                    <div className="text-sm text-sq-neutral-50">
                       Buy more tokens
                     </div>
-                    <div className="text-xs text-adam-neutral-200">
+                    <div className="text-xs text-sq-neutral-200">
                       Never expire
                     </div>
                   </div>
@@ -439,18 +439,18 @@ export default function SettingsView() {
                             purchaseTokenPack({ priceId: pack.stripePriceId })
                           }
                           className={cn(
-                            'relative flex flex-col items-start rounded-lg border border-adam-neutral-800 bg-adam-background-1 px-3 py-2.5 text-left transition-colors',
-                            'hover:border-adam-blue/40 hover:bg-adam-neutral-800/40',
+                            'relative flex flex-col items-start rounded-lg border border-sq-neutral-800 bg-sq-background-1 px-3 py-2.5 text-left transition-colors',
+                            'hover:border-sq-blue/40 hover:bg-sq-neutral-800/40',
                             'disabled:cursor-not-allowed disabled:opacity-50',
                           )}
                         >
                           {isThisPending && (
-                            <Loader2 className="absolute right-2 top-2 h-3.5 w-3.5 animate-spin text-adam-neutral-200" />
+                            <Loader2 className="absolute right-2 top-2 h-3.5 w-3.5 animate-spin text-sq-neutral-200" />
                           )}
-                          <div className="text-sm font-medium tabular-nums text-adam-neutral-50">
+                          <div className="text-sm font-medium tabular-nums text-sq-neutral-50">
                             {pack.tokenAmount.toLocaleString()}
                           </div>
-                          <div className="mt-0.5 text-xs tabular-nums text-adam-neutral-200">
+                          <div className="mt-0.5 text-xs tabular-nums text-sq-neutral-200">
                             ${(pack.priceCents / 100).toFixed(2)}
                           </div>
                         </button>
@@ -463,20 +463,20 @@ export default function SettingsView() {
           </section>
 
           {/* Data & Privacy — when SSO owns the identity, account deletion is
-              handled in the Adam account ("Manage account" above), so the
+              handled in the Synqit account ("Manage account" above), so the
               in-app delete is hidden to avoid a partial, one-sided delete. */}
           {!ssoManaged && (
-            <section className="rounded-xl border border-adam-neutral-800 bg-adam-background-2 p-6">
-              <h2 className="mb-5 text-sm font-medium text-adam-neutral-50">
+            <section className="rounded-xl border border-sq-neutral-800 bg-sq-background-2 p-6">
+              <h2 className="mb-5 text-sm font-medium text-sq-neutral-50">
                 Data and privacy
               </h2>
 
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0 flex-1">
-                  <div className="text-sm text-adam-neutral-50">
+                  <div className="text-sm text-sq-neutral-50">
                     Delete account
                   </div>
-                  <div className="mt-0.5 text-xs leading-relaxed text-adam-neutral-200">
+                  <div className="mt-0.5 text-xs leading-relaxed text-sq-neutral-200">
                     Permanently delete your account and all associated data.
                   </div>
                 </div>
@@ -492,19 +492,19 @@ export default function SettingsView() {
             </section>
           )}
 
-          <div className="mt-2 flex items-center justify-center gap-3 text-xs text-adam-neutral-300">
+          <div className="mt-2 flex items-center justify-center gap-3 text-xs text-sq-neutral-300">
             <Link
               to="/terms-of-service"
-              className="transition-colors hover:text-adam-neutral-50"
+              className="transition-colors hover:text-sq-neutral-50"
             >
               Terms of Service
             </Link>
-            <span aria-hidden className="text-adam-neutral-700">
+            <span aria-hidden className="text-sq-neutral-700">
               •
             </span>
             <Link
               to="/privacy-policy"
-              className="transition-colors hover:text-adam-neutral-50"
+              className="transition-colors hover:text-sq-neutral-50"
             >
               Privacy Policy
             </Link>

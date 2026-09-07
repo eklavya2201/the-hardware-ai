@@ -66,12 +66,12 @@ function EmailConfirmation() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-adam-bg-dark p-4">
+    <div className="flex min-h-screen items-center justify-center bg-sq-bg-dark p-4">
       <div className="w-full max-w-md">
-        <div className="rounded-lg bg-adam-bg-secondary-dark p-8 shadow-md">
+        <div className="rounded-lg bg-sq-bg-secondary-dark p-8 shadow-md">
           {/* Icon and Header */}
           <div className="mb-8 text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-adam-neutral-800">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-sq-neutral-800">
               <Mail className="h-6 w-6 text-white" />
             </div>
             <h1 className="mb-4 text-2xl font-semibold text-white">
@@ -100,18 +100,18 @@ function EmailConfirmation() {
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder="Enter your email"
-                  className="border-gray-700 bg-adam-bg-dark px-4 text-white placeholder:text-gray-400 max-[430px]:text-base"
+                  className="border-gray-700 bg-sq-bg-dark px-4 text-white placeholder:text-gray-400 max-[430px]:text-base"
                 />
               </div>
             )}
 
             {/* Alert for spam warning and sign in link */}
-            <Alert className="border-adam-neutral-700 bg-adam-neutral-800">
+            <Alert className="border-sq-neutral-700 bg-sq-neutral-800">
               <AlertDescription className="text-center text-gray-400">
                 Already verified your email?{' '}
                 <Link
                   to="/signin"
-                  className="font-medium text-adam-text-primary transition-colors duration-200 hover:text-adam-text-primary/80"
+                  className="font-medium text-sq-text-primary transition-colors duration-200 hover:text-sq-text-primary/80"
                 >
                   Sign in here
                 </Link>
@@ -121,7 +121,7 @@ function EmailConfirmation() {
             {/* Resend Email button */}
             <Button
               type="button"
-              className="w-full p-6 text-adam-blue transition-colors duration-200 hover:bg-adam-neutral-950 hover:text-adam-blue/80"
+              className="w-full p-6 text-sq-blue transition-colors duration-200 hover:bg-sq-neutral-950 hover:text-sq-blue/80"
               onClick={handleResend}
               disabled={isResending}
             >
