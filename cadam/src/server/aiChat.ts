@@ -1,4 +1,5 @@
 import { createAnthropic } from '@ai-sdk/anthropic';
+import { createAzure } from '@ai-sdk/azure';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { chatTools, type AppUIMessage, type AppTools } from '@shared/chatAi';
@@ -87,6 +88,11 @@ const MODEL_PRICES: Record<
     cacheRead: 0.075,
     cacheWrite: 0.75,
   },
+
+  // Azure OpenAI (local fork: `azure/<deployment>`; deployment names on the
+  // aatreus resource). Priced like the matching OpenAI list price.
+  'azure/gpt-5.1': { input: 5, output: 30, cacheRead: 0.5, cacheWrite: 6.25 },
+  'azure/gpt-5-pro': { input: 15, output: 120 },
 
   // OpenAI — prompt-cache reads at 10% of input, cache writes at 1.25x.
   'openai/gpt-5.6-sol': {
@@ -361,10 +367,11 @@ function jsonResponse(body: unknown, status: number) {
 const THINKING_BUDGET_TOKENS = 9000;
 const PARAMETRIC_MAX_OUTPUT_TOKENS = 64000;
 
-type ChatProvider = 'anthropic' | 'google' | 'openrouter';
+type ChatProvider = 'anthropic' | 'azure' | 'google' | 'openrouter';
 
 function providerFor(modelId: string): ChatProvider {
   if (modelId.startsWith('anthropic/')) return 'anthropic';
+  if (modelId.startsWith('azure/')) return 'azure';
   if (modelId.startsWith('google/')) return 'google';
   return 'openrouter';
 }
@@ -388,15 +395,28 @@ function normalizedAnthropicBaseURL(): string | undefined {
 
 type ChatProviders = {
   anthropic: () => AnthropicProvider;
+  azure: () => ReturnType<typeof createAzure>;
   google: () => GoogleProvider;
   openrouter: () => ReturnType<typeof createOpenRouter>;
 };
 
 function createChatProviders(): ChatProviders {
   let anthropic: AnthropicProvider | undefined;
+  let azure: ReturnType<typeof createAzure> | undefined;
   let google: GoogleProvider | undefined;
   let openrouter: ReturnType<typeof createOpenRouter> | undefined;
   return {
+    azure: () => {
+      // Local fork: Azure OpenAI. `azure/<deployment>` model ids resolve to
+      // https://{AZURE_RESOURCE_NAME}.openai.azure.com/openai/v1 with the
+      // resource's API key. Chat Completions (not Responses) so the same
+      // tool loop the OpenRouter path uses applies unchanged.
+      azure ??= createAzure({
+        resourceName: requiredEnv('AZURE_RESOURCE_NAME'),
+        apiKey: requiredEnv('AZURE_OPENAI_API_KEY'),
+      });
+      return azure;
+    },
     anthropic: () => {
       if (!anthropic) {
         const baseURL = normalizedAnthropicBaseURL();
@@ -446,6 +466,11 @@ function buildChatModel(
         usage: { include: true },
       }),
     };
+  }
+
+  if (modelId.startsWith('azure/')) {
+    const deployment = modelId.slice('azure/'.length);
+    return { model: providers.azure().chat(deployment) };
   }
 
   if (modelId.startsWith('anthropic/')) {

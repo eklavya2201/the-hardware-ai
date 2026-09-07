@@ -51,7 +51,7 @@ export function PromptView() {
 
   const [type, setType] = useState<'parametric' | 'creative'>('parametric');
 
-  const [model, setModel] = useState<Model>('google/gemini-3.8-flash');
+  const [model, setModel] = useState<Model>('azure/gpt-5.1');
 
   const handleTypeChange = (newType: 'parametric' | 'creative') => {
     setType(newType);
@@ -59,7 +59,7 @@ export function PromptView() {
     if (newType === 'creative') {
       setModel('quality');
     } else {
-      setModel('google/gemini-3.8-flash');
+      setModel('azure/gpt-5.1');
     }
   };
 

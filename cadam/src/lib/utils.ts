@@ -237,6 +237,24 @@ export function getInitials(fullName: string | null) {
 
 export const PARAMETRIC_MODELS: ModelConfig[] = [
   {
+    id: 'azure/gpt-5.1',
+    name: 'GPT-5.1 (Azure)',
+    description: 'OpenAI GPT-5.1 on our Azure Foundry deployment',
+    provider: 'OpenAI',
+    supportsTools: true,
+    supportsThinking: false,
+    supportsVision: true,
+  },
+  {
+    id: 'azure/gpt-5-pro',
+    name: 'GPT-5 Pro (Azure)',
+    description: 'OpenAI GPT-5 Pro on our Azure Foundry deployment (slow, strongest)',
+    provider: 'OpenAI',
+    supportsTools: true,
+    supportsThinking: false,
+    supportsVision: true,
+  },
+  {
     id: 'google/gemini-3.1-pro-preview',
     name: 'Gemini 3.1 Pro',
     description: 'Latest Google model with excellent multi-modal capabilities',
