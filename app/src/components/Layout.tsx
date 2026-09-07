@@ -15,6 +15,11 @@ export function Layout() {
   const isMobile = useIsMobile();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  // `?embed=1` (the Studio tab inside the Synqit editor): no sidebar, the host
+  // app already has navigation.
+  const isEmbedded =
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('embed') === '1';
   const [hasLoadedSidebarPreference, setHasLoadedSidebarPreference] =
     useState(false);
 
@@ -45,10 +50,12 @@ export function Layout() {
   if (!user) {
     return (
       <div className="flex h-dvh overflow-hidden">
-        <Sidebar
-          isSidebarOpen={isSidebarOpen}
-          setIsSidebarOpen={setIsSidebarOpen}
-        />
+        {!isEmbedded && (
+          <Sidebar
+            isSidebarOpen={isSidebarOpen}
+            setIsSidebarOpen={setIsSidebarOpen}
+          />
+        )}
         <LayoutContext.Provider value={{ isSidebarOpen }}>
           <Outlet />
         </LayoutContext.Provider>
@@ -59,10 +66,12 @@ export function Layout() {
   return (
     <div className="h-dvh overflow-hidden">
       <div className="flex h-dvh transition-all ease-in-out">
-        <Sidebar
-          isSidebarOpen={isSidebarOpen}
-          setIsSidebarOpen={setIsSidebarOpen}
-        />
+        {!isEmbedded && (
+          <Sidebar
+            isSidebarOpen={isSidebarOpen}
+            setIsSidebarOpen={setIsSidebarOpen}
+          />
+        )}
         <div className="relative flex-1 overflow-auto bg-sq-bg-dark">
           {/* Credits button — home page only. Mirrors the sidebar-toggle's
               movement: eases inward when the sidebar opens (so it lands

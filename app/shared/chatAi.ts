@@ -33,6 +33,15 @@ export const parametricCompileOutputSchema = z.object({
       imageAttached: z.boolean(),
     })
     .optional(),
+  // Numeric facts measured from the compiled mesh (queries, not pictures).
+  facts: z
+    .object({
+      bbox_mm: z.object({ x: z.number(), y: z.number(), z: z.number() }),
+      min_mm: z.object({ x: z.number(), y: z.number(), z: z.number() }),
+      triangles: z.number(),
+      bodies: z.number(),
+    })
+    .optional(),
 });
 
 export const answerUserSchema = z.object({

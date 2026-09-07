@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCachedAiChat } from '@/hooks/useCachedAiChat';
 import { useToast } from '@/hooks/use-toast';
 import { previewScadColoredViaToolWorker } from '@/worker/toolWorker';
+import { describeFacts, meshFacts, type MeshFacts } from '@/utils/meshFacts';
 import { apiUrl } from '@/services/api';
 import { messageRowToChatMessage, type ChatMessage } from '@/lib/aiMessages';
 import { collectStuckToolRecovery } from '@/components/chat/stuckToolRecovery';
@@ -460,6 +461,14 @@ export function ChatSession({
         // - preview-* is the single ISO thumbnail the chat UI displays.
         // - inspection-preview-* is the multi-view sheet the agent receives.
         const { stl, off } = await previewScadColoredViaToolWorker(input.code);
+        // Measure first: size, floor, triangle count, separate bodies. Cheap
+        // here, one line for the model, and exact where pictures are vague.
+        let facts: MeshFacts | undefined;
+        try {
+          facts = await meshFacts(stl);
+        } catch (factsError) {
+          console.warn('Could not measure the compiled model:', factsError);
+        }
         let inspectionUploaded = false;
         try {
           if (user?.id) {
@@ -515,15 +524,19 @@ export function ChatSession({
         const inspectionViews: Array<
           'ISO' | 'FRONT' | 'BACK' | 'LEFT' | 'RIGHT' | 'TOP' | 'BOTTOM'
         > = ['ISO', 'FRONT', 'BACK', 'LEFT', 'RIGHT', 'TOP', 'BOTTOM'];
+        const factsLine = facts ? `Model facts: ${describeFacts(facts)}. ` : '';
         const output = {
           status: 'success' as const,
           inspection: {
             views: inspectionViews,
             imageAttached: inspectionUploaded,
           },
+          ...(facts ? { facts } : {}),
           message: inspectionUploaded
-            ? 'Compilation successful. Inspect the multi-view render in this tool result against the user request from every visible angle. If any required feature is missing, wrong, too simple, disconnected, non-printable, hidden from some view, or visually unclear, call build_parametric_model again with a corrected complete OpenSCAD script. If all views satisfy the request, give a concise final response.'
-            : 'Compilation successful, but the multi-view preview sheet was not available. Review the OpenSCAD you wrote against the user request. If anything is missing, wrong, too simple, disconnected, non-printable, or visually unclear, call build_parametric_model again with a corrected complete OpenSCAD script. If it satisfies the request, give a concise final response.',
+            ? factsLine +
+              'Compilation successful. Check the facts against the requested dimensions and part count first, then inspect the multi-view render in this tool result against the user request from every visible angle. If any required feature is missing, wrong, too simple, disconnected, non-printable, hidden from some view, or visually unclear, call build_parametric_model again with a corrected complete OpenSCAD script. If all views satisfy the request, give a concise final response.'
+            : factsLine +
+              'Compilation successful, but the multi-view preview sheet was not available. Review the OpenSCAD you wrote against the user request. If anything is missing, wrong, too simple, disconnected, non-printable, or visually unclear, call build_parametric_model again with a corrected complete OpenSCAD script. If it satisfies the request, give a concise final response.',
         };
 
         const successPart = {

@@ -22,6 +22,20 @@ feasibility plan for Synqit.
 | `scripts/research_extract_competitor.py` | Crawler that re-pulls the competitor's site + docs into `data/` and diffs against last run |
 | `scripts/e2e/` | Playwright drivers that produced the screenshots (headless Chrome, no browser download) |
 
+## How the two engines fit together
+
+Synqit (electronics: schematic, PCB, BOM, firmware, build guide) and Synqit CAD
+(`app/`, 3D with sliders) are one product joined by **queries, not pictures**:
+the Synqit backend answers `GET /projects/{id}/cad-brief` with the board as
+facts and an OpenSCAD `synqit_board()` prelude; the studio inserts it (Board
+button or `?project=<id>`) and the agent builds the enclosure around real
+holes, parts and connector openings. After every build the studio measures the
+model (bounding box, bodies) and hands the numbers back to the agent before it
+looks at any render. The Synqit editor has a **Studio** tab that embeds the
+studio for the current project. Full design and the verbs / nouns / queries
+rule: `docs/INTEGRATION.md`. The Synqit side lives in the `synqit/` submodule
+(branch `cad-sso`): `git submodule update --init` after cloning.
+
 ## Run it in 10 minutes
 
 You need three things installed. Everything else is downloaded by the scripts.

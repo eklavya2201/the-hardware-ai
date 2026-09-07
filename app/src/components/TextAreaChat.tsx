@@ -62,6 +62,7 @@ import {
 } from '@/utils/meshUtils';
 import { useMeshFiles } from '@/contexts/MeshFilesContext';
 import { PartsButton } from '@/components/parts/PartsButton';
+import { BoardButton } from '@/components/parts/BoardButton';
 import { AnimatePresence, motion } from 'framer-motion';
 import { apiJson } from '@/services/api';
 import { z } from 'zod';
@@ -1658,6 +1659,19 @@ function TextAreaChat({
             {/* Octopart parts lookup: inserts real component dimensions into the prompt */}
             {type === 'parametric' && (
               <PartsButton
+                disabled={isLoading || disabled}
+                showFullLabels={showFullLabels}
+                onInsert={(block) =>
+                  setInput((v) =>
+                    v.trim() ? `${v.trimEnd()}\n\n${block}\n` : `${block}\n`,
+                  )
+                }
+              />
+            )}
+
+            {/* Synqit board: inserts the project's PCB facts + synqit_board() prelude */}
+            {type === 'parametric' && (
+              <BoardButton
                 disabled={isLoading || disabled}
                 showFullLabels={showFullLabels}
                 onInsert={(block) =>

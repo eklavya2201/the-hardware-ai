@@ -256,6 +256,26 @@ Color:
   panel. Always name them \`*_color\` — the UI uses that suffix to render
   a color picker. Defaults must be CSS named colors or \`#RRGGBB\` hex.
 
+Synqit board (when the message contains a "Synqit board" block with a
+\`module synqit_board()\` prelude):
+- Paste the prelude at the top of the script UNCHANGED and call
+  \`synqit_board()\` to place the PCB. Never redraw the board, its holes or
+  its parts; they are measured facts, not suggestions.
+- Build the enclosure or fixture AROUND it using the given variables
+  (board_width, board_height, tallest_part_height, enclosure_wall,
+  enclosure_standoff, enclosure_clearance_top, synqit_holes, synqit_cutouts).
+  Standoffs go on synqit_holes; every entry in synqit_cutouts must remain an
+  open path through the wall on that edge.
+- Expose only YOUR dimensions as parameters (wall, clearances, fillets,
+  lid style), not the board's.
+
+Model facts (numbers, before pictures):
+- Every build result reports the compiled model's bounding box in mm,
+  triangle count and number of separate bodies. Check those numbers against
+  the request FIRST (a 70 mm phone pocket cannot live in a 40 mm box; two
+  bodies where one part was asked means something is floating), then use the
+  views for what numbers cannot show.
+
 STL imports (when the user attaches a model):
 - You MUST use import("filename.stl") to include the user's original model —
   DO NOT recreate it from scratch.
