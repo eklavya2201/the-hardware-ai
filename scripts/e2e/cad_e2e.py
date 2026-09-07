@@ -1,4 +1,4 @@
-"""Drive the local CADAM clone end to end with headless Chrome and save screenshots.
+"""Drive the local Synqit CAD end to end with headless Chrome and save screenshots.
 
 Steps: open app -> sign up (local Supabase, throwaway account) -> submit a prompt
 -> wait for the agent loop to finish -> screenshot the editor with the model.
@@ -13,12 +13,12 @@ from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
-BASE = os.environ.get("CADAM_URL", "http://localhost:3000/cad")
+BASE = os.environ.get("CAD_URL", "http://localhost:3000/cad")
 OUT = Path(__file__).resolve().parent / "shots"
 OUT.mkdir(exist_ok=True)
-EMAIL = os.environ.get("CADAM_EMAIL", f"clone-test-{int(time.time())}@local.dev")
-PASSWORD = os.environ.get("CADAM_PASSWORD", "Clone-Test-2026!")
-PROMPT = os.environ.get("CADAM_PROMPT", "A phone stand for a 70 mm wide phone, 15 degree tilt, with a cable slot at the back")
+EMAIL = os.environ.get("CAD_EMAIL", f"clone-test-{int(time.time())}@local.dev")
+PASSWORD = os.environ.get("CAD_PASSWORD", "Clone-Test-2026!")
+PROMPT = os.environ.get("CAD_PROMPT", "A phone stand for a 70 mm wide phone, 15 degree tilt, with a cable slot at the back")
 MODE = sys.argv[1] if len(sys.argv) > 1 else "explore"
 
 

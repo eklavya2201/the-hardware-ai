@@ -2,9 +2,9 @@
 
 Text-to-CAD in the browser, branded Synqit, running on our Azure OpenAI
 deployment. Type "a phone stand with a cable slot", get an editable 3D model
-with sliders and an STL. It is a fork of Adam's open-source
-[CADAM](https://github.com/Adam-CAD/CADAM) (GPL-3.0) plus our research on
-adam.new and a feasibility plan for Synqit.
+with sliders and an STL. It is built on an upstream open-source text-to-CAD
+project (GPL-3.0, see `app/NOTICE.md`) plus our competitor research and a
+feasibility plan for Synqit.
 
 > **New here? Jump to [Run it in 10 minutes](#run-it-in-10-minutes).**
 > If you use Claude Code, paste the block in [Let Claude do it](#let-claude-do-it).
@@ -16,10 +16,10 @@ adam.new and a feasibility plan for Synqit.
 | `app/` | **The app.** React + TanStack Start + Supabase + OpenSCAD-WASM. Our changes: Azure OpenAI provider, Synqit rebrand, Synqit/Google sign-in, no-auth guest mode, `scripts/bootstrap.mjs` |
 | `docs/LOCAL_SETUP.md` | Full runbook: every change we made, every env var, what is and is not wired up, how sign-in works |
 | `docs/screenshots/` | Proof runs: phone stand generation, follow-up edit, exported STL + SCAD, rebranded UI, SSO |
-| `research/01-adam-product-teardown.md` | What adam.new is, how it is built, pricing, API, changelog |
-| `research/02-cadam-architecture.md` | How the text-to-CAD agent works (two tools, code + screenshot loop) |
+| `research/01-competitor-product-teardown.md` | The competitor: what it is, how it is built, pricing, API, changelog |
+| `research/02-competitor-architecture.md` | How the text-to-CAD agent works (two tools, code + screenshot loop) |
 | `research/03-synqit-feasibility.md` | What we can reuse (and the GPL boundary), what Synqit already has, an 8-day plan |
-| `scripts/research_extract_competitor.py` | Crawler that re-pulls adam.new + docs into `data/` and diffs against last run |
+| `scripts/research_extract_competitor.py` | Crawler that re-pulls the competitor's site + docs into `data/` and diffs against last run |
 | `scripts/e2e/` | Playwright drivers that produced the screenshots (headless Chrome, no browser download) |
 
 ## Run it in 10 minutes
@@ -106,7 +106,7 @@ Do not push to git, do not change .env.local.template, and never print the Azure
 
 ## Licence
 
-`app/` is GPL-3.0 (upstream Adam-CAD/CADAM with GPL-2.0+ OpenSCAD-WASM
+`app/` is GPL-3.0 (derived from an upstream project named in `app/NOTICE.md`, with GPL-2.0+ OpenSCAD-WASM
 binaries; see `app/LICENSE` and `app/src/vendor/openscad-wasm/SOURCE-OFFER.txt`).
 Our changes to it are under the same licence. Everything outside `app/` is
 internal research.

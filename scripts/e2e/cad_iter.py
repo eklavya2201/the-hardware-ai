@@ -1,4 +1,4 @@
-"""Second pass on the local CADAM clone: sign in, reopen the conversation, send a
+"""Second pass on the local Synqit CAD: sign in, reopen the conversation, send a
 follow-up edit, wait for the agent, screenshot, then download the STL."""
 from __future__ import annotations
 
@@ -9,12 +9,12 @@ from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
-BASE = os.environ.get("CADAM_URL", "http://localhost:3000/cad")
+BASE = os.environ.get("CAD_URL", "http://localhost:3000/cad")
 OUT = Path(__file__).resolve().parent / "shots"
 EMAIL = sys.argv[1]
-PASSWORD = os.environ.get("CADAM_PASSWORD", "Clone-Test-2026!")
+PASSWORD = os.environ.get("CAD_PASSWORD", "Clone-Test-2026!")
 EDITOR = sys.argv[2]
-FOLLOWUP = os.environ.get("CADAM_FOLLOWUP", "Make the walls 3 mm thick, add three vertical ventilation slots on the back support, and round all outer vertical edges with a 4 mm radius")
+FOLLOWUP = os.environ.get("CAD_FOLLOWUP", "Make the walls 3 mm thick, add three vertical ventilation slots on the back support, and round all outer vertical edges with a 4 mm radius")
 
 
 def shot(page, name):

@@ -31,7 +31,7 @@ Change the wall thickness to 2.5 mm and add a 1 mm chamfer on all outer edges of
 Make the four corner screw bosses 6 mm diameter and add a 45 degree fillet where each meets the floor.
 ```
 
-## 4. Stress test (one of Adam's own benchmarks; GPT-5.1 will probably need several rounds)
+## 4. Stress test (one of the upstream project's own benchmarks; GPT-5.1 will probably need several rounds)
 
 ```
 A herringbone planetary gear stage, module 1.5: 18-tooth sun, three 18-tooth planets, 54-tooth internal ring, and a carrier plate linking the planet axles. Colour the sun, planets, ring and carrier differently.
