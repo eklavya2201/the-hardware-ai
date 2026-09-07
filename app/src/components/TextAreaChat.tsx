@@ -1550,7 +1550,7 @@ function TextAreaChat({
                 setInput(e.target.value);
               }}
               placeholder={placeholderAnim}
-              className="hide-scrollbar z-40 block h-auto min-h-10 w-full resize-none overflow-hidden whitespace-pre-line break-words border-none bg-sq-neutral-800 bg-transparent px-3 py-2 text-base leading-6 text-sq-text-primary outline-none transition-all duration-500 placeholder:text-sq-text-secondary placeholder:opacity-[var(--placeholder-opacity)] placeholder:transition-all placeholder:duration-300 placeholder:ease-in-out hover:placeholder:blur-[0.2px] focus:border-0 focus:shadow-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 dark:text-gray-200 sm:px-4 sm:text-sm"
+              className="z-40 block h-auto max-h-56 min-h-10 w-full resize-none overflow-y-auto whitespace-pre-line break-words border-none bg-sq-neutral-800 bg-transparent px-3 py-2 text-base leading-6 text-sq-text-primary outline-none transition-all duration-500 placeholder:text-sq-text-secondary placeholder:opacity-[var(--placeholder-opacity)] placeholder:transition-all placeholder:duration-300 placeholder:ease-in-out hover:placeholder:blur-[0.2px] focus:border-0 focus:shadow-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 dark:text-gray-200 sm:px-4 sm:text-sm"
               style={
                 {
                   '--placeholder-opacity': placeholderOpacity,
