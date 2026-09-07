@@ -82,9 +82,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const {
+        let {
           data: { session },
         } = await supabase.auth.refreshSession();
+        // "No auth" mode: with VITE_GUEST_EMAIL / VITE_GUEST_PASSWORD set,
+        // a visitor with no session is signed in as the shared guest account
+        // automatically, so the app opens with no login screen. Leave both
+        // unset to restore the normal sign-in flow.
+        const guestEmail = import.meta.env.VITE_GUEST_EMAIL as string | undefined;
+        const guestPassword = import.meta.env.VITE_GUEST_PASSWORD as string | undefined;
+        if (!session && guestEmail && guestPassword) {
+          const guest = await supabase.auth.signInWithPassword({
+            email: guestEmail,
+            password: guestPassword,
+          });
+          if (!guest.error) session = guest.data.session;
+        }
         setSession(session);
         localStorage.setItem('session', JSON.stringify(session));
         setUser(session?.user ?? null);

@@ -130,3 +130,14 @@ Google" needs `GOOGLE_CLIENT_ID` / `GOOGLE_SECRET` in the Supabase env.
 `scripts/e2e/cadam_iter.py` (sign-in → follow-up edit → STL download) drive
 the app with Playwright on the installed Chrome (`channel="chrome"`, so no
 browser download). They are how the screenshots were produced.
+
+## No-auth mode (2026-09-08, on by default locally)
+
+The founder asked to skip sign-in while evaluating. With `VITE_GUEST_EMAIL` and
+`VITE_GUEST_PASSWORD` set in `cadam/.env.local`, `AuthProvider` signs any
+visitor without a session in as that account automatically, so the app opens
+straight into the workspace and `/signin` redirects home. The local account is
+`guest@synqit.in` (created confirmed through the Supabase admin API). Every
+visitor shares that account's creations. To restore the real sign-in flow
+(Google, "Continue with Synqit", email), remove both variables and restart
+`npm run dev`. Never set them on a public deployment.
