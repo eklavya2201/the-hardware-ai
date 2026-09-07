@@ -1,24 +1,19 @@
-# Running Synqit CAD (the CADAM fork) locally — verified 2026-09-08, Windows 11
+# Running Synqit CAD locally — verified 2026-09-08, Windows 11
 
-The app in `app/` is upstream CADAM with three changes: an **Azure OpenAI
+The app in `app/` is the upstream open-source project (see `app/NOTICE.md`) with three changes: an **Azure OpenAI
 provider** (upstream only speaks Anthropic, Google and OpenRouter), a
 **Synqit rebrand**, and **Synqit sign-in** (details in the sections at the
 end).
 
 ## Rebrand summary (2026-09-08)
 
-- Base path `/cadam` → `/cad`; package name `synqit-cad`; page title "Synqit CAD".
-- Every user-visible "Adam" / "CADAM" / "AdamCAD" string → "Synqit" / "Synqit CAD"
-  (agent persona included: the system prompt now says "You are Synqit").
-- Tailwind tokens `adam-*` → `sq-*`, button variants `adam_dark*` → `sq_dark*`,
-  localStorage keys `adam-*` → `synqit-*`.
-- Assets: Adam logos, Lottie animation, product banner, GitHub/Discord links and
-  the Adam logo particle cloud removed; `synqit-logo.png` (from the Synqit
-  frontend) and a generated `synqit-wordmark.svg` in their place. Sidebar links
-  go to synqit.in and hello@synqit.in.
-- Terms and Privacy pages now point at synqit.in/terms and synqit.in/privacy
-  instead of carrying Adam's legal text.
-- Env: `ADAM_URL` → `SYNQIT_APP_URL`, `CADAM_BILLING_MULTIPLIER` → `SYNQIT_BILLING_MULTIPLIER`.
+- Base path `/cad`; package name `synqit-cad`; page title "Synqit CAD".
+- Every user-visible upstream product string → "Synqit" / "Synqit CAD" (agent persona included).
+- Tailwind tokens → `sq-*`, button variants → `sq_dark*`, localStorage keys → `synqit-*`.
+- Upstream logos, Lottie animation, product banner, community links and logo particle cloud removed; `synqit-logo.png` and a generated `synqit-wordmark.svg` in their place. Sidebar links go to synqit.in and hello@synqit.in.
+- Terms and Privacy pages point at synqit.in/terms and synqit.in/privacy.
+- Env: `SYNQIT_APP_URL`, `SYNQIT_BILLING_MULTIPLIER` (upstream names dropped).
+- The upstream name remains only in `app/NOTICE.md` and `app/LICENSE`, which the GPL requires.
 
 ## Sign-in shared with Synqit (2026-09-08)
 
@@ -81,7 +76,7 @@ SUPABASE_SERVICE_ROLE_KEY="<SERVICE_ROLE_KEY>"
 AZURE_RESOURCE_NAME="aatreus"
 AZURE_OPENAI_API_KEY="<the OPENAI_API_KEY from Cursor-for-hardware/backend/.env>"
 ENVIRONMENT="local"                   # bypasses the billing service: every user gets 3M tokens
-ADAM_URL="http://localhost:3000"
+SYNQIT_APP_URL="http://localhost:3000"
 WEBHOOK_BASE_URL="http://localhost:3000"
 ```
 
