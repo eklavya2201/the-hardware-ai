@@ -1,0 +1,548 @@
+{
+  "https://adam.new/": {
+    "url": "https://adam.new/",
+    "title": "Adam | AI CAD Copilot for Hardware Teams",
+    "bytes": 13117,
+    "sha256_16": "3cc5c626daf655b5",
+    "fetched": "2026-09-07T17:59:58+00:00"
+  },
+  "https://adam.new/copilot": {
+    "url": "https://adam.new/copilot",
+    "title": "AI CAD Copilot for Onshape and Fusion | Adam",
+    "bytes": 2547,
+    "sha256_16": "1d0790422e4a71c1",
+    "fetched": "2026-09-07T17:59:58+00:00"
+  },
+  "https://adam.new/pricing": {
+    "url": "https://adam.new/pricing",
+    "title": "Pricing | Adam",
+    "bytes": 324,
+    "sha256_16": "a6e6f7b22195a7d7",
+    "fetched": "2026-09-07T17:59:59+00:00"
+  },
+  "https://adam.new/opensource": {
+    "url": "https://adam.new/opensource",
+    "title": "CADAM | Open Source Text-to-CAD and AI 3D Model Generator",
+    "bytes": 1545,
+    "sha256_16": "f60a814e0ec0f8b3",
+    "fetched": "2026-09-07T18:00:00+00:00"
+  },
+  "https://adam.new/cadam": {
+    "url": "https://adam.new/cadam",
+    "title": "CADAM",
+    "bytes": 0,
+    "sha256_16": "e3b0c44298fc1c14",
+    "fetched": "2026-09-07T18:00:01+00:00"
+  },
+  "https://adam.new/learn": {
+    "url": "https://adam.new/learn",
+    "title": "Learn Adam | How the AI CAD Copilot Works",
+    "bytes": 12290,
+    "sha256_16": "7708e3c53ad86cee",
+    "fetched": "2026-09-07T18:00:02+00:00"
+  },
+  "https://adam.new/install": {
+    "url": "https://adam.new/install",
+    "title": "Install the Fusion Add-In | Adam",
+    "bytes": 922,
+    "sha256_16": "d5c113f5be2b7c95",
+    "fetched": "2026-09-07T18:00:03+00:00"
+  },
+  "https://adam.new/changelog": {
+    "url": "https://adam.new/changelog",
+    "title": "Changelog | Adam",
+    "bytes": 9654,
+    "sha256_16": "f31e997160cb58c7",
+    "fetched": "2026-09-07T18:00:04+00:00"
+  },
+  "https://adam.new/blog": {
+    "url": "https://adam.new/blog",
+    "title": "Blog | Adam",
+    "bytes": 1269,
+    "sha256_16": "a713b793066f6ed8",
+    "fetched": "2026-09-07T18:00:05+00:00"
+  },
+  "https://adam.new/blog/bitter-lesson-ai-cad": {
+    "url": "https://adam.new/blog/bitter-lesson-ai-cad",
+    "title": "The Bitter Lesson of AI CAD | Adam Blog",
+    "bytes": 3653,
+    "sha256_16": "9dfd9721225efe5b",
+    "fetched": "2026-09-07T18:00:05+00:00"
+  },
+  "https://adam.new/blog/seed": {
+    "url": "https://adam.new/blog/seed",
+    "title": "Announcing Adam\u2019s $4.1m seed round, led by TQ Ventures | Adam Blog",
+    "bytes": 1575,
+    "sha256_16": "1b2cb8c50394e08d",
+    "fetched": "2026-09-07T18:00:06+00:00"
+  },
+  "https://adam.new/blog/research": {
+    "url": "https://adam.new/blog/research",
+    "title": "Things we're exploring | Adam Blog",
+    "bytes": 2898,
+    "sha256_16": "e41511728fce1bdf",
+    "fetched": "2026-09-07T18:00:07+00:00"
+  },
+  "https://adam.new/blog/mesh-editor": {
+    "url": "https://adam.new/blog/mesh-editor",
+    "title": "Our 3D Mesh Editor | Adam Blog",
+    "bytes": 1381,
+    "sha256_16": "83fc657575f5b233",
+    "fetched": "2026-09-07T18:00:07+00:00"
+  },
+  "https://adam.new/blog/sliders": {
+    "url": "https://adam.new/blog/sliders",
+    "title": "How we improved the slider experience in Adam | Adam Blog",
+    "bytes": 5760,
+    "sha256_16": "8fe77e4bdce691b2",
+    "fetched": "2026-09-07T18:00:08+00:00"
+  },
+  "https://adam.new/blog/thesis": {
+    "url": "https://adam.new/blog/thesis",
+    "title": "A Thesis Turned Company: The origins of Adam | Adam Blog",
+    "bytes": 2496,
+    "sha256_16": "9ed6913f0feb7072",
+    "fetched": "2026-09-07T18:00:09+00:00"
+  },
+  "https://adam.new/fusion-mcp": {
+    "url": "https://adam.new/fusion-mcp",
+    "title": "Autodesk Fusion MCP, Explained | Adam",
+    "bytes": 6900,
+    "sha256_16": "a227820256b1cff1",
+    "fetched": "2026-09-07T18:00:10+00:00"
+  },
+  "https://adam.new/featurescript-mcp": {
+    "url": "https://adam.new/featurescript-mcp",
+    "title": "Onshape FeatureScript MCP, Explained | Adam",
+    "bytes": 5221,
+    "sha256_16": "98604fec698be2c6",
+    "fetched": "2026-09-07T18:00:10+00:00"
+  },
+  "https://adam.new/vs/fusion-mcp": {
+    "url": "https://adam.new/vs/fusion-mcp",
+    "title": "Adam vs Fusion MCP: AI CAD Comparison | Adam",
+    "bytes": 8729,
+    "sha256_16": "4f2ffa750c1f22a6",
+    "fetched": "2026-09-07T18:00:11+00:00"
+  },
+  "https://adam.new/vs/featurescript-mcp": {
+    "url": "https://adam.new/vs/featurescript-mcp",
+    "title": "Adam vs FeatureScript MCP: AI CAD for Onshape | Adam",
+    "bytes": 7959,
+    "sha256_16": "879f2f1f449a6379",
+    "fetched": "2026-09-07T18:00:12+00:00"
+  },
+  "https://adam.new/careers": {
+    "url": "https://adam.new/careers",
+    "title": "Careers at Adam | Build CAD Software for Hardware Teams",
+    "bytes": 1097,
+    "sha256_16": "fed177dd6313f701",
+    "fetched": "2026-09-07T18:00:12+00:00"
+  },
+  "https://adam.new/security": {
+    "url": "https://adam.new/security",
+    "title": "Trust & Security \u2014 Adam",
+    "bytes": 1912,
+    "sha256_16": "d74dd07ac4d7d0c4",
+    "fetched": "2026-09-07T18:00:13+00:00"
+  },
+  "https://adam.new/bug-bounty": {
+    "url": "https://adam.new/bug-bounty",
+    "title": "Bug Bounty \u2014 Adam",
+    "bytes": 2237,
+    "sha256_16": "99d94485c7dd2db7",
+    "fetched": "2026-09-07T18:00:14+00:00"
+  },
+  "https://adam.new/privacy-policy": {
+    "url": "https://adam.new/privacy-policy",
+    "title": "Privacy Policy | Adam",
+    "bytes": 2406,
+    "sha256_16": "4f342c9fb2b7ff55",
+    "fetched": "2026-09-07T18:00:15+00:00"
+  },
+  "https://adam.new/terms-of-service": {
+    "url": "https://adam.new/terms-of-service",
+    "title": "Terms of Service | Adam",
+    "bytes": 2313,
+    "sha256_16": "37b501dd35b5feb2",
+    "fetched": "2026-09-07T18:00:15+00:00"
+  },
+  "https://docs.adam.new/index.md": {
+    "url": "https://docs.adam.new/index.md",
+    "title": "Adam documentation",
+    "bytes": 3027,
+    "sha256_16": "ede28b66a33304af",
+    "fetched": "2026-09-07T18:00:16+00:00"
+  },
+  "https://docs.adam.new/quickstart.md": {
+    "url": "https://docs.adam.new/quickstart.md",
+    "title": "Quickstart",
+    "bytes": 2725,
+    "sha256_16": "f2a66636dc7ed9f1",
+    "fetched": "2026-09-07T18:00:17+00:00"
+  },
+  "https://docs.adam.new/setup.md": {
+    "url": "https://docs.adam.new/setup.md",
+    "title": "Set up Adam",
+    "bytes": 2666,
+    "sha256_16": "37b53cedee5caff8",
+    "fetched": "2026-09-07T18:00:19+00:00"
+  },
+  "https://docs.adam.new/guides/core-concepts.md": {
+    "url": "https://docs.adam.new/guides/core-concepts.md",
+    "title": "Core concepts",
+    "bytes": 2495,
+    "sha256_16": "fd4f42538927f34d",
+    "fetched": "2026-09-07T18:00:20+00:00"
+  },
+  "https://docs.adam.new/guides/workflows.md": {
+    "url": "https://docs.adam.new/guides/workflows.md",
+    "title": "Work with tasks",
+    "bytes": 3137,
+    "sha256_16": "676be213d9322039",
+    "fetched": "2026-09-07T18:00:21+00:00"
+  },
+  "https://docs.adam.new/guides/projects.md": {
+    "url": "https://docs.adam.new/guides/projects.md",
+    "title": "Organize work with projects",
+    "bytes": 4663,
+    "sha256_16": "0937c73b999dd573",
+    "fetched": "2026-09-07T18:00:22+00:00"
+  },
+  "https://docs.adam.new/guides/files.md": {
+    "url": "https://docs.adam.new/guides/files.md",
+    "title": "Find and export files",
+    "bytes": 1718,
+    "sha256_16": "14b6c764c96e6abb",
+    "fetched": "2026-09-07T18:00:23+00:00"
+  },
+  "https://docs.adam.new/guides/automations.md": {
+    "url": "https://docs.adam.new/guides/automations.md",
+    "title": "Scheduled tasks",
+    "bytes": 2365,
+    "sha256_16": "b3e26028ef118161",
+    "fetched": "2026-09-07T18:00:24+00:00"
+  },
+  "https://docs.adam.new/guides/integrations.md": {
+    "url": "https://docs.adam.new/guides/integrations.md",
+    "title": "Connect tools and accounts",
+    "bytes": 3392,
+    "sha256_16": "f42ad7b9945b90b8",
+    "fetched": "2026-09-07T18:00:25+00:00"
+  },
+  "https://docs.adam.new/integrations/onshape.md": {
+    "url": "https://docs.adam.new/integrations/onshape.md",
+    "title": "Connect Onshape",
+    "bytes": 2380,
+    "sha256_16": "7ed4d96b6df94959",
+    "fetched": "2026-09-07T18:00:26+00:00"
+  },
+  "https://docs.adam.new/integrations/fusion.md": {
+    "url": "https://docs.adam.new/integrations/fusion.md",
+    "title": "Install Adam for Autodesk Fusion",
+    "bytes": 2949,
+    "sha256_16": "a33f2ada8b3651d2",
+    "fetched": "2026-09-07T18:00:28+00:00"
+  },
+  "https://docs.adam.new/integrations/desktop-connector.md": {
+    "url": "https://docs.adam.new/integrations/desktop-connector.md",
+    "title": "Use the Desktop Connector",
+    "bytes": 2697,
+    "sha256_16": "ca11842c92532f62",
+    "fetched": "2026-09-07T18:00:29+00:00"
+  },
+  "https://docs.adam.new/integrations/arena.md": {
+    "url": "https://docs.adam.new/integrations/arena.md",
+    "title": "Connect Arena PLM",
+    "bytes": 2137,
+    "sha256_16": "3bcbb61310a748fb",
+    "fetched": "2026-09-07T18:00:30+00:00"
+  },
+  "https://docs.adam.new/admin/team.md": {
+    "url": "https://docs.adam.new/admin/team.md",
+    "title": "Manage a team",
+    "bytes": 2932,
+    "sha256_16": "9589e396f2335faa",
+    "fetched": "2026-09-07T18:00:31+00:00"
+  },
+  "https://docs.adam.new/admin/billing.md": {
+    "url": "https://docs.adam.new/admin/billing.md",
+    "title": "Billing and usage",
+    "bytes": 13264,
+    "sha256_16": "1de5b379b6d67e86",
+    "fetched": "2026-09-07T18:00:32+00:00"
+  },
+  "https://docs.adam.new/admin/usage-costs.md": {
+    "url": "https://docs.adam.new/admin/usage-costs.md",
+    "title": "Usage costs by tier",
+    "bytes": 15992,
+    "sha256_16": "250af7a7f7a4df78",
+    "fetched": "2026-09-07T18:00:33+00:00"
+  },
+  "https://docs.adam.new/mcp/overview.md": {
+    "url": "https://docs.adam.new/mcp/overview.md",
+    "title": "Adam MCP",
+    "bytes": 3946,
+    "sha256_16": "720cfbc8c19777a2",
+    "fetched": "2026-09-07T18:00:34+00:00"
+  },
+  "https://docs.adam.new/mcp/connect.md": {
+    "url": "https://docs.adam.new/mcp/connect.md",
+    "title": "Connect an MCP client",
+    "bytes": 4830,
+    "sha256_16": "9f5c300fe5482c72",
+    "fetched": "2026-09-07T18:00:35+00:00"
+  },
+  "https://docs.adam.new/mcp/tools.md": {
+    "url": "https://docs.adam.new/mcp/tools.md",
+    "title": "MCP tools and workflows",
+    "bytes": 12690,
+    "sha256_16": "203ec43ccabdd159",
+    "fetched": "2026-09-07T18:00:36+00:00"
+  },
+  "https://docs.adam.new/api-reference/introduction.md": {
+    "url": "https://docs.adam.new/api-reference/introduction.md",
+    "title": "API overview",
+    "bytes": 14566,
+    "sha256_16": "42cc0736e5c6ead1",
+    "fetched": "2026-09-07T18:00:37+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/get-authentication-context.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/get-authentication-context.md",
+    "title": "Get authentication context",
+    "bytes": 4577,
+    "sha256_16": "c4a3eae834014afe",
+    "fetched": "2026-09-07T18:00:40+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/list-available-models.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/list-available-models.md",
+    "title": "List available models",
+    "bytes": 4127,
+    "sha256_16": "858fee2eb41e22cd",
+    "fetched": "2026-09-07T18:00:47+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/get-billing-and-usage-summary.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/get-billing-and-usage-summary.md",
+    "title": "Get billing and usage summary",
+    "bytes": 7474,
+    "sha256_16": "bc2305c2adbdeaae",
+    "fetched": "2026-09-07T18:00:48+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/list-available-and-connected-integrations.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/list-available-and-connected-integrations.md",
+    "title": "List available and connected integrations",
+    "bytes": 5138,
+    "sha256_16": "26ab35ca5c92902e",
+    "fetched": "2026-09-07T18:00:51+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/get-an-integration.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/get-an-integration.md",
+    "title": "Get an integration",
+    "bytes": 5134,
+    "sha256_16": "555fff7d2470a59c",
+    "fetched": "2026-09-07T18:00:59+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/list-automations.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/list-automations.md",
+    "title": "List automations",
+    "bytes": 9622,
+    "sha256_16": "f462da4767961299",
+    "fetched": "2026-09-07T18:01:02+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/create-an-automation.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/create-an-automation.md",
+    "title": "Create an automation",
+    "bytes": 12361,
+    "sha256_16": "5f65759c354db662",
+    "fetched": "2026-09-07T18:01:03+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/get-an-automation.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/get-an-automation.md",
+    "title": "Get an automation",
+    "bytes": 9457,
+    "sha256_16": "06f35c5056bf1ca5",
+    "fetched": "2026-09-07T18:01:10+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/update-an-automation.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/update-an-automation.md",
+    "title": "Update an automation",
+    "bytes": 10780,
+    "sha256_16": "e70fa37aa08bb9ab",
+    "fetched": "2026-09-07T18:01:16+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/pause-an-automation.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/pause-an-automation.md",
+    "title": "Pause an automation",
+    "bytes": 9477,
+    "sha256_16": "051f974d81fb057c",
+    "fetched": "2026-09-07T18:01:31+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/resume-an-automation.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/resume-an-automation.md",
+    "title": "Resume an automation",
+    "bytes": 9482,
+    "sha256_16": "fd98a70e96c7365f",
+    "fetched": "2026-09-07T18:01:49+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/delete-an-automation.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/delete-an-automation.md",
+    "title": "Delete an automation",
+    "bytes": 3750,
+    "sha256_16": "90b5dab340d77075",
+    "fetched": "2026-09-07T18:01:50+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/upload-a-task-attachment.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/upload-a-task-attachment.md",
+    "title": "Upload a task attachment",
+    "bytes": 4562,
+    "sha256_16": "15a907d7ddfe24b3",
+    "fetched": "2026-09-07T18:01:52+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/list-projects.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/list-projects.md",
+    "title": "List projects",
+    "bytes": 4951,
+    "sha256_16": "2712ae8c1047f956",
+    "fetched": "2026-09-07T18:01:53+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/create-a-project.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/create-a-project.md",
+    "title": "Create a project",
+    "bytes": 5555,
+    "sha256_16": "ad7ae09e934df4d5",
+    "fetched": "2026-09-07T18:01:54+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/get-a-project.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/get-a-project.md",
+    "title": "Get a project",
+    "bytes": 4497,
+    "sha256_16": "59ab0eea40d1521d",
+    "fetched": "2026-09-07T18:01:56+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/update-a-project.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/update-a-project.md",
+    "title": "Update a project",
+    "bytes": 5181,
+    "sha256_16": "b1e6ad05e93e7c2e",
+    "fetched": "2026-09-07T18:01:57+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/delete-a-project.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/delete-a-project.md",
+    "title": "Delete a project",
+    "bytes": 3745,
+    "sha256_16": "fff902a56e4b9cd1",
+    "fetched": "2026-09-07T18:01:58+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/list-project-files.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/list-project-files.md",
+    "title": "List project files",
+    "bytes": 5118,
+    "sha256_16": "f8431c866d8ec26f",
+    "fetched": "2026-09-07T18:02:00+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/upload-a-project-file.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/upload-a-project-file.md",
+    "title": "Upload a project file",
+    "bytes": 4809,
+    "sha256_16": "2a9c1ad56675a364",
+    "fetched": "2026-09-07T18:02:01+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/list-tasks.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/list-tasks.md",
+    "title": "List tasks",
+    "bytes": 6687,
+    "sha256_16": "b286851079867167",
+    "fetched": "2026-09-07T18:02:02+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/create-and-start-a-task.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/create-and-start-a-task.md",
+    "title": "Create and start a task",
+    "bytes": 17080,
+    "sha256_16": "e7b499f8bbdc0670",
+    "fetched": "2026-09-07T18:02:03+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/get-a-task-and-its-messages.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/get-a-task-and-its-messages.md",
+    "title": "Get a task and its messages",
+    "bytes": 14671,
+    "sha256_16": "7c8a7b95628618ad",
+    "fetched": "2026-09-07T18:02:04+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/list-a-tasks-messages.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/list-a-tasks-messages.md",
+    "title": "List a task's messages",
+    "bytes": 13365,
+    "sha256_16": "9b1e80713d54de79",
+    "fetched": "2026-09-07T18:02:05+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/update-a-task.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/update-a-task.md",
+    "title": "Update a task",
+    "bytes": 15314,
+    "sha256_16": "5eb416607716236f",
+    "fetched": "2026-09-07T18:02:06+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/delete-a-task.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/delete-a-task.md",
+    "title": "Delete a task",
+    "bytes": 3718,
+    "sha256_16": "5ec60421402c05e2",
+    "fetched": "2026-09-07T18:02:07+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/cancel-a-task.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/cancel-a-task.md",
+    "title": "Cancel a task",
+    "bytes": 14969,
+    "sha256_16": "9278faeb00e0a1f9",
+    "fetched": "2026-09-07T18:02:08+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/send-a-message-to-a-task.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/send-a-message-to-a-task.md",
+    "title": "Send a message to a task",
+    "bytes": 7996,
+    "sha256_16": "afa9ba6eb352d5eb",
+    "fetched": "2026-09-07T18:02:10+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/answer-a-task-interaction.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/answer-a-task-interaction.md",
+    "title": "Answer a task interaction",
+    "bytes": 6957,
+    "sha256_16": "389e9fc23377934a",
+    "fetched": "2026-09-07T18:02:11+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/list-task-files.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/list-task-files.md",
+    "title": "List task files",
+    "bytes": 5094,
+    "sha256_16": "ae83f3983b84ffbb",
+    "fetched": "2026-09-07T18:02:12+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/get-file-metadata.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/get-file-metadata.md",
+    "title": "Get file metadata",
+    "bytes": 4466,
+    "sha256_16": "accadf68e211465f",
+    "fetched": "2026-09-07T18:02:13+00:00"
+  },
+  "https://docs.adam.new/api-reference/adam-api/download-a-file.md": {
+    "url": "https://docs.adam.new/api-reference/adam-api/download-a-file.md",
+    "title": "Download a file",
+    "bytes": 3428,
+    "sha256_16": "c07f09e05f64e3d6",
+    "fetched": "2026-09-07T18:02:15+00:00"
+  },
+  "https://docs.adam.new/resources/faq.md": {
+    "url": "https://docs.adam.new/resources/faq.md",
+    "title": "Frequently asked questions",
+    "bytes": 3190,
+    "sha256_16": "67de488cf03230b0",
+    "fetched": "2026-09-07T18:02:16+00:00"
+  },
+  "https://docs.adam.new/resources/troubleshooting.md": {
+    "url": "https://docs.adam.new/resources/troubleshooting.md",
+    "title": "Troubleshooting",
+    "bytes": 3744,
+    "sha256_16": "14563d268ece567c",
+    "fetched": "2026-09-07T18:02:17+00:00"
+  }
+}

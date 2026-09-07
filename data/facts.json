@@ -1,0 +1,291 @@
+{
+  "pricing": [],
+  "changelog": [
+    {
+      "date": "August 10, 2026",
+      "item": "The Onshape panel stays signed in",
+      "tag": "Improvements"
+    },
+    {
+      "date": "August 10, 2026",
+      "item": "Large attachments no longer break a turn",
+      "tag": "Fixes"
+    },
+    {
+      "date": "August 7, 2026",
+      "item": "Adam toolbar button in Fusion",
+      "tag": "New"
+    },
+    {
+      "date": "August 4, 2026",
+      "item": "Less erros in Fusion Extension",
+      "tag": "Fixes"
+    },
+    {
+      "date": "August 4, 2026",
+      "item": "Agent message streams smoother after queued messages",
+      "tag": "Fixes"
+    },
+    {
+      "date": "August 3, 2026",
+      "item": "Turning off dictation now turns off the microphone",
+      "tag": "Fixes"
+    },
+    {
+      "date": "August 3, 2026",
+      "item": "Long conversations cost less",
+      "tag": "Improvements"
+    },
+    {
+      "date": "August 1, 2026",
+      "item": "Password-protected share links",
+      "tag": "New"
+    },
+    {
+      "date": "August 1, 2026",
+      "item": "See a task's share state at a glance",
+      "tag": "New"
+    },
+    {
+      "date": "August 1, 2026",
+      "item": "Dictation works alongside typing",
+      "tag": "Improvements"
+    },
+    {
+      "date": "August 1, 2026",
+      "item": "Credit balance is back on the new-task page",
+      "tag": "Fixes"
+    },
+    {
+      "date": "July 31, 2026",
+      "item": "Approval UI Update",
+      "tag": "Improvements"
+    },
+    {
+      "date": "July 31, 2026",
+      "item": "STEP files now load faster in the viewer",
+      "tag": "Improvements"
+    },
+    {
+      "date": "July 30, 2026",
+      "item": "No more hot-pink PDFs",
+      "tag": "Fixes"
+    },
+    {
+      "date": "July 28, 2026",
+      "item": "Loops stop burning credits",
+      "tag": "Fixes"
+    },
+    {
+      "date": "July 28, 2026",
+      "item": "Less thrash on CAD work",
+      "tag": "Improvements"
+    },
+    {
+      "date": "July 28, 2026",
+      "item": "Same-named attachments no longer collide",
+      "tag": "Fixes"
+    },
+    {
+      "date": "July 28, 2026",
+      "item": "A cleaner question card in chat",
+      "tag": "Improvements"
+    },
+    {
+      "date": "July 23, 2026",
+      "item": "Manage older subscription plans",
+      "tag": "Fixes"
+    },
+    {
+      "date": "July 23, 2026",
+      "item": "Faster CAD file viewing",
+      "tag": "Improvements"
+    },
+    {
+      "date": "July 20, 2026",
+      "item": "Snappier STEP viewer",
+      "tag": "Improvements"
+    },
+    {
+      "date": "July 20, 2026",
+      "item": "Composer drafts are saved",
+      "tag": "New"
+    },
+    {
+      "date": "July 20, 2026",
+      "item": "Ask Adam about your account",
+      "tag": "New"
+    },
+    {
+      "date": "July 15, 2026",
+      "item": "Interference detection with highlighting",
+      "tag": "New"
+    },
+    {
+      "date": "July 15, 2026",
+      "item": "Manage teams from the accounts center",
+      "tag": "New"
+    },
+    {
+      "date": "July 15, 2026",
+      "item": "Better long-term memory",
+      "tag": "Improvements"
+    },
+    {
+      "date": "July 13, 2026",
+      "item": "Adam workspace inside Onshape",
+      "tag": "New"
+    },
+    {
+      "date": "July 13, 2026",
+      "item": "Grok 4.5 in the copilot model pickers",
+      "tag": "New"
+    },
+    {
+      "date": "July 13, 2026",
+      "item": "Review pass on completed work",
+      "tag": "Improvements"
+    },
+    {
+      "date": "July 13, 2026",
+      "item": "Clearer activity in the task thread",
+      "tag": "Improvements"
+    },
+    {
+      "date": "July 10, 2026",
+      "item": "iPhone photos just work",
+      "tag": "New"
+    },
+    {
+      "date": "July 9, 2026",
+      "item": "Deploy websites to a permanent public URL",
+      "tag": "New"
+    },
+    {
+      "date": "July 9, 2026",
+      "item": "Account page and full account deletion",
+      "tag": "New"
+    },
+    {
+      "date": "July 9, 2026",
+      "item": "GPT-5.6 Sol",
+      "tag": "New"
+    },
+    {
+      "date": "July 8, 2026",
+      "item": "Better files on mobile",
+      "tag": "Improvements"
+    },
+    {
+      "date": "July 8, 2026",
+      "item": "Collapsible sidebar sections",
+      "tag": "Improvements"
+    },
+    {
+      "date": "July 8, 2026",
+      "item": "Composer and viewer fixes",
+      "tag": "Fixes"
+    },
+    {
+      "date": "July 7, 2026",
+      "item": "Interference and fit checks",
+      "tag": "New"
+    },
+    {
+      "date": "July 7, 2026",
+      "item": "Stripe checkout no longer popup-blocked",
+      "tag": "Fixes"
+    },
+    {
+      "date": "July 6, 2026",
+      "item": "Adam as an installable app",
+      "tag": "New"
+    },
+    {
+      "date": "July 6, 2026",
+      "item": "@cad references in chat",
+      "tag": "New"
+    },
+    {
+      "date": "July 6, 2026",
+      "item": "Richer model viewers",
+      "tag": "Improvements"
+    },
+    {
+      "date": "July 2, 2026",
+      "item": "Full-text search",
+      "tag": "New"
+    },
+    {
+      "date": "July 2, 2026",
+      "item": "CAD-aware files grid",
+      "tag": "New"
+    },
+    {
+      "date": "July 2, 2026",
+      "item": "Deleting a running task stops its run",
+      "tag": "Fixes"
+    },
+    {
+      "date": "July 1, 2026",
+      "item": "Claude Sonnet 5 and GPT-5.5",
+      "tag": "New"
+    },
+    {
+      "date": "July 1, 2026",
+      "item": "Rebuilt CAD rendering",
+      "tag": "Improvements"
+    },
+    {
+      "date": "June 30, 2026",
+      "item": "Blender and SketchUp connectors",
+      "tag": "New"
+    },
+    {
+      "date": "June 30, 2026",
+      "item": "Feature demos on the copilot page",
+      "tag": "New"
+    },
+    {
+      "date": "June 30, 2026",
+      "item": "Tighter access checks on shared files",
+      "tag": "Security"
+    },
+    {
+      "date": "June 30, 2026",
+      "item": "Markdown export crash",
+      "tag": "Fixes"
+    },
+    {
+      "date": "June 29, 2026",
+      "item": "A cleaner share sheet",
+      "tag": "Improvements"
+    },
+    {
+      "date": "June 29, 2026",
+      "item": "Products",
+      "tag": ""
+    },
+    {
+      "date": "June 29, 2026",
+      "item": "Website",
+      "tag": ""
+    },
+    {
+      "date": "June 29, 2026",
+      "item": "Resources",
+      "tag": ""
+    },
+    {
+      "date": "June 29, 2026",
+      "item": "Socials",
+      "tag": ""
+    },
+    {
+      "date": "June 29, 2026",
+      "item": "Company",
+      "tag": ""
+    }
+  ],
+  "api_rate_limits": []
+}

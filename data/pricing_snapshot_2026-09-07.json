@@ -1,0 +1,26 @@
+{
+  "source": "https://adam.new/pricing rendered in a headless browser on 2026-09-07 (the page is client-rendered; scripts/extract_adam.py cannot see it without a browser)",
+  "currency": "USD",
+  "personal": [
+    {"tier": "Free", "per_month": 0, "for": "getting started",
+     "features": ["Light daily quota to CAD with agents", "Lite model only", "CAD specific skills", "Integrate with your CAD software"]},
+    {"tier": "Pro", "per_month": 40, "for": "power users", "trial_days": 7,
+     "features": ["Usage resets weekly", "Access to frontier models", "Shared folders", "CAD specific skills", "Persistent memory", "Integrate with your CAD software"]},
+    {"tier": "Max", "per_month": 200, "for": "heavy workloads",
+     "features": ["5x usage of Pro", "Significantly higher quotas for frontier models", "Shared folders", "CAD specific skills", "Persistent memory", "Integrate with your CAD software"]}
+  ],
+  "team_enterprise": "contact sales; pooled weekly usage across seats, shared memory and connections, SSO, audit trails, admin scope controls",
+  "usage_model": "weekly usage limit per plan; task tiers Lite / Pro / Ultra draw from it at different rates (docs.adam.new/admin/usage-costs)",
+  "api_rate_limits_per_minute": {
+    "source": "https://docs.adam.new/api-reference/introduction rendered 2026-09-07",
+    "free_workspace": {"global": 10, "metadata_reads": 10, "resource_reads": 10, "resource_writes": 5, "task_execution": 2, "file_uploads": 2},
+    "paid_workspace": {"global": 480, "metadata_reads": 480, "resource_reads": 480, "resource_writes": 240, "task_execution": 80, "file_uploads": 80}
+  },
+  "cadam_open_source_metering": {
+    "source": "cadam/src/server/aiChat.ts MODEL_PRICES and billing comments",
+    "billing_token_usd": 0.01,
+    "pro_plan_tokens": 5000,
+    "fallback_price_per_million": {"input": 15, "output": 75},
+    "note": "unknown model ids bill at the fallback (most expensive) price so nothing is ever free"
+  }
+}
