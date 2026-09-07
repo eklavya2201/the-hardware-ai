@@ -2,7 +2,7 @@
 
 Everything here was read from public pages on 2026-09-07 (marketing site,
 docs, changelog, the open-source repo). Nothing came from a logged-in session
-or from their backend. Re-run `scripts/extract_adam.py` to refresh the raw
+or from their backend. Re-run `scripts/research_extract_competitor.py` to refresh the raw
 pages in `data/extracted/`.
 
 ## 1. What Adam is today

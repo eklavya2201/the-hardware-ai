@@ -1,6 +1,6 @@
 # Running Synqit CAD (the CADAM fork) locally — verified 2026-09-08, Windows 11
 
-The app in `cadam/` is upstream CADAM with three changes: an **Azure OpenAI
+The app in `app/` is upstream CADAM with three changes: an **Azure OpenAI
 provider** (upstream only speaks Anthropic, Google and OpenRouter), a
 **Synqit rebrand**, and **Synqit sign-in** (details in the sections at the
 end).
@@ -45,7 +45,7 @@ Two paths, both verified locally:
    side: `SYNQIT_API_BASE` and `VITE_SYNQIT_API_BASE` (default
    `http://localhost:8000/api`).
 
-## What was changed (all in `cadam/`)
+## What was changed (all in `app/`)
 
 | File | Change |
 |---|---|
@@ -66,13 +66,13 @@ screenshot loop, parameter sliders, STL/SCAD/DXF export) is upstream code.
 ## Steps
 
 ```bash
-cd cadam
+cd app
 npm ci --ignore-scripts
 npx supabase start                    # first run pulls ~13 images, 2-3 min
 npx supabase status -o env            # copy ANON_KEY and SERVICE_ROLE_KEY
 ```
 
-Create `cadam/.env.local` (git-ignored):
+Create `app/.env.local` (git-ignored):
 
 ```
 VITE_SUPABASE_URL='http://127.0.0.1:54321'
@@ -86,7 +86,7 @@ WEBHOOK_BASE_URL="http://localhost:3000"
 ```
 
 ```bash
-npm run dev                           # http://localhost:3000/cadam
+npm run dev                           # http://localhost:3000/cad
 ```
 
 ## Accounts
@@ -95,7 +95,7 @@ Local Supabase requires email confirmation and there is no mail server wired
 up. After signing up with email, confirm the row directly:
 
 ```bash
-docker exec supabase_db_cadam psql -U postgres -d postgres -c \
+docker exec supabase_db_synqit psql -U postgres -d postgres -c \
   "update auth.users set email_confirmed_at=now() where email='you@example.com'"
 ```
 
@@ -126,15 +126,15 @@ Google" needs `GOOGLE_CLIENT_ID` / `GOOGLE_SECRET` in the Supabase env.
 
 ## Headless test drivers
 
-`scripts/e2e/cadam_e2e.py` (sign-up → prompt → model) and
-`scripts/e2e/cadam_iter.py` (sign-in → follow-up edit → STL download) drive
+`scripts/e2e/cad_e2e.py` (sign-up → prompt → model) and
+`scripts/e2e/cad_iter.py` (sign-in → follow-up edit → STL download) drive
 the app with Playwright on the installed Chrome (`channel="chrome"`, so no
 browser download). They are how the screenshots were produced.
 
 ## No-auth mode (2026-09-08, on by default locally)
 
 The founder asked to skip sign-in while evaluating. With `VITE_GUEST_EMAIL` and
-`VITE_GUEST_PASSWORD` set in `cadam/.env.local`, `AuthProvider` signs any
+`VITE_GUEST_PASSWORD` set in `app/.env.local`, `AuthProvider` signs any
 visitor without a session in as that account automatically, so the app opens
 straight into the workspace and `/signin` redirects home. The local account is
 `guest@synqit.in` (created confirmed through the Supabase admin API). Every
