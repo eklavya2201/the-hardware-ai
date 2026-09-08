@@ -121,6 +121,24 @@ export const NET_COLORS: Record<NetClass, string> = {
   signal: '#9ca3af',
 };
 
+/**
+ * The same net classes on paper. The dark-theme palette above is tuned for a
+ * near-black PCB canvas; on the schematic's white sheet those 500-level tones
+ * wash out, so the schematic uses these darker 600/700 tones instead.
+ */
+export const NET_COLORS_PAPER: Record<NetClass, string> = {
+  power: '#dc2626',
+  ground: '#475569',
+  sda: '#1d4ed8',
+  scl: '#a16207',
+  uart: '#15803d',
+  spi: '#7e22ce',
+  usb: '#0f766e',
+  analog: '#c2410c',
+  pwm: '#be185d',
+  signal: '#4b5563',
+};
+
 export function classifyNet(name: string, pinNames: string[] = []): NetClass {
   const n = name.toUpperCase();
   const p = pinNames.join(' ').toUpperCase();
@@ -142,6 +160,13 @@ export function hashedColor(name: string): string {
   for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
   const hue = h % 360;
   return `hsl(${hue} 55% 62%)`;
+}
+
+/** Same hash, darkened for the schematic's white sheet. */
+export function hashedColorPaper(name: string): string {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  return `hsl(${h % 360} 62% 36%)`;
 }
 
 /**

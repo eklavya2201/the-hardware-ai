@@ -14,7 +14,8 @@
     "typecheck": "tsc -b --noEmit",
     "format": "prettier --write .",
     "preview": "vite preview",
-    "prepare": "husky"
+    "prepare": "husky",
+    "check:schematic": "node --experimental-strip-types --import ./scripts/ts-register.mjs scripts/check-schematic-layout.mjs"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.78",

@@ -31,6 +31,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ConditionalWrapper } from './ConditionalWrapper';
 import { LibraryBig, LifeBuoy } from 'lucide-react';
 import { LibraryDialog } from '@/components/synqit/LibraryDialog';
+import { RenamableCreation } from '@/components/sidebar/RenamableCreation';
 
 const SYNQIT_HOME = 'https://synqit.in';
 const SYNQIT_SUPPORT = 'mailto:hello@synqit.in';
@@ -258,26 +259,16 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
                           Conversation,
                           'message_count' | 'last_message_at'
                         >,
-                      ) => {
-                        return (
-                          <Link
-                            to="/editor/$id"
-                            params={{ id: conversation.id }}
-                            key={conversation.id}
-                            onClick={() => {
-                              if (isMobile) {
-                                setIsSidebarOpen(false);
-                              }
-                            }}
-                          >
-                            <li key={conversation.id}>
-                              <span className="line-clamp-1 text-ellipsis text-nowrap rounded-md p-1 text-xs font-medium text-sq-neutral-400 transition-colors duration-200 ease-in-out [@media(hover:hover)]:hover:bg-sq-neutral-950 [@media(hover:hover)]:hover:text-sq-neutral-10">
-                                {conversation.title}
-                              </span>
-                            </li>
-                          </Link>
-                        );
-                      },
+                      ) => (
+                        <RenamableCreation
+                          key={conversation.id}
+                          id={conversation.id}
+                          title={conversation.title ?? 'Untitled'}
+                          onNavigate={() => {
+                            if (isMobile) setIsSidebarOpen(false);
+                          }}
+                        />
+                      ),
                     )}
                   </ul>
                 )}
