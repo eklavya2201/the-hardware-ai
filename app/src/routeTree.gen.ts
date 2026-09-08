@@ -23,6 +23,7 @@ import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
 import { Route as AssetsSplatRouteImport } from './routes/assets.$'
 import { Route as ApiTitleGeneratorRouteImport } from './routes/api/title-generator'
 import { Route as ApiSynqitSsoRouteImport } from './routes/api/synqit-sso'
+import { Route as ApiSynqitSessionRouteImport } from './routes/api/synqit-session'
 import { Route as ApiPromptGeneratorRouteImport } from './routes/api/prompt-generator'
 import { Route as ApiPartsRouteImport } from './routes/api/parts'
 import { Route as ApiParametricChatRouteImport } from './routes/api/parametric-chat'
@@ -36,6 +37,7 @@ import { Route as ApiBillingCheckoutRouteImport } from './routes/api/billing-che
 import { Route as LayoutSubscriptionRouteImport } from './routes/_layout/subscription'
 import { Route as LayoutAuthRouteImport } from './routes/_layout/_auth'
 import { Route as LayoutSplatRouteImport } from './routes/_layout/$'
+import { Route as ApiSynqitSplatRouteImport } from './routes/api/synqit/$'
 import { Route as ApiJacksonPollockSplatRouteImport } from './routes/api/jackson-pollock/$'
 import { Route as LayoutShareIdRouteImport } from './routes/_layout/share/$id'
 import { Route as LayoutAuthSettingsRouteImport } from './routes/_layout/_auth/settings'
@@ -112,6 +114,11 @@ const ApiSynqitSsoRoute = ApiSynqitSsoRouteImport.update({
   path: '/api/synqit-sso',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSynqitSessionRoute = ApiSynqitSessionRouteImport.update({
+  id: '/api/synqit-session',
+  path: '/api/synqit-session',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPromptGeneratorRoute = ApiPromptGeneratorRouteImport.update({
   id: '/api/prompt-generator',
   path: '/api/prompt-generator',
@@ -176,6 +183,11 @@ const LayoutSplatRoute = LayoutSplatRouteImport.update({
   path: '/$',
   getParentRoute: () => LayoutRoute,
 } as any)
+const ApiSynqitSplatRoute = ApiSynqitSplatRouteImport.update({
+  id: '/api/synqit/$',
+  path: '/api/synqit/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiJacksonPollockSplatRoute = ApiJacksonPollockSplatRouteImport.update({
   id: '/api/jackson-pollock/$',
   path: '/api/jackson-pollock/$',
@@ -231,6 +243,7 @@ export interface FileRoutesByFullPath {
   '/api/parametric-chat': typeof ApiParametricChatRoute
   '/api/parts': typeof ApiPartsRoute
   '/api/prompt-generator': typeof ApiPromptGeneratorRoute
+  '/api/synqit-session': typeof ApiSynqitSessionRoute
   '/api/synqit-sso': typeof ApiSynqitSsoRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
   '/assets/$': typeof AssetsSplatRoute
@@ -238,6 +251,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof LayoutAuthSettingsRoute
   '/share/$id': typeof LayoutShareIdRoute
   '/api/jackson-pollock/$': typeof ApiJacksonPollockSplatRoute
+  '/api/synqit/$': typeof ApiSynqitSplatRoute
   '/editor/$id': typeof LayoutAuthEditorIdRoute
   '/api/internal/account/delete': typeof ApiInternalAccountDeleteRoute
 }
@@ -264,6 +278,7 @@ export interface FileRoutesByTo {
   '/api/parametric-chat': typeof ApiParametricChatRoute
   '/api/parts': typeof ApiPartsRoute
   '/api/prompt-generator': typeof ApiPromptGeneratorRoute
+  '/api/synqit-session': typeof ApiSynqitSessionRoute
   '/api/synqit-sso': typeof ApiSynqitSsoRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
   '/assets/$': typeof AssetsSplatRoute
@@ -271,6 +286,7 @@ export interface FileRoutesByTo {
   '/settings': typeof LayoutAuthSettingsRoute
   '/share/$id': typeof LayoutShareIdRoute
   '/api/jackson-pollock/$': typeof ApiJacksonPollockSplatRoute
+  '/api/synqit/$': typeof ApiSynqitSplatRoute
   '/editor/$id': typeof LayoutAuthEditorIdRoute
   '/api/internal/account/delete': typeof ApiInternalAccountDeleteRoute
 }
@@ -299,6 +315,7 @@ export interface FileRoutesById {
   '/api/parametric-chat': typeof ApiParametricChatRoute
   '/api/parts': typeof ApiPartsRoute
   '/api/prompt-generator': typeof ApiPromptGeneratorRoute
+  '/api/synqit-session': typeof ApiSynqitSessionRoute
   '/api/synqit-sso': typeof ApiSynqitSsoRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
   '/assets/$': typeof AssetsSplatRoute
@@ -307,6 +324,7 @@ export interface FileRoutesById {
   '/_layout/_auth/settings': typeof LayoutAuthSettingsRoute
   '/_layout/share/$id': typeof LayoutShareIdRoute
   '/api/jackson-pollock/$': typeof ApiJacksonPollockSplatRoute
+  '/api/synqit/$': typeof ApiSynqitSplatRoute
   '/_layout/_auth/editor/$id': typeof LayoutAuthEditorIdRoute
   '/api/internal/account/delete': typeof ApiInternalAccountDeleteRoute
 }
@@ -335,6 +353,7 @@ export interface FileRouteTypes {
     | '/api/parametric-chat'
     | '/api/parts'
     | '/api/prompt-generator'
+    | '/api/synqit-session'
     | '/api/synqit-sso'
     | '/api/title-generator'
     | '/assets/$'
@@ -342,6 +361,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/share/$id'
     | '/api/jackson-pollock/$'
+    | '/api/synqit/$'
     | '/editor/$id'
     | '/api/internal/account/delete'
   fileRoutesByTo: FileRoutesByTo
@@ -368,6 +388,7 @@ export interface FileRouteTypes {
     | '/api/parametric-chat'
     | '/api/parts'
     | '/api/prompt-generator'
+    | '/api/synqit-session'
     | '/api/synqit-sso'
     | '/api/title-generator'
     | '/assets/$'
@@ -375,6 +396,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/share/$id'
     | '/api/jackson-pollock/$'
+    | '/api/synqit/$'
     | '/editor/$id'
     | '/api/internal/account/delete'
   id:
@@ -402,6 +424,7 @@ export interface FileRouteTypes {
     | '/api/parametric-chat'
     | '/api/parts'
     | '/api/prompt-generator'
+    | '/api/synqit-session'
     | '/api/synqit-sso'
     | '/api/title-generator'
     | '/assets/$'
@@ -410,6 +433,7 @@ export interface FileRouteTypes {
     | '/_layout/_auth/settings'
     | '/_layout/share/$id'
     | '/api/jackson-pollock/$'
+    | '/api/synqit/$'
     | '/_layout/_auth/editor/$id'
     | '/api/internal/account/delete'
   fileRoutesById: FileRoutesById
@@ -435,10 +459,12 @@ export interface RootRouteChildren {
   ApiParametricChatRoute: typeof ApiParametricChatRoute
   ApiPartsRoute: typeof ApiPartsRoute
   ApiPromptGeneratorRoute: typeof ApiPromptGeneratorRoute
+  ApiSynqitSessionRoute: typeof ApiSynqitSessionRoute
   ApiSynqitSsoRoute: typeof ApiSynqitSsoRoute
   ApiTitleGeneratorRoute: typeof ApiTitleGeneratorRoute
   AssetsSplatRoute: typeof AssetsSplatRoute
   ApiJacksonPollockSplatRoute: typeof ApiJacksonPollockSplatRoute
+  ApiSynqitSplatRoute: typeof ApiSynqitSplatRoute
   ApiInternalAccountDeleteRoute: typeof ApiInternalAccountDeleteRoute
 }
 
@@ -542,6 +568,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSynqitSsoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/synqit-session': {
+      id: '/api/synqit-session'
+      path: '/api/synqit-session'
+      fullPath: '/api/synqit-session'
+      preLoaderRoute: typeof ApiSynqitSessionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/prompt-generator': {
       id: '/api/prompt-generator'
       path: '/api/prompt-generator'
@@ -632,6 +665,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/$'
       preLoaderRoute: typeof LayoutSplatRouteImport
       parentRoute: typeof LayoutRoute
+    }
+    '/api/synqit/$': {
+      id: '/api/synqit/$'
+      path: '/api/synqit/$'
+      fullPath: '/api/synqit/$'
+      preLoaderRoute: typeof ApiSynqitSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/jackson-pollock/$': {
       id: '/api/jackson-pollock/$'
@@ -734,10 +774,12 @@ const rootRouteChildren: RootRouteChildren = {
   ApiParametricChatRoute: ApiParametricChatRoute,
   ApiPartsRoute: ApiPartsRoute,
   ApiPromptGeneratorRoute: ApiPromptGeneratorRoute,
+  ApiSynqitSessionRoute: ApiSynqitSessionRoute,
   ApiSynqitSsoRoute: ApiSynqitSsoRoute,
   ApiTitleGeneratorRoute: ApiTitleGeneratorRoute,
   AssetsSplatRoute: AssetsSplatRoute,
   ApiJacksonPollockSplatRoute: ApiJacksonPollockSplatRoute,
+  ApiSynqitSplatRoute: ApiSynqitSplatRoute,
   ApiInternalAccountDeleteRoute: ApiInternalAccountDeleteRoute,
 }
 export const routeTree = rootRouteImport

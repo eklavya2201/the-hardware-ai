@@ -24,6 +24,9 @@ ARG VITE_SYNQIT_APP_URL=https://synqit.in
 ARG VITE_AZURE_DEPLOYMENTS=gpt-5.1,gpt-5-pro
 ARG VITE_DEFAULT_MODEL=azure/gpt-5.1
 ARG VITE_GOOGLE_CLIENT_ID
+# Where the studio is mounted. It is the product's front door, so the root.
+ARG APP_BASE=/
+ENV APP_BASE=$APP_BASE
 RUN npm run build
 
 FROM node:22.14.0-slim AS runtime

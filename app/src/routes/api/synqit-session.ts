@@ -1,4 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { requireUser } from '@/server/api';
+import { env } from '@/server/env';
 import {
   clearEngineCookie,
   readEngineCookie,
@@ -8,20 +10,21 @@ import {
 } from '@/server/synqit';
 
 /**
- * Sign in to the Synqit engine from inside the studio.
+ * The studio's session with the engine.
  *
- * The engine owns the boards, the part library and the agent; the studio owns
- * the conversation and the 3D. A person should not have to visit a second site
- * to connect the two, so this exchanges their Synqit credentials for an engine
- * session and keeps it in a studio-domain httpOnly cookie. The password is
- * forwarded once and never stored.
+ * One account, not two. A person signs in to the studio; the engine account
+ * that owns their boards is provisioned for them the first time they need it,
+ * server to server, and they never see it. This route is the exchange: it
+ * proves who the caller is with their studio token, asks the engine for a
+ * session for that email using a shared secret the browser never sees, and
+ * keeps the result in an httpOnly cookie on the studio's own domain.
  *
- *   GET    -> who the engine thinks we are, or 401
- *   POST   -> { email, password } sign in
+ *   GET    -> whether we hold a live engine session
+ *   POST   -> link (or re-link) the signed-in studio user to their engine account
  *   DELETE -> forget the session
  */
 export const Route = createFileRoute('/api/synqit-session')({
-  server: { handlers: { GET: whoami, POST: signIn, DELETE: signOut } },
+  server: { handlers: { GET: whoami, POST: link, DELETE: unlink } },
 });
 
 function isSecure(request: Request): boolean {
@@ -35,35 +38,60 @@ async function whoami({ request }: { request: Request }) {
   const res = await fetch(`${synqitApiBase()}/auth/me`, {
     headers: { cookie: `session=${encodeURIComponent(session)}` },
   });
-  if (!res.ok) {
+  // `/auth/me` answers 200 with `null` when the cookie is stale, so an empty
+  // body is a signed-out answer, not a signed-in one.
+  const user = res.ok ? await res.json().catch(() => null) : null;
+  if (!user) {
     return Response.json(
       { signedIn: false },
       { status: 401, headers: { 'set-cookie': clearEngineCookie(isSecure(request)) } },
     );
   }
-  return Response.json({ signedIn: true, user: await res.json() });
+  return Response.json({ signedIn: true, user });
 }
 
-async function signIn({ request }: { request: Request }) {
-  let email = '';
-  let password = '';
-  try {
-    const body = (await request.json()) as { email?: string; password?: string };
-    email = (body.email ?? '').trim();
-    password = body.password ?? '';
-  } catch {
-    return Response.json({ error: 'Expected a JSON body.' }, { status: 400 });
+async function link({ request }: { request: Request }) {
+  const secret = env('STUDIO_SERVICE_SECRET');
+  if (!secret) {
+    return Response.json(
+      { error: 'This deployment has no engine service secret configured.' },
+      { status: 503 },
+    );
   }
-  if (!email || !password) {
-    return Response.json({ error: 'Email and password are required.' }, { status: 400 });
+  // Checked before the token is read, because these are needed at *runtime* to
+  // verify it -- being build-time values for the client bundle makes them easy
+  // to leave out of the container's environment. Without this a misconfigured
+  // deployment reports "sign in first" forever and nobody ever can.
+  for (const name of ['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY']) {
+    if (!env(name)) {
+      return Response.json({ error: `${name} is not set on the server.` }, { status: 503 });
+    }
+  }
+
+  if (!request.headers.get('Authorization')) {
+    return Response.json({ error: 'Sign in to the studio first.' }, { status: 401 });
+  }
+
+  let email: string;
+  let name: string | undefined;
+  try {
+    const user = await requireUser(request);
+    if (!user.email) throw new Error('Unauthorized');
+    email = user.email;
+    name = (user.user_metadata?.full_name as string | undefined) ?? undefined;
+  } catch {
+    // Every way this can fail -- no token, expired token, Supabase unreachable
+    // with a bad token -- is the caller not being signed in. It must never be
+    // an unhandled 500, which is what a bare token check produced.
+    return Response.json({ error: 'Sign in to the studio first.' }, { status: 401 });
   }
 
   let res: Response;
   try {
-    res = await fetch(`${synqitApiBase()}/auth/login`, {
+    res = await fetch(`${synqitApiBase()}/auth/service/session`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      headers: { 'content-type': 'application/json', 'x-service-secret': secret },
+      body: JSON.stringify({ email, name }),
     });
   } catch (error) {
     return Response.json(
@@ -73,16 +101,15 @@ async function signIn({ request }: { request: Request }) {
   }
 
   if (!res.ok) {
-    const detail = await res.text();
     return Response.json(
-      { error: res.status === 401 ? 'That email and password did not match a Synqit account.' : detail.slice(0, 200) },
-      { status: res.status },
+      { error: `The engine refused the session (${res.status}).` },
+      { status: res.status === 401 ? 500 : res.status },
     );
   }
 
   const session = sessionFromSetCookie(res.headers);
   if (!session) {
-    return Response.json({ error: 'The engine signed in but returned no session.' }, { status: 502 });
+    return Response.json({ error: 'The engine returned no session.' }, { status: 502 });
   }
 
   return Response.json(
@@ -91,7 +118,7 @@ async function signIn({ request }: { request: Request }) {
   );
 }
 
-function signOut({ request }: { request: Request }) {
+function unlink({ request }: { request: Request }) {
   return Response.json(
     { signedIn: false },
     { headers: { 'set-cookie': clearEngineCookie(isSecure(request)) } },

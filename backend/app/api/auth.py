@@ -6,6 +6,7 @@ Sessions are HttpOnly signed cookies (see services/auth.py).
 from __future__ import annotations
 
 import re
+import secrets
 import uuid
 from datetime import datetime, timezone
 from typing import Optional
@@ -13,7 +14,7 @@ from typing import Optional
 import os
 from urllib.parse import quote, urlparse
 
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, Header, HTTPException, Response
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import select
@@ -232,6 +233,62 @@ def handoff_verify(body: HandoffVerifyRequest) -> UserOut:
         user = db.get(UserRow, user_id)
         if user is None:
             raise HTTPException(401, "Unknown user")
+        return UserOut.from_row(user)
+
+
+# --- Studio service session (2026-09) ---------------------------------------
+# The studio is the product's front door and owns sign-in; the engine owns
+# projects, the library and the agent. Rather than ask a person to hold two
+# accounts, the studio's *server* presents this endpoint with a shared secret
+# and the email of the person it has already authenticated, and gets back an
+# engine session for them. The engine account is an implementation detail
+# nobody has to know about.
+#
+# The secret never reaches a browser. If STUDIO_SERVICE_SECRET is unset the
+# endpoint refuses outright rather than defaulting to open -- an unconfigured
+# deployment must not be a passwordless login for any email.
+
+
+class ServiceSessionRequest(BaseModel):
+    email: EmailStr
+    name: Optional[str] = None
+
+
+@router.post("/service/session", response_model=UserOut)
+def service_session(
+    body: ServiceSessionRequest,
+    response: Response,
+    x_service_secret: Optional[str] = Header(default=None),
+) -> UserOut:
+    expected = os.environ.get("STUDIO_SERVICE_SECRET", "")
+    if not expected:
+        raise HTTPException(503, "Service sessions are not configured.")
+    if not x_service_secret or not secrets.compare_digest(x_service_secret, expected):
+        raise HTTPException(401, "Bad service secret.")
+
+    email = _normalize_email(str(body.email))
+    name = (body.name or "").strip() or email.split("@")[0]
+
+    with SessionLocal() as db:
+        user = db.execute(
+            select(UserRow).where(UserRow.email == email)
+        ).scalar_one_or_none()
+        created = user is None
+        if user is None:
+            # Passwordless, like a Google account: the studio vouches for them.
+            user = UserRow(
+                id=uuid.uuid4().hex,
+                email=email,
+                name=name,
+                password_hash=None,
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+        auth_service.issue_session_cookie(response, user.id)
+        if created:
+            posthog_client.capture(user.email, "signup", {"method": "studio"})
+        posthog_client.capture(user.email, "login", {"method": "studio"})
         return UserOut.from_row(user)
 
 

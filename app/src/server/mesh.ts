@@ -1102,7 +1102,7 @@ async function submitMeshJob(
 
       await fal.queue.submit('fal-ai/meshy/v6-preview/image-to-3d', {
         input: meshyInput,
-        webhookUrl: `${appBaseUrl}/cad/api/fal-webhook?id=${meshId}`,
+        webhookUrl: `${appBaseUrl}${import.meta.env.BASE_URL}api/fal-webhook?id=${meshId}`,
       });
 
       debugLog('Successfully submitted to Meshy v6 Preview');
@@ -1306,7 +1306,7 @@ Output:`;
 
       await fal.queue.submit('fal-ai/sam-3/3d-objects', {
         input: sam3dInput,
-        webhookUrl: `${appBaseUrl}/cad/api/fal-webhook?id=${meshId}`,
+        webhookUrl: `${appBaseUrl}${import.meta.env.BASE_URL}api/fal-webhook?id=${meshId}`,
       });
 
       debugLog('Successfully submitted to SAM 3D');
@@ -1343,7 +1343,7 @@ Output:`;
       try {
         await fal.queue.submit('tripo3d/tripo/v2.5/image-to-3d', {
           input: tripoInput,
-          webhookUrl: `${appBaseUrl}/cad/api/fal-webhook?id=${meshId}`,
+          webhookUrl: `${appBaseUrl}${import.meta.env.BASE_URL}api/fal-webhook?id=${meshId}`,
         });
         debugLog(
           'Successfully submitted to Tripo v2.5 textureless with conversational context',
@@ -1571,7 +1571,7 @@ async function submitPreviewJob(
       input: {
         input_image_url: imageInputs[0],
       },
-      webhookUrl: `${appBaseUrl}/cad/api/fal-webhook?id=${previewId}&mode=preview`,
+      webhookUrl: `${appBaseUrl}${import.meta.env.BASE_URL}api/fal-webhook?id=${previewId}&mode=preview`,
     });
   } catch (error) {
     logApiError(error, {
@@ -1626,7 +1626,7 @@ async function createHunyuanPreview(
         input: {
           input_image_url: imageUrl,
         },
-        webhookUrl: `${appBaseUrl}/cad/api/fal-webhook?id=${previewData.id}&mode=preview`,
+        webhookUrl: `${appBaseUrl}${import.meta.env.BASE_URL}api/fal-webhook?id=${previewData.id}&mode=preview`,
       });
       debugLog(`Successfully submitted ${description} to Hunyuan3D Mini Turbo`);
     }

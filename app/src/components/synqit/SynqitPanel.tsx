@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { CircuitBoard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSynqitProject } from '@/lib/synqitProject';
-import { requestSynqitSignIn } from './SynqitAuthDialog';
+import { requestSynqitSignIn } from './SynqitConnection';
 import { BomView } from './BomView';
 import { BuildGuideView } from './BuildGuideView';
 

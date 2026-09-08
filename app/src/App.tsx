@@ -1,6 +1,7 @@
 import { AuthProvider } from '@/contexts/AuthProvider';
 import { TooltipProvider } from './components/ui/tooltip';
 import { Toaster } from './components/ui/toaster';
+import { SynqitConnection } from '@/components/synqit/SynqitConnection';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Outlet } from '@tanstack/react-router';
 import { MeshFilesProvider } from '@/contexts/MeshFilesContext';
@@ -33,6 +34,7 @@ function App({ error }: { error?: unknown }) {
           <MeshFilesProvider>
             <TooltipProvider delayDuration={0}>
               <Toaster />
+              <SynqitConnection />
               {error !== undefined ? <ErrorView error={error} /> : <Outlet />}
             </TooltipProvider>
           </MeshFilesProvider>

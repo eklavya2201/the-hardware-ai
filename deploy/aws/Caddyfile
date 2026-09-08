@@ -1,0 +1,15 @@
+# synqit.in is the studio. Certificates are issued by Let's Encrypt on first
+# request, which works because both names resolve to this box and 80/443 are
+# open.
+synqit.in, www.synqit.in {
+	encode gzip
+	reverse_proxy studio:3000
+}
+
+# The engine's own API, kept on its own name. The studio does not use this
+# path — it reaches the engine over the compose network — but the endpoint
+# stays public for scripts, the CLI and anything already pointing at it.
+api.synqit.in {
+	encode gzip
+	reverse_proxy api:8000
+}

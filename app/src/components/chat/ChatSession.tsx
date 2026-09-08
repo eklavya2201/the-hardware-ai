@@ -1,5 +1,5 @@
 import { MessageBubble } from '@/components/chat/MessageBubble';
-import { requestSynqitSignIn } from '@/components/synqit/SynqitAuthDialog';
+import { requestSynqitSignIn } from '@/components/synqit/SynqitConnection';
 import { SuggestionPills } from '@/components/chat/SuggestionPills';
 import { LimitReachedMessage } from '@/components/LimitReachedMessage';
 import TextAreaChat from '@/components/TextAreaChat';

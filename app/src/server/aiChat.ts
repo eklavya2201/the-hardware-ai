@@ -925,7 +925,7 @@ function creativeTools({
       ...chatTools.create_mesh,
       execute: async (input: AppTools['create_mesh']['input']) => {
         const response = await handleMeshRequest(
-          new Request(new URL('/cad/api/mesh', req.url), {
+          new Request(new URL(`${import.meta.env.BASE_URL}api/mesh`, req.url), {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

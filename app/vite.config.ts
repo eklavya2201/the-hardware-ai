@@ -6,7 +6,9 @@ import path from 'path';
 import react from '@vitejs/plugin-react';
 import { defineConfig, type Plugin } from 'vite';
 
-const appBase = '/cad';
+// Where the studio is mounted. Production serves it at the root of
+// synqit.in; set APP_BASE=/cad to mount it under a path instead.
+const appBase = process.env.APP_BASE || '/';
 const normalizedAppBase = appBase.replace(/\/$/, '');
 
 function serveOpenScadWasmInDev(): Plugin {

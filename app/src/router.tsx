@@ -9,7 +9,7 @@ let clientRouter: AppRouter | undefined;
 function createAppRouter() {
   return createTanStackRouter({
     routeTree,
-    basepath: '/cad',
+    basepath: import.meta.env.BASE_URL.replace(/\/$/, ''),
     defaultPreload: 'intent',
     scrollRestoration: true,
   });

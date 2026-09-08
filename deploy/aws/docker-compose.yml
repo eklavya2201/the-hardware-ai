@@ -1,0 +1,78 @@
+# The whole product on one EC2 box: the studio people use, the engine that
+# designs the boards, and Caddy in front terminating TLS.
+#
+#   cd ~/the-hardware-ai/deploy/aws
+#   sudo docker compose up -d
+#
+# This replaces the older stack in ~/synqit/deploy/aws, which built the engine
+# from the Cursor-for-hardware checkout and served the apex from CloudFront/S3.
+# The engine's SQLite volume is reused by name so existing projects survive the
+# switch.
+name: synqit
+
+services:
+  # The engine: schematic agent, part library, placement, routing, exports.
+  api:
+    build:
+      context: ../../backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - ./backend.env
+    environment:
+      - PORT=8000
+      - DATABASE_URL=sqlite:////data/voltron.db
+    volumes:
+      - synqit-data:/data
+    expose:
+      - "8000"
+
+  # The studio: the UI, the conversation, the 3D, and the agent that drives
+  # the engine. Server routes are not optional here, so this is a Node server
+  # rather than a static bundle.
+  studio:
+    build:
+      context: ../../app
+      dockerfile: Dockerfile
+      args:
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+        VITE_SYNQIT_APP_URL: https://synqit.in
+        # The studio is the front door, so it is served at the root.
+        APP_BASE: /
+    restart: unless-stopped
+    env_file:
+      - ./studio.env
+    environment:
+      - PORT=3000
+      # Over the compose network: no public round trip, no TLS handshake, no
+      # CORS, and no cross-site cookie for a browser to refuse.
+      - SYNQIT_API_BASE=http://api:8000/api
+    expose:
+      - "3000"
+    depends_on:
+      - api
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - api
+      - studio
+
+volumes:
+  # The engine's database, as created by the previous stack (compose project
+  # "aws"). Declared external so switching stacks does not silently start from
+  # an empty database.
+  synqit-data:
+    external: true
+    name: aws_synqit-data
+  caddy-data:
+  caddy-config:

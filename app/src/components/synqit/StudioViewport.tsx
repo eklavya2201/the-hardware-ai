@@ -6,7 +6,7 @@ import { fetchSynqitProject, useSynqitProjectData } from '@/lib/synqitData';
 import { PcbView } from './PcbView';
 import { SchematicView } from './SchematicView';
 import { INSERT_EVENT } from './LibraryDialog';
-import { requestSynqitSignIn } from './SynqitAuthDialog';
+import { requestSynqitSignIn } from './SynqitConnection';
 
 /**
  * Example briefs for the empty PCB and schematic space. Clicking one drops it
