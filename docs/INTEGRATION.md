@@ -75,6 +75,27 @@ signed-in Synqit user to the studio through a 5-minute token. Locally the
 studio runs in guest mode so evaluation needs no login. Details in
 `LOCAL_SETUP.md`.
 
+### 5. Native PCB and schematic in the studio viewport (2026-09-08, later)
+
+The founder rejected framing the Synqit editor for these (theme clash). The
+studio now draws them itself from the project JSON, in its own theme, behind a
+floating **3D / PCB / Schematic** switcher over the centre space
+(`app/src/components/synqit/StudioViewport.tsx`). The 3D preview stays mounted
+while hidden, so switching back never recompiles.
+
+- `PcbView.tsx`: outline (rounded rect / circle / polygon from the mechanical
+  IR), mounting holes, part bodies with refdes, pads rotated with the part,
+  traces per layer (copper gold top, blue bottom), vias, unrouted rats;
+  wheel zoom, drag pan, double-click fit; Top / Bottom / Rats / Refdes toggles.
+- `SchematicView.tsx`: symbols as boxes with pins on the IR-declared sides,
+  two-pin signal nets as wires, power / ground / multi-pin nets as coloured
+  net labels; colours by net function (the same hookup-guide convention as
+  Synqit); click a wire or label to highlight its net.
+- Data: one `GET /projects/{id}` read with the Synqit cookie
+  (`app/src/lib/synqitData.ts`), cached per id, refresh button on the switcher.
+- The side panel keeps the list-shaped Synqit views (BOM, Build guide,
+  Library) as embeds for now.
+
 ## Where the code lives
 
 | Piece | Repo / path |

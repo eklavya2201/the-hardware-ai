@@ -13,10 +13,11 @@ import { synqitHandoffUrl } from '@/components/auth/SynqitSignInButton';
 type SynqitView = 'schematic' | 'pcb' | 'bom' | 'guide' | 'library';
 type TabId = 'parameters' | SynqitView;
 
+// Schematic and PCB live in the centre viewport (floating 3D / PCB / Schematic
+// switcher), drawn natively in the studio theme. The side panel keeps the
+// list-shaped views.
 const TABS: { id: TabId; label: string }[] = [
   { id: 'parameters', label: 'Parameters' },
-  { id: 'schematic', label: 'Schematic' },
-  { id: 'pcb', label: 'PCB' },
   { id: 'bom', label: 'BOM' },
   { id: 'guide', label: 'Build guide' },
   { id: 'library', label: 'Library' },

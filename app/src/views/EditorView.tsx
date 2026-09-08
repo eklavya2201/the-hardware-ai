@@ -4,6 +4,7 @@ import { ChatSession } from '@/components/chat/ChatSession';
 import { CreateIcon } from '@/components/icons/ui/CreateIcon';
 import { ParameterSection } from '@/components/parameter/ParameterSection';
 import { SynqitPanel } from '@/components/synqit/SynqitPanel';
+import { StudioViewport } from '@/components/synqit/StudioViewport';
 import { ParameterSheetContent } from '@/components/parameter/ParameterSheetContent';
 import { Button } from '@/components/ui/button';
 import {
@@ -725,24 +726,26 @@ function ConversationEditor() {
         </>
       }
       previewSlot={
-        <div className="flex h-full w-full items-center justify-center bg-sq-neutral-700">
-          {isChatStreaming ? (
-            <Loader showLoadingText />
-          ) : activePreview?.type === 'artifact' ? (
-            <OpenSCADPreview
-              scadCode={activePreview.artifact.code}
-              color="#00A6FF"
-              onOutputChange={setCurrentOutput}
-              onDxfExportChange={handleDxfExporterChange}
-            />
-          ) : activePreview?.type === 'mesh' ? (
-            <MeshPreview meshId={activePreview.meshId} />
-          ) : (
-            <div className="text-sm text-sq-text-secondary">
-              Send a message to start creating
-            </div>
-          )}
-        </div>
+        <StudioViewport>
+          <div className="flex h-full w-full items-center justify-center bg-sq-neutral-700">
+            {isChatStreaming ? (
+              <Loader showLoadingText />
+            ) : activePreview?.type === 'artifact' ? (
+              <OpenSCADPreview
+                scadCode={activePreview.artifact.code}
+                color="#00A6FF"
+                onOutputChange={setCurrentOutput}
+                onDxfExportChange={handleDxfExporterChange}
+              />
+            ) : activePreview?.type === 'mesh' ? (
+              <MeshPreview meshId={activePreview.meshId} />
+            ) : (
+              <div className="text-sm text-sq-text-secondary">
+                Send a message to start creating
+              </div>
+            )}
+          </div>
+        </StudioViewport>
       }
       mobilePreviewSlot={
         <div className="flex h-full w-full items-center justify-center bg-sq-bg-secondary-dark">
