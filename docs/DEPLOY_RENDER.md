@@ -21,10 +21,18 @@ are set on the service; change them in the dashboard or via
 `PUT /v1/services/{id}/env-vars`. `VITE_*` values are baked in at build time,
 so changing one needs a redeploy.
 
-**Status: live but not usable until Supabase is wired.** The app shows
-"Missing API Keys" because `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` /
-`SUPABASE_SERVICE_ROLE_KEY` are empty placeholders. Do section 1 above, set
-those three on the service, then redeploy with cleared cache.
+**Status: fully working (2026-09-08).** Supabase project `lkicwbmvigrhbprasote`
+("synqit", ap-northeast-2) is wired: seven tables, three storage buckets, the
+confirmed guest account, site URL and redirect list set. Verified on the live
+URL: guest auto sign-in, a phone-holder prompt built in 43 s with 13 sliders
+and an STL button, no console errors. An UptimeRobot ping keeps the free
+instance awake.
+
+The whole Supabase setup was done through the management API, not the
+dashboard — migrations via `POST /v1/projects/{ref}/database/query` (send a
+normal `User-Agent`, Cloudflare blocks `Python-urllib` with error 1010),
+buckets and the guest via `scripts/seed-remote.mjs`, auth config via
+`PATCH /v1/projects/{ref}/config/auth`.
 
 ## 1. Supabase (hosted, free tier is enough)
 
