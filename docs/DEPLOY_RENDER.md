@@ -5,6 +5,27 @@ auth and file storage, and Synqit production as the source of boards. About
 30 minutes the first time. Everything below that touches an account is a
 human step; the repo already contains the blueprint and the scripts.
 
+## Live service (created 2026-09-08)
+
+| | |
+|---|---|
+| URL | https://synqit-cad.onrender.com/cad |
+| service id | `srv-dafvb8fqj5pc738ggrf0` |
+| workspace | "My Workspace" (pandeyeklavya220@gmail.com), `tea-d9j1crjeo5us73amk2u0` |
+| plan / region | free / singapore (sleeps after 15 min idle; first load ~1 min) |
+| repo | `eklavya2201/the-hardware-ai`, branch `main`, root `app/`, auto-deploy on push |
+
+It was created through the Render API, not the dashboard blueprint, so
+`render.yaml` is now documentation rather than the source of truth. Env vars
+are set on the service; change them in the dashboard or via
+`PUT /v1/services/{id}/env-vars`. `VITE_*` values are baked in at build time,
+so changing one needs a redeploy.
+
+**Status: live but not usable until Supabase is wired.** The app shows
+"Missing API Keys" because `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` /
+`SUPABASE_SERVICE_ROLE_KEY` are empty placeholders. Do section 1 above, set
+those three on the service, then redeploy with cleared cache.
+
 ## 1. Supabase (hosted, free tier is enough)
 
 1. https://supabase.com → New project. Region: Mumbai (ap-south-1) if offered.
