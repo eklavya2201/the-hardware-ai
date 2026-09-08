@@ -1,4 +1,4 @@
-import { SYNQIT_API_BASE } from '@/components/auth/SynqitSignInButton';
+import { SYNQIT_API_BASE } from '@/lib/synqitApi';
 import { fetchSynqitProject, type SqProject } from './synqitData';
 import { setSynqitProject } from './synqitProject';
 

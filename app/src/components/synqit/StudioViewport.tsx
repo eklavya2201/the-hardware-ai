@@ -5,8 +5,22 @@ import { useSynqitProject } from '@/lib/synqitProject';
 import { fetchSynqitProject, useSynqitProjectData } from '@/lib/synqitData';
 import { PcbView } from './PcbView';
 import { SchematicView } from './SchematicView';
-import { synqitHandoffUrl } from '@/components/auth/SynqitSignInButton';
-import { SYNQIT_APP_URL } from '@/lib/synqitProject';
+import { INSERT_EVENT } from './LibraryDialog';
+import { requestSynqitSignIn } from './SynqitAuthDialog';
+
+/**
+ * Example briefs for the empty PCB and schematic space. Clicking one drops it
+ * into the composer rather than sending it, so the person can shape it first.
+ */
+const STARTERS = [
+  'Design a board: ESP32-C3, USB-C power, a 3.3 V regulator, a status LED and a user button.',
+  'Design a board: RP2040 with a microSD slot, an IMU and a JST battery input.',
+  'Design a board: ATtiny85 driving four WS2812 LEDs from a coin cell.',
+];
+
+function insertPrompt(text: string) {
+  window.dispatchEvent(new CustomEvent(INSERT_EVENT, { detail: text }));
+}
 
 /**
  * The studio's centre space. A floating 3D / PCB / Schematic switcher sits
@@ -51,17 +65,21 @@ export function StudioViewport({ children }: { children: ReactNode }) {
                 {mode === 'pcb' ? 'No board here yet' : 'No schematic here yet'}
               </p>
               <p className="mb-4">
-                This studio builds the 3D model. Schematics and PCBs are designed in Synqit — describe the
-                circuit there, then bring the finished board back with the <b>Board</b> button in the composer.
+                Describe the circuit in the chat and it is designed here — parts chosen from the library,
+                schematic wired, board placed and routed, then drawn in this space.
               </p>
-              <a
-                href={`${SYNQIT_APP_URL}/projects`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-block rounded-md bg-sq-blue/15 px-3 py-1.5 text-xs text-sq-blue hover:bg-sq-blue/25"
-              >
-                Design the board in Synqit
-              </a>
+              <div className="flex flex-col items-stretch gap-1.5">
+                {STARTERS.map((prompt) => (
+                  <button
+                    key={prompt}
+                    type="button"
+                    onClick={() => insertPrompt(prompt)}
+                    className="rounded-md border border-sq-neutral-600 px-3 py-1.5 text-left text-xs text-sq-text-secondary hover:border-sq-blue hover:text-sq-text-primary"
+                  >
+                    {prompt}
+                  </button>
+                ))}
+              </div>
             </Empty>
           ) : loading ? (
             <Empty>
@@ -71,10 +89,14 @@ export function StudioViewport({ children }: { children: ReactNode }) {
             <Empty>
               {error === 'not_signed_in' ? (
                 <>
-                  Sign in to Synqit to see this board.{' '}
-                  <a href={synqitHandoffUrl('/')} className="text-sq-blue hover:underline">
-                    Continue with Synqit
-                  </a>
+                  <p className="mb-3">Connect your Synqit account to design and see boards here.</p>
+                  <button
+                    type="button"
+                    onClick={requestSynqitSignIn}
+                    className="rounded-md bg-sq-blue/15 px-3 py-1.5 text-xs text-sq-blue hover:bg-sq-blue/25"
+                  >
+                    Connect Synqit
+                  </button>
                 </>
               ) : (
                 `Could not load the project (${error}).`
@@ -84,12 +106,30 @@ export function StudioViewport({ children }: { children: ReactNode }) {
             data?.board && data.board.components.length ? (
               <PcbView board={data.board} mechanical={data.mechanical} components={data.ir?.components ?? []} />
             ) : (
-              <Empty>This project has no placed board yet. Place parts in Synqit first.</Empty>
+              <Empty>
+                <p className="mb-3">This board has a schematic but no placed parts yet.</p>
+                <button
+                  type="button"
+                  onClick={() => insertPrompt('Place and route this board.')}
+                  className="rounded-md bg-sq-blue/15 px-3 py-1.5 text-xs text-sq-blue hover:bg-sq-blue/25"
+                >
+                  Place and route it
+                </button>
+              </Empty>
             )
           ) : data?.ir?.components?.length ? (
             <SchematicView components={data.ir.components} nets={data.ir.nets} />
           ) : (
-            <Empty>This project has no schematic yet.</Empty>
+            <Empty>
+              <p className="mb-3">This project has no schematic yet.</p>
+              <button
+                type="button"
+                onClick={() => insertPrompt('Design the schematic for this board.')}
+                className="rounded-md bg-sq-blue/15 px-3 py-1.5 text-xs text-sq-blue hover:bg-sq-blue/25"
+              >
+                Design the schematic
+              </button>
+            </Empty>
           )}
         </div>
       )}

@@ -60,6 +60,4 @@ export function useSynqitProject(): SynqitProjectRef {
   return useSyncExternalStore(subscribe, snapshot, () => null);
 }
 
-export const SYNQIT_APP_URL = (
-  (import.meta.env.VITE_SYNQIT_APP_URL as string | undefined) || 'http://localhost:5173'
-).replace(/\/$/, '');
+export { SYNQIT_APP_URL } from './synqitApi';

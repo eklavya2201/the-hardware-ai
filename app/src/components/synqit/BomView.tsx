@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Download, ExternalLink, Loader2 } from 'lucide-react';
-import { SYNQIT_API_BASE } from '@/components/auth/SynqitSignInButton';
+import { SYNQIT_API_BASE, SYNQIT_APP_URL } from '@/lib/synqitApi';
 import { useSynqitProjectData } from '@/lib/synqitData';
 
 /**
@@ -59,7 +59,7 @@ export function BomView({ projectId, projectName }: { projectId: string; project
             <Download className="h-4 w-4" />
           </a>
           <a
-            href={`${(import.meta.env.VITE_SYNQIT_APP_URL as string) || 'https://synqit.in'}/projects/${encodeURIComponent(projectId)}`}
+            href={`${SYNQIT_APP_URL}/projects/${encodeURIComponent(projectId)}`}
             target="_blank"
             rel="noreferrer"
             title="Open in Synqit for live prices and ordering"

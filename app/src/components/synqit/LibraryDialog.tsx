@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Loader2, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { SYNQIT_API_BASE } from '@/components/auth/SynqitSignInButton';
+import { SYNQIT_API_BASE } from '@/lib/synqitApi';
 import { cn } from '@/lib/utils';
 
 /**

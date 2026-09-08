@@ -1,4 +1,5 @@
 import { MessageBubble } from '@/components/chat/MessageBubble';
+import { requestSynqitSignIn } from '@/components/synqit/SynqitAuthDialog';
 import { SuggestionPills } from '@/components/chat/SuggestionPills';
 import { LimitReachedMessage } from '@/components/LimitReachedMessage';
 import TextAreaChat from '@/components/TextAreaChat';
@@ -355,11 +356,12 @@ export function ChatSession({
           });
         } catch (err) {
           const msg = err instanceof Error ? err.message : String(err);
+          if (msg === 'not_signed_in') requestSynqitSignIn();
           await settle({
             status: 'error',
             message:
               msg === 'not_signed_in'
-                ? 'The user is not signed in to Synqit, so the board could not be created. Tell them to sign in to Synqit (the Continue with Synqit link) and ask again.'
+                ? 'The studio has no Synqit account connected, so the board could not be created. A sign-in box has been opened for the user; tell them to connect their Synqit account there and ask again.'
                 : `Synqit could not design the board: ${msg}`,
           });
         }

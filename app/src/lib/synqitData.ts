@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { SYNQIT_API_BASE } from '@/components/auth/SynqitSignInButton';
+import { SYNQIT_API_BASE } from '@/lib/synqitApi';
 
 /**
  * Read-only view of a Synqit project for the studio's native PCB and

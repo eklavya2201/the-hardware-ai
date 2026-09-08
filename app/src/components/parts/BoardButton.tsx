@@ -7,7 +7,8 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { SYNQIT_API_BASE, synqitHandoffUrl } from '@/components/auth/SynqitSignInButton';
+import { SYNQIT_API_BASE } from '@/lib/synqitApi';
+import { synqitHandoffUrl } from '@/components/auth/SynqitSignInButton';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { setSynqitProject } from '@/lib/synqitProject';

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { CheckCircle2, Download, Loader2, RefreshCw, Wrench } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { SYNQIT_API_BASE } from '@/components/auth/SynqitSignInButton';
+import { SYNQIT_API_BASE } from '@/lib/synqitApi';
 
 /**
  * The assembly guide for the linked Synqit project, rendered natively in the

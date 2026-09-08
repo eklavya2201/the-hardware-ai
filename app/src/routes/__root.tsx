@@ -1,4 +1,5 @@
 import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router';
+import { SynqitAuthDialog } from '@/components/synqit/SynqitAuthDialog';
 import App from '@/App';
 import appCss from '@/index.css?url';
 
@@ -49,6 +50,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <SynqitAuthDialog />
         <Scripts />
       </body>
     </html>

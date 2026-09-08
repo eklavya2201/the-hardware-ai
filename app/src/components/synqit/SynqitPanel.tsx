@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { CircuitBoard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSynqitProject } from '@/lib/synqitProject';
-import { synqitHandoffUrl } from '@/components/auth/SynqitSignInButton';
+import { requestSynqitSignIn } from './SynqitAuthDialog';
 import { BomView } from './BomView';
 import { BuildGuideView } from './BuildGuideView';
 
@@ -62,14 +62,18 @@ function NoProject() {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center text-sm text-sq-text-secondary">
       <CircuitBoard className="h-8 w-8 opacity-60" />
-      <p>No Synqit project linked yet.</p>
+      <p>No board in this creation yet.</p>
       <p className="text-xs">
-        Use the <span className="text-sq-text-primary">Board</span> button in the composer to pick a project, or open the studio from a Synqit project. Signed out of Synqit?{' '}
-        <a href={synqitHandoffUrl('/')} className="text-sq-blue hover:underline">
-          Continue with Synqit
-        </a>
-        .
+        Ask for a circuit in the chat and the parts, BOM and build guide fill in here. Already have one in
+        Synqit? Pick it with the <span className="text-sq-text-primary">Board</span> button in the composer.
       </p>
+      <button
+        type="button"
+        onClick={requestSynqitSignIn}
+        className="text-xs text-sq-blue hover:underline"
+      >
+        Connect a Synqit account
+      </button>
     </div>
   );
 }
