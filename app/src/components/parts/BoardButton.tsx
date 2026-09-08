@@ -11,6 +11,8 @@ import { SYNQIT_API_BASE, synqitHandoffUrl } from '@/components/auth/SynqitSignI
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { setSynqitProject } from '@/lib/synqitProject';
+import { fetchSynqitProject } from '@/lib/synqitData';
+import { buildClientBrief } from '@/lib/synqitBrief';
 
 type SynqitProject = { id: string; name: string; updatedAt?: string };
 type Brief = { entities: unknown; openscad: string; prompt_block: string };
@@ -51,7 +53,19 @@ export function BoardButton({
     setBusy(id);
     setError(null);
     try {
-      const brief = await fetchJson<Brief>(`/projects/${encodeURIComponent(id)}/cad-brief`);
+      // Server brief first (curated part heights); if this Synqit backend
+      // does not have /cad-brief yet (production today), build it here from
+      // the project JSON with estimated heights.
+      let brief: Brief;
+      try {
+        brief = await fetchJson<Brief>(`/projects/${encodeURIComponent(id)}/cad-brief`);
+      } catch (e) {
+        if (e instanceof Error && e.message === 'not_signed_in') throw e;
+        const project = await fetchSynqitProject(id, true);
+        const local = buildClientBrief(project);
+        if (!local) throw new Error('404');
+        brief = local;
+      }
       const ents = brief.entities as { project?: { id?: string; name?: string } } | null;
       setSynqitProject({ id, name: ents?.project?.name });
       onInsert(`${brief.prompt_block}\n\n\`\`\`openscad\n${brief.openscad}\n\`\`\``);

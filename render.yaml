@@ -1,0 +1,60 @@
+# Render Blueprint for Synqit CAD (the studio in app/).
+# Dashboard -> New -> Blueprint -> this repo. Fill the sync:false secrets when asked.
+# The app serves under /cad; "/" redirects there.
+services:
+  - type: web
+    name: synqit-cad
+    runtime: node
+    plan: starter            # 512 MB; the OpenSCAD work runs in the browser, the server is light
+    rootDir: app
+    buildCommand: npm ci --ignore-scripts && npm run build
+    startCommand: node .output/server/index.mjs
+    healthCheckPath: /cad/
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_VERSION
+        value: 22.14.0
+      - key: ENVIRONMENT
+        value: local          # bypasses the upstream billing service; every user has 3M tokens
+      # --- Supabase (hosted project; create at supabase.com, Project Settings -> API) ---
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      # --- LLM ---
+      - key: AZURE_RESOURCE_NAME
+        value: aatreus
+      - key: AZURE_OPENAI_API_KEY
+        sync: false
+      - key: VITE_AZURE_DEPLOYMENTS
+        value: gpt-5.1,gpt-5-pro
+      - key: VITE_DEFAULT_MODEL
+        value: azure/gpt-5.1
+      # --- Synqit (production backend; CORS already allows *.onrender.com with credentials) ---
+      - key: SYNQIT_API_BASE
+        value: https://api.synqit.in/api
+      - key: VITE_SYNQIT_API_BASE
+        value: https://api.synqit.in/api
+      - key: VITE_SYNQIT_APP_URL
+        value: https://synqit.in
+      - key: SYNQIT_APP_URL
+        value: https://synqit.in
+      # --- URLs of this service (set after the first deploy shows the URL) ---
+      - key: WEBHOOK_BASE_URL
+        sync: false           # e.g. https://synqit-cad.onrender.com
+      # --- No-auth evaluation mode (shared guest). Remove both to require sign-in. ---
+      - key: VITE_GUEST_EMAIL
+        value: guest@synqit.in
+      - key: VITE_GUEST_PASSWORD
+        sync: false           # the password you gave scripts/seed-remote.mjs
+      # --- Optional ---
+      - key: VITE_GOOGLE_CLIENT_ID
+        sync: false           # Synqit's Google client id; add the Render origin in Google console first
+      - key: NEXAR_CLIENT_ID
+        sync: false
+      - key: NEXAR_CLIENT_SECRET
+        sync: false
+      - key: VITE_SENTRY_ENVIRONMENT
+        value: production

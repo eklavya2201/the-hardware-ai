@@ -103,6 +103,15 @@ npm run dev
 - `401` / `insufficient tokens`: `ENVIRONMENT="local"` is missing from `.env.local`.
 - Azure errors mentioning the deployment: the key is for resource `aatreus` with a deployment named `gpt-5.1`; another resource needs `--azure-resource <name>` and a deployment with the same name.
 
+## Deploy for testers (Render)
+
+`render.yaml` is a Render Blueprint for the studio (`app/`), talking to a hosted
+Supabase project and to Synqit production for boards. Step by step, including
+the two human-only parts (creating the Supabase project, filling secrets on
+Render): `docs/DEPLOY_RENDER.md`. Testers open `https://<service>.onrender.com/cad`,
+no login (guest mode), and see their own Synqit boards if they are signed in
+at synqit.in in the same browser.
+
 ## Let Claude do it
 
 Paste this into Claude Code (or any coding agent) from the repo root:
