@@ -1,0 +1,30 @@
+# The studio, added to the existing Synqit box.
+#
+# Merge it with the engine's own compose file rather than replacing it:
+#
+#   docker compose -f ~/synqit/deploy/aws/docker-compose.yml \
+#                  -f ~/the-hardware-ai/deploy/aws/docker-compose.studio.yml \
+#                  up -d studio
+#
+# The studio reaches the engine at http://api:8000/api over the compose
+# network -- no public hop, no TLS handshake, no CORS. That is the whole point
+# of the server-side proxy in routes/api/synqit/$.ts.
+services:
+  studio:
+    build:
+      context: ../../app
+      dockerfile: Dockerfile
+      args:
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+        VITE_SYNQIT_APP_URL: https://synqit.in
+    restart: unless-stopped
+    env_file:
+      - ./studio.env
+    environment:
+      - PORT=3000
+      - SYNQIT_API_BASE=http://api:8000/api
+    expose:
+      - "3000"
+    depends_on:
+      - api
