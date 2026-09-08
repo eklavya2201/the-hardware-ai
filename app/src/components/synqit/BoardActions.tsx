@@ -52,10 +52,12 @@ export function BoardActions() {
         <PopoverTrigger asChild>
           <Button
             variant="ghost"
-            className="flex h-8 items-center gap-2 rounded-full px-3 text-sq-text-primary hover:bg-sq-neutral-950 hover:text-sq-neutral-10 focus-visible:ring-0"
+            aria-label="Order the parts"
+            title="Order the parts"
+            className="flex h-8 items-center gap-2 rounded-full px-2.5 text-sq-text-primary hover:bg-sq-neutral-950 hover:text-sq-neutral-10 focus-visible:ring-0"
           >
             <ShoppingCart className="h-[14px] w-[14px] min-w-[14px]" />
-            <span>Order</span>
+            <span className="hidden lg:inline">Order</span>
           </Button>
         </PopoverTrigger>
         <PopoverContent align="end" className="w-80 rounded-xl bg-sq-background-1 p-3 text-sm">
@@ -101,10 +103,12 @@ export function BoardActions() {
         <PopoverTrigger asChild>
           <Button
             variant="ghost"
-            className="flex h-8 items-center gap-2 rounded-full px-3 text-sq-text-primary hover:bg-sq-neutral-950 hover:text-sq-neutral-10 focus-visible:ring-0"
+            aria-label="Manufacture this board"
+            title="Manufacture this board"
+            className="flex h-8 items-center gap-2 rounded-full px-2.5 text-sq-text-primary hover:bg-sq-neutral-950 hover:text-sq-neutral-10 focus-visible:ring-0"
           >
             <Factory className="h-[14px] w-[14px] min-w-[14px]" />
-            <span>Manufacture</span>
+            <span className="hidden lg:inline">Manufacture</span>
           </Button>
         </PopoverTrigger>
         <PopoverContent align="end" className="w-80 rounded-xl bg-sq-background-1 p-3 text-sm">

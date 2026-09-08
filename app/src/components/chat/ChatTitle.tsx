@@ -33,8 +33,11 @@ function BoardName() {
   const project = useSynqitProject();
   if (!project?.name) return null;
   return (
-    <span className="line-clamp-1 px-2 text-left text-[11px] text-sq-neutral-400">
-      Board · {project.name}
+    <span
+      className="truncate px-2 text-left text-[11px] text-sq-neutral-400"
+      title={project.name}
+    >
+      {project.name}
     </span>
   );
 }

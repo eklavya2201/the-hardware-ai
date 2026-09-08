@@ -374,7 +374,7 @@ export function ConversationView({
                 <ChevronsRight className="mb-3 h-5 w-5 text-white" />
                 <div className="flex flex-1 items-center justify-center">
                   <span className="min-w-[100px] rotate-90 transform text-center text-base font-semibold text-white">
-                    Parameters · BOM · Guide
+                    Tools
                   </span>
                 </div>
               </Button>

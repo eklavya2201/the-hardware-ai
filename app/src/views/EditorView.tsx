@@ -646,7 +646,7 @@ function ConversationEditor() {
               that sits in the left gutter when the chat panel is collapsed,
               so the title and share button don't get covered. */}
           <div className="flex w-full items-center justify-between bg-transparent p-3 md:pl-12">
-            <div className="flex min-w-0 flex-1 items-center space-x-2">
+            <div className="flex min-w-0 flex-1 items-center space-x-2 overflow-hidden">
               <div className="min-w-0 flex-1">
                 <ChatTitle
                   activeMeshId={
@@ -662,7 +662,7 @@ function ConversationEditor() {
                 />
               </div>
             </div>
-            <div className="hidden items-center gap-3 md:flex">
+            <div className="hidden shrink-0 items-center gap-1 md:flex">
               <BoardActions />
               <Popover>
                 <PopoverTrigger asChild>

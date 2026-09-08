@@ -202,3 +202,74 @@ class ProjectCommitRow(Base):
     __table_args__ = (
         Index("ix_commits_project_created", "project_id", "created_at"),
     )
+
+
+# --- The studio's own data (2026-09) ------------------------------------------
+# The studio used to keep its conversations, messages and uploads in a hosted
+# Supabase project — a second database, a second account system and a second
+# place for a board's history to live. These three tables replace it, so the
+# whole product runs on one box with one database.
+
+
+class StudioConversationRow(Base):
+    """One chat in the studio. `settings` carries suggestions and anything else
+    the UI keeps per conversation; `current_message_leaf_id` is the tip of the
+    branch being viewed, since messages form a tree rather than a list."""
+
+    __tablename__ = "studio_conversations"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    user_id: Mapped[str] = mapped_column(String(64), ForeignKey("users.id"), index=True)
+    title: Mapped[str] = mapped_column(String(300), default="New Conversation")
+    type: Mapped[str] = mapped_column(String(32), default="parametric")
+    privacy: Mapped[str] = mapped_column(String(16), default="private")
+    settings: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    current_message_leaf_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow, onupdate=_utcnow)
+
+    __table_args__ = (Index("ix_studio_conv_user_updated", "user_id", "updated_at"),)
+
+
+class StudioMessageRow(Base):
+    """One turn. `parts` is the AI SDK's message-parts array — text, tool calls,
+    tool output — stored whole, because that is how it is read back."""
+
+    __tablename__ = "studio_messages"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    conversation_id: Mapped[str] = mapped_column(
+        String(64), ForeignKey("studio_conversations.id", ondelete="CASCADE"), index=True
+    )
+    user_id: Mapped[str] = mapped_column(String(64), index=True)
+    role: Mapped[str] = mapped_column(String(32))
+    parts: Mapped[list[Any]] = mapped_column(JSON, default=list)
+    content: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column("metadata", JSON, default=dict)
+    parent_message_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    rating: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)
+
+    __table_args__ = (Index("ix_studio_msg_conv_created", "conversation_id", "created_at"),)
+
+
+class StudioFileRow(Base):
+    """An upload or a generated artifact — an attached image, a mesh, a preview
+    render. The bytes sit on the engine's data volume; this row is the index.
+
+    Not S3: the volume is EBS-backed and already the home of every project, and
+    a bucket would mean new credentials on the box for no durability gain at
+    this size. Worth revisiting when the total gets large — the only thing that
+    would change is `storage_path`."""
+
+    __tablename__ = "studio_files"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    user_id: Mapped[str] = mapped_column(String(64), index=True)
+    conversation_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    kind: Mapped[str] = mapped_column(String(32), default="image")  # image | mesh | preview
+    content_type: Mapped[str] = mapped_column(String(120), default="application/octet-stream")
+    size_bytes: Mapped[int] = mapped_column(Integer, default=0)
+    storage_path: Mapped[str] = mapped_column(String(500))
+    meta: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)
