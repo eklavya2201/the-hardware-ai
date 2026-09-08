@@ -23,7 +23,6 @@ import {
 import { cn } from '@/lib/utils';
 import { usePreview } from '@/hooks/usePreview';
 import { useImageData } from '@/hooks/useImageData';
-import { useMeshData } from '@/hooks/useMeshData';
 import { generatePreview, generateColoredPreview } from '@/utils/meshUtils';
 import { previewScadColoredViaToolWorker } from '@/worker/toolWorker';
 import type { ChatMessage } from '@/lib/aiMessages';
@@ -65,7 +64,6 @@ type MessageBubbleProps = {
   onSelectLeaf?: (messageId: string) => void;
   onEditUserText?: (message: ChatMessage, text: string) => void;
   onViewArtifact?: (artifact: ParametricArtifact) => void;
-  onViewMesh?: (meshId: string) => void;
   onChangeRating?: (rating: number) => void;
   onRetry?: (model: Model) => void;
   onRestore?: () => void;
@@ -425,7 +423,6 @@ function AssistantBubble({
   currentModel,
   onSelectLeaf,
   onViewArtifact,
-  onViewMesh,
   onChangeRating,
   onRetry,
   onRestore,
@@ -633,22 +630,6 @@ function AssistantBubble({
               >
                 <Streamdown parseIncompleteMarkdown>{answerMessage}</Streamdown>
               </div>
-            );
-          }
-
-          if (part.type === 'tool-create_mesh') {
-            const output =
-              part.state === 'output-available' ? part.output : undefined;
-            const meshId = output?.id;
-            return (
-              <MeshToolBlock
-                key={index}
-                state={part.state}
-                meshId={meshId}
-                expanded={expandedTools.has(index)}
-                onToggle={() => toggleTool(index)}
-                onViewMesh={onViewMesh}
-              />
             );
           }
 
@@ -997,80 +978,7 @@ function ToolBlock({
 // type-system-only. Still listed here so the prop type stays a
 // superset of `ToolUIPart['state']` and we don't lose type safety the
 // next time the SDK widens the union.
-type ToolPartState =
-  | 'input-streaming'
-  | 'input-available'
-  | 'approval-requested'
-  | 'approval-responded'
-  | 'output-available'
-  | 'output-error'
-  | 'output-denied';
 
-function MeshToolBlock({
-  state,
-  meshId,
-  expanded,
-  onToggle,
-  onViewMesh,
-}: {
-  state: ToolPartState;
-  meshId: string | undefined;
-  expanded: boolean;
-  onToggle: () => void;
-  onViewMesh?: (meshId: string) => void;
-}) {
-  const {
-    data: { data: meshData },
-    blob: { data: meshBlob },
-  } = useMeshData({ id: meshId ?? '' });
-
-  const meshStatus = meshData?.status;
-  const isAwaitingMesh =
-    state === 'output-available' &&
-    !!meshId &&
-    meshStatus !== 'success' &&
-    meshStatus !== 'failure';
-  const showPreview =
-    state === 'output-available' &&
-    !!meshId &&
-    ((meshStatus === 'success' && !!meshBlob) || meshStatus === 'failure');
-
-  const isError = state === 'output-error' || state === 'output-denied';
-  const isPending =
-    state === 'input-streaming' ||
-    state === 'input-available' ||
-    state === 'approval-requested' ||
-    state === 'approval-responded';
-
-  const title =
-    isError || meshStatus === 'failure'
-      ? 'Mesh generation failed'
-      : meshStatus === 'success'
-        ? '3D Object'
-        : 'Generating mesh...';
-
-  return (
-    <ToolBlock
-      icon={<Box className="h-4 w-4" />}
-      title={title}
-      loading={isPending || isAwaitingMesh}
-      expanded={expanded}
-      onToggle={onToggle}
-      onPrimary={meshId ? () => onViewMesh?.(meshId) : undefined}
-      previewBody={
-        showPreview && meshId ? (
-          <button
-            type="button"
-            className="block w-full p-2"
-            onClick={() => onViewMesh?.(meshId)}
-          >
-            <MeshImagePreview meshId={meshId} />
-          </button>
-        ) : null
-      }
-    />
-  );
-}
 
 function ParametricImagePreview({
   toolCallId,

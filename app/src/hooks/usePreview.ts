@@ -1,5 +1,5 @@
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/lib/supabase';
+import { uploadFile } from '@/lib/studioData';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 interface UsePreviewOptions {
@@ -29,27 +29,20 @@ export function usePreview({
     queryKey: ['preview', conversationId, id],
     queryFn: async () => {
       if (!userId || !id) throw new Error('usePreview: missing userId or id');
-      const storagePath = `${userId}/${conversationId}/preview-${id}`;
 
-      const { data: existing } = await supabase.storage
-        .from('images')
-        .download(storagePath);
-
-      if (existing) return blobToDataUrl(existing);
-
+      // Rendered here, then stored so the server can attach it to a later
+      // turn. A failed upload is not worth failing the preview over: the
+      // person still sees the thumbnail.
       const blob = await generateBlob();
-
-      const { error: uploadError } = await supabase.storage
-        .from('images')
-        .upload(storagePath, blob, {
-          contentType: 'image/png',
-          upsert: true,
+      try {
+        await uploadFile(blob, {
+          kind: 'preview',
+          conversationId,
+          filename: `preview-${id}.png`,
         });
-
-      if (uploadError) {
-        console.warn('[usePreview] upload failed, continuing:', uploadError);
+      } catch (error) {
+        console.warn('[usePreview] upload failed, continuing:', error);
       }
-
       return blobToDataUrl(blob);
     },
     enabled: enabled && !!userId && !!id,

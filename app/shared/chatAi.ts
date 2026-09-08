@@ -2,20 +2,6 @@ import { tool, type InferUITools, type UIMessage } from 'ai';
 import { z } from 'zod';
 import type { MeshFileType, Model } from './types.ts';
 
-export const createMeshInputSchema = z.object({
-  text: z.string().optional(),
-  imageIds: z.array(z.string()).optional(),
-  meshId: z.string().optional(),
-  model: z.enum(['fast', 'quality', 'ultra']).optional(),
-  meshTopology: z.enum(['quads', 'polys']).optional(),
-  polygonCount: z.number().optional(),
-});
-
-export const createMeshOutputSchema = z.object({
-  id: z.string(),
-  fileType: z.enum(['glb', 'stl', 'obj', 'fbx']),
-});
-
 export const parametricArtifactSchema = z.object({
   title: z.string().min(1),
   version: z.string().default('v1'),
@@ -67,7 +53,17 @@ export const designBoardOutputSchema = z.object({
   boardSize: z.string().optional(),
 });
 
+export const layoutBoardInputSchema = z.object({
+  reason: z.string().optional(),
+});
+
 export const chatTools = {
+  layout_board: tool({
+    description:
+      "Place and route the board already linked to this conversation: arrange the parts on the PCB and route the copper. Use this when the user asks to place, route, lay out, or finish an existing board -- NOT design_board, which starts a new one from a brief. Returns counts; the PCB view fills in automatically.",
+    inputSchema: layoutBoardInputSchema,
+    outputSchema: designBoardOutputSchema,
+  }),
   design_board: tool({
     description:
       "Design the electronics in Synqit: create a project, run the schematic agent on the brief, then place and route the PCB. Use this whenever the user asks for a circuit, schematic, PCB, wiring, or names electronic parts (MCU, sensor, display, battery). Returns counts, not prose; the PCB and Schematic views fill in automatically.",
@@ -85,12 +81,6 @@ export const chatTools = {
       'Send the final user-facing chat message. Use this for normal non-CAD replies, and after a CAD build when the multi-view preview satisfies the user request.',
     inputSchema: answerUserSchema,
     outputSchema: answerUserSchema,
-  }),
-  create_mesh: tool({
-    description:
-      'Create a 3D mesh from text, images, or an existing mesh plus edit instructions.',
-    inputSchema: createMeshInputSchema,
-    outputSchema: createMeshOutputSchema,
   }),
 };
 

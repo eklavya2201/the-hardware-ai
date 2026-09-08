@@ -8,7 +8,7 @@ import type { ParametricArtifact } from './types.ts';
 /**
  * Narrow an unknown DB jsonb value into the AI SDK's UI part array.
  *
- * Every callsite (`messages.parts` from supabase, draft message rows held
+ * Every callsite (`messages.parts` from the engine, draft message rows held
  * in cache, etc.) crosses an untrusted boundary, so a bare
  * `parts as AppUIMessage['parts']` would let a malformed row or an
  * upstream SDK shape change crash the renderer before any part-specific

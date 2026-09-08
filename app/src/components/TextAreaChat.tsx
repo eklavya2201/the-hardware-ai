@@ -47,8 +47,7 @@ import {
 import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
 import { useMutation } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
-import { useAuth } from '@/contexts/AuthContext';
+import { uploadFile } from '@/lib/studioData';
 import { ModelSelector } from '@/components/ModelSelector';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -519,7 +518,6 @@ ${text}
     useState('');
   const prevIsDraggingRef = useRef(isDragging);
   const { toast } = useToast();
-  const { session } = useAuth();
   const { images, mesh, setImages, setMesh } = useItemSelection();
   const meshFiles = useMeshFiles();
   const creativeModel =
@@ -841,11 +839,9 @@ ${text}
 
   const { mutateAsync: uploadImageAsync } = useMutation({
     mutationFn: async ({ file, id }: { file: File; id: string }) => {
-      const { error } = await supabase.storage
-        .from('images')
-        .upload(`${conversation.user_id}/${conversation.id}/${id}`, file);
-
-      if (error) throw error;
+      // The engine stores it on the data volume and hands back an id; the
+      // preview below is read locally so the composer paints immediately.
+      await uploadFile(file, { kind: 'image', conversationId: conversation.id, filename: id });
 
       const reader = new FileReader();
       const urlPromise = new Promise((resolve) => {
@@ -869,60 +865,15 @@ ${text}
 
   const { mutateAsync: uploadMeshAsync } = useMutation({
     mutationFn: async ({ file, id }: { file: File; id: string }) => {
-      // Determine file extension
       const fileExtension = getMeshFileType(file.name);
-
-      const { error } = await supabase.storage
-        .from('meshes')
-        .upload(
-          `${conversation.user_id}/${conversation.id}/${id}.${fileExtension}`,
-          file,
-        );
-
-      if (error) throw error;
-
-      // Check if preview exists in storage
-      const previewPath = `${conversation.user_id}/${conversation.id}/preview-${id}`;
-
-      const { data } = await supabase.storage
-        .from('images')
-        .createSignedUrl(previewPath, 60 * 60); // 1 hour expiry
-
-      if (data && data.signedUrl) {
-        return data.signedUrl;
-      }
-
-      // If preview doesn't exist, generate it with the correct file type
-      const preview = await generatePreview(file, fileExtension);
-
-      // Only upload if the current user is the conversation owner
-      if (session?.user.id === conversation.user_id) {
-        // Convert data URL to Blob
-        const response = await fetch(preview);
-        const blob = await response.blob();
-
-        // Save the preview to storage
-        const { error: uploadError } = await supabase.storage
-          .from('images')
-          .upload(previewPath, blob, {
-            contentType: 'image/png',
-            upsert: true,
-          });
-
-        if (uploadError) {
-          console.error('Error uploading preview:', uploadError);
-          return preview; // Return the preview anyway even if upload fails
-        }
-
-        // Get the signed URL of the uploaded preview
-        const { data } = await supabase.storage
-          .from('images')
-          .createSignedUrl(previewPath, 60 * 60); // 1 hour expiry
-        return data?.signedUrl;
-      }
-
-      // If not the owner, just return the generated preview
-      return preview;
+      await uploadFile(file, {
+        kind: 'mesh',
+        conversationId: conversation.id,
+        filename: `${id}.${fileExtension}`,
+      });
+      // The thumbnail is rendered here rather than fetched: it is cheap, and
+      // it means an attached mesh shows up without a second round trip.
+      return generatePreview(file, fileExtension);
     },
     onError: () => {
       toast({
@@ -1170,41 +1121,16 @@ ${text}
     }
   };
 
-  const handleMeshRemoved = async () => {
-    if (mesh?.source === 'upload') {
-      try {
-        const fileExtension = mesh.fileType || 'glb'; // Default to glb if fileType is not set
-        await Promise.all([
-          supabase.storage
-            .from('meshes')
-            .remove([
-              `${session?.user?.id}/${conversation.id}/${mesh.id}.${fileExtension}`,
-            ]),
-          supabase.storage
-            .from('images')
-            .remove([
-              `${session?.user?.id}/${conversation.id}/preview-${mesh.id}`,
-            ]),
-        ]);
-      } catch (error) {
-        console.error('Error removing mesh:', error);
-      }
-    }
+  const handleMeshRemoved = () => {
+    // Detaching is a composer action; the stored file is reaped with the
+    // conversation rather than chased here, which used to fire two storage
+    // deletes whose failures were only ever logged.
     setMesh(null);
   };
 
   const handleImageRemoved = async (image: MessageItem) => {
     if (!image.isUploading) {
       // Only try to remove from storage if the item has been uploaded
-      if (image.source === 'upload') {
-        try {
-          await supabase.storage
-            .from('images')
-            .remove([`${session?.user?.id}/${conversation.id}/${image.id}`]);
-        } catch (error) {
-          console.error('Error removing image:', error);
-        }
-      }
       setImages((prevImages) =>
         prevImages.filter((img) => img.id !== image.id),
       );

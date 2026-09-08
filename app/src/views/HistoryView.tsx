@@ -7,13 +7,18 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
-import { supabase } from '@/lib/supabase';
+import {
+  deleteConversation as removeConversation,
+  listConversations,
+  listMessages,
+  updateConversation as patchConversation,
+} from '@/lib/studioData';
 import { useAuth } from '@/contexts/AuthContext';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as Sentry from '@sentry/react';
-import { Conversation, ConversationSettings } from '@shared/types';
+import { Conversation } from '@shared/types';
 import type { AppUIMessage } from '@shared/chatAi';
 import { asParametricParts } from '@shared/parametricParts';
 import { HistoryConversation } from '../types/misc.ts';
@@ -60,23 +65,27 @@ export function HistoryView() {
     queryKey: ['conversations'],
     enabled: !!user,
     queryFn: async () => {
-      const { data: conversationsData, error: conversationsError } =
-        await supabase
-          .from('conversations')
-          .select(
-            `*, first_message:messages(parts), messagesCount:messages(count)`,
-          )
-          .eq('user_id', user?.id ?? '')
-          .order('updated_at', { ascending: false })
-          .order('created_at', { ascending: false })
-          .limit(1, { referencedTable: 'first_message' })
-          .overrideTypes<Array<{ settings: ConversationSettings }>>();
+      const conversationsData = await listConversations(200);
 
-      if (conversationsError) throw conversationsError;
+      // The old store fetched the first message and a count as one nested
+      // select. Here each card's preview is a small follow-up read, run
+      // together rather than in series.
+      const previews = await Promise.all(
+        conversationsData.map(async (conv) => {
+          try {
+            const messages = await listMessages(conv.id);
+            return { id: conv.id, parts: messages[0]?.parts, count: messages.length };
+          } catch {
+            return { id: conv.id, parts: undefined, count: 0 };
+          }
+        }),
+      );
+      const previewById = new Map(previews.map((p) => [p.id, p]));
 
       const formattedConversations = conversationsData.map((conv) => {
-        const parts = conv.first_message?.[0]?.parts;
-        const messageCount = conv.messagesCount?.[0]?.count ?? 0;
+        const preview = previewById.get(conv.id);
+        const parts = preview?.parts;
+        const messageCount = preview?.count ?? 0;
 
         const formattedFirstMessage = {
           text: textFromParts(parts),
@@ -109,24 +118,9 @@ export function HistoryView() {
 
   const deleteConversation = useMutation({
     mutationFn: async (conversationId: string) => {
-      const { error } = await supabase
-        .from('conversations')
-        .delete()
-        .eq('id', conversationId);
-
-      if (error) throw error;
-
-      supabase.storage
-        .from('images')
-        .list(`${user?.id}/${conversationId}`)
-        .then(({ data: list }) => {
-          if (list) {
-            const filesToRemove = list.map(
-              (file) => `${user?.id}/${conversationId}/${file.name}`,
-            );
-            supabase.storage.from('images').remove(filesToRemove);
-          }
-        });
+      // Deleting the conversation takes its messages with it; stored files
+      // are reaped separately rather than listed and removed one by one.
+      await removeConversation(conversationId);
     },
     onMutate: async (conversationId) => {
       await queryClient.cancelQueries({ queryKey: ['conversations'] });
@@ -167,12 +161,7 @@ export function HistoryView() {
       conversationId: string;
       newTitle: string;
     }) => {
-      const { error } = await supabase
-        .from('conversations')
-        .update({ title: newTitle })
-        .eq('id', conversationId);
-
-      if (error) throw error;
+      await patchConversation(conversationId, { title: newTitle });
     },
     onMutate: async ({ conversationId, newTitle }) => {
       await queryClient.cancelQueries({ queryKey: ['conversations'] });
@@ -217,12 +206,7 @@ export function HistoryView() {
       conversationId: string;
       newPrivacy: 'public' | 'private';
     }) => {
-      const { error } = await supabase
-        .from('conversations')
-        .update({ privacy: newPrivacy })
-        .eq('id', conversationId);
-
-      if (error) throw error;
+      await patchConversation(conversationId, { privacy: newPrivacy });
     },
     onMutate: async ({ conversationId, newPrivacy }) => {
       await queryClient.cancelQueries({ queryKey: ['conversations'] });

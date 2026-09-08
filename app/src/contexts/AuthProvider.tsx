@@ -1,49 +1,32 @@
-import { useEffect, useRef, useState } from 'react';
-import { Session, User } from '@supabase/supabase-js';
-import { supabase, ssoClaims } from '@/lib/supabase';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import posthog from 'posthog-js';
-import { AuthContext, type BillingStatus, getLevel } from './AuthContext';
-import { apiJson } from '@/services/api';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
+import posthog from 'posthog-js';
+import {
+  AuthContext,
+  getLevel,
+  type BillingStatus,
+  type StudioUser,
+} from '@/contexts/AuthContext';
+import { apiJson } from '@/services/api';
+import { getProfile, StudioAuthError } from '@/lib/studioData';
 
-// Build an absolute, same-frontend redirect URL for Supabase auth emails / OAuth.
-// Uses the current origin + Vite base path so links return to whichever frontend
-// initiated them (synqit.in/cad, synqit.in, Vercel previews) rather than
-// falling back to the project's Site URL (which points at the workspace app).
-function getAppRedirectUrl(path: string) {
-  const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
-
-  return `${window.location.origin}${basePath}${path}`;
-}
-
-const LOCAL_BILLING_STATUS: BillingStatus = {
-  user: { hasTrialed: false },
-  subscription: {
-    level: 'pro',
-    status: 'active',
-    currentPeriodEnd: new Date(
-      Date.now() + 365 * 24 * 60 * 60 * 1000,
-    ).toISOString(),
-  },
-  tokens: {
-    free: 1_000_000,
-    subscription: 1_000_000,
-    purchased: 1_000_000,
-    total: 3_000_000,
-  },
-};
-
+/**
+ * Who is signed in, from the engine.
+ *
+ * There is one account system: the engine's. The browser holds an httpOnly
+ * session cookie it cannot read, so "am I signed in" is a question for the
+ * server — `getProfile()` — rather than something decoded from a token here.
+ * That is also why there is no session object on the context any more: nothing
+ * in the app needs a bearer token, because every call to our own server is
+ * same-origin and carries the cookie.
+ */
 const billingStatusSchema = z.object({
   user: z.object({ hasTrialed: z.boolean() }),
   subscription: z
     .object({
-      level: z.union([
-        z.literal('standard'),
-        z.literal('pro'),
-        z.literal('max'),
-      ]),
+      level: z.enum(['standard', 'pro', 'max']),
       status: z.string().nullable(),
       currentPeriodEnd: z.string().nullable(),
     })
@@ -56,75 +39,47 @@ const billingStatusSchema = z.object({
   }),
 });
 
-const ensurePermission = async () => {
-  if (typeof window === 'undefined' || !('Notification' in window)) {
-    return false;
-  }
-  if (Notification.permission === 'granted') return true;
-  if (Notification.permission === 'denied') return false;
-  const perm = await Notification.requestPermission();
-  return perm === 'granted';
+/** What a self-hosted deployment without the billing service should report. */
+const LOCAL_BILLING_STATUS: BillingStatus = {
+  user: { hasTrialed: false },
+  subscription: null,
+  tokens: { free: 1_000_000, subscription: 0, purchased: 0, total: 1_000_000 },
 };
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [session, setSession] = useState<Session | null>(
-    typeof window === 'undefined'
-      ? null
-      : JSON.parse(localStorage.getItem('session') ?? 'null'),
-  );
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
-  const posthogSent = useRef(false);
-  const queryClient = useQueryClient();
+const SESSION_URL = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/api/synqit-session`;
+const LOGIN_URL = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/api/synqit-login`;
 
-  // Initialize auth state and set up session listener
-  useEffect(() => {
-    const initializeAuth = async () => {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [user, setUser] = useState<StudioUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const loadUser = useMemo(
+    () => async () => {
       try {
-        let {
-          data: { session },
-        } = await supabase.auth.refreshSession();
-        // "No auth" mode: with VITE_GUEST_EMAIL / VITE_GUEST_PASSWORD set,
-        // a visitor with no session is signed in as the shared guest account
-        // automatically, so the app opens with no login screen. Leave both
-        // unset to restore the normal sign-in flow.
-        const guestEmail = import.meta.env.VITE_GUEST_EMAIL as string | undefined;
-        const guestPassword = import.meta.env.VITE_GUEST_PASSWORD as string | undefined;
-        if (!session && guestEmail && guestPassword) {
-          const guest = await supabase.auth.signInWithPassword({
-            email: guestEmail,
-            password: guestPassword,
-          });
-          if (!guest.error) session = guest.data.session;
+        const profile = await getProfile();
+        setUser(profile);
+      } catch (error) {
+        if (!(error instanceof StudioAuthError)) {
+          console.warn('Could not read the profile:', error);
         }
-        setSession(session);
-        localStorage.setItem('session', JSON.stringify(session));
-        setUser(session?.user ?? null);
+        setUser(null);
       } finally {
         setIsLoading(false);
       }
-    };
+    },
+    [],
+  );
 
-    initializeAuth();
+  useEffect(() => {
+    void loadUser();
+  }, [loadUser]);
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
-      localStorage.setItem('session', JSON.stringify(session));
-      setUser(session?.user ?? null);
-      if (event === 'PASSWORD_RECOVERY') {
-        navigate({ to: '/update-password' });
-      }
-    });
+  useEffect(() => {
+    if (user) posthog.identify(user.id, { email: user.email });
+  }, [user]);
 
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  // Poll synqit-billing for subscription state + token balances. 30s cadence
-  // matches the prior user_extradata poll — synqit-billing is the source of
-  // truth; no local realtime channel anymore.
   const { data: billing, isLoading: isBillingLoading } = useQuery({
     queryKey: ['billing', 'status'],
     enabled: !!user,
@@ -132,187 +87,61 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     queryFn: async (): Promise<BillingStatus> => {
       try {
         return await apiJson('billing-status', {}, billingStatusSchema);
-      } catch (err) {
-        if (import.meta.env.DEV) return LOCAL_BILLING_STATUS;
-        throw err;
+      } catch {
+        // No billing service on a self-hosted deployment is not an error.
+        return LOCAL_BILLING_STATUS;
       }
     },
   });
 
-  // Fetch user's profile data directly (avoiding circular dependency)
-  const { data: profile, isLoading: isProfileLoading } = useQuery({
-    queryKey: ['profile', user?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', user?.id || '')
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user?.id,
-  });
-
-  // Initialize notifications preference once on first render after profile loads
   useEffect(() => {
-    if (profile?.notifications_enabled) void ensurePermission();
-  }, [profile?.notifications_enabled]);
-
-  // Set up real-time subscription for meshes table to update meshData immediately and notify the user
-  useEffect(() => {
-    if (!user) {
-      return;
-    }
-
-    // Supabase realtime
-    const channel = supabase
-      .channel(`mesh-updates-${user.id}`)
-      .on(
-        'broadcast',
-        {
-          event: 'mesh-updated',
-        },
-        async ({ payload }) => {
-          if (payload.kind === 'mesh') {
-            queryClient.invalidateQueries({
-              queryKey: ['meshData', payload.id],
-            });
-            queryClient.invalidateQueries({ queryKey: ['mesh', payload.id] });
-            queryClient.invalidateQueries({ queryKey: ['billing', 'status'] });
-
-            if (
-              payload.status === 'success' &&
-              profile?.notifications_enabled &&
-              !window.location.pathname.includes(
-                `/editor/${payload.conversation_id}`,
-              )
-            ) {
-              if (await ensurePermission()) {
-                const notification = new Notification('3D model is ready', {
-                  body: 'Your generated 3D model has finished. Click to open.',
-                  icon: `${import.meta.env.BASE_URL}synqit-logo.png`,
-                });
-                notification.onclick = () => {
-                  window.focus();
-                  navigate({
-                    to: '/editor/$id',
-                    params: { id: payload.conversation_id },
-                  });
-                  notification.close();
-                };
-              }
-            }
-          }
-
-          if (payload.kind === 'preview') {
-            queryClient.invalidateQueries({
-              queryKey: ['preview', payload.id],
-            });
-          }
-        },
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user, queryClient, navigate, profile?.notifications_enabled]);
-
-  // Track user in PostHog once we have all their data
-  useEffect(() => {
-    if (
-      user &&
-      !posthogSent.current &&
-      !isBillingLoading &&
-      !isProfileLoading
-    ) {
-      posthog.identify(user.id, {
-        email: user.email,
-        full_name: ssoClaims(user)?.name || profile?.full_name,
-        subscription: getLevel(billing),
-        has_trialed: billing?.user.hasTrialed ?? false,
-      });
-      posthogSent.current = true;
-    }
-  }, [user, isBillingLoading, billing, profile, isProfileLoading]);
+    if (!user || isBillingLoading) return;
+    posthog.setPersonProperties({
+      email: user.email,
+      subscription: getLevel(billing),
+      has_trialed: billing?.user.hasTrialed ?? false,
+      name: user.full_name ?? '',
+    });
+  }, [user, isBillingLoading, billing]);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) throw error;
+    await postCredentials({ email, password });
+    await loadUser();
   };
 
   const signUp = async (email: string, password: string, name: string) => {
-    const { error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { full_name: name },
-        emailRedirectTo: getAppRedirectUrl('/'),
-      },
-    });
-    if (signUpError) throw signUpError;
+    await postCredentials({ email, password, name, signup: true });
+    await loadUser();
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-  };
-
-  const signInWithMagicLink = async (email: string) => {
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        shouldCreateUser: true,
-        emailRedirectTo: getAppRedirectUrl('/'),
-      },
-    });
-    if (error) throw error;
-  };
-
-  const verifyOtp = async (email: string, token: string) => {
-    const { error } = await supabase.auth.verifyOtp({
-      email,
-      token,
-      type: 'email',
-    });
-    if (error) throw error;
-  };
-
-  const resetPassword = async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: getAppRedirectUrl('/update-password'),
-    });
-    if (error) throw error;
-  };
-
-  const updatePassword = async (password: string) => {
-    const { error } = await supabase.auth.updateUser({ password });
-    if (error) throw error;
+    await fetch(SESSION_URL, { method: 'DELETE', credentials: 'include' });
+    setUser(null);
+    queryClient.clear();
+    await navigate({ to: '/' });
   };
 
   return (
     <AuthContext.Provider
-      value={{
-        session,
-        user,
-        billing: billing ?? null,
-        isLoading:
-          isLoading || (!!user && (isBillingLoading || isProfileLoading)),
-        signIn,
-        signUp,
-        signInWithMagicLink,
-        verifyOtp,
-        signOut,
-        resetPassword,
-        updatePassword,
-      }}
+      value={{ user, billing: billing ?? null, isLoading, signIn, signUp, signOut }}
     >
       {children}
     </AuthContext.Provider>
   );
+}
+
+async function postCredentials(body: {
+  email: string;
+  password: string;
+  name?: string;
+  signup?: boolean;
+}) {
+  const res = await fetch(LOGIN_URL, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const data = (await res.json().catch(() => ({}))) as { error?: string };
+  if (!res.ok) throw new Error(data.error || 'Could not sign in.');
 }

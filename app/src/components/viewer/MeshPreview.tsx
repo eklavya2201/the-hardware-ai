@@ -15,7 +15,6 @@ import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import { Button } from '@/components/ui/button';
 
 import { GlbPreview } from './GlbPreview';
-import { useGlbPreview } from '@/hooks/useGlbPreview';
 import { LightingControls } from './LightingControls';
 
 import posthog from 'posthog-js';
@@ -922,12 +921,17 @@ export function MeshPreview({ meshId }: { meshId: string }) {
   );
 }
 
+/**
+ * A mesh with nothing to show yet. There is no longer a half-generated preview
+ * to fetch — an attached mesh either loads or it does not — so this is just the
+ * empty frame.
+ */
 function MeshPreviewPending({ meshId }: { meshId: string }) {
-  const { data: previewBlob } = useGlbPreview({ id: meshId });
+  void meshId;
   return (
     <div className="flex h-full w-full items-center justify-center bg-[#3B3B3B]">
       <div className="h-full w-full">
-        <GlbPreview glbBlob={previewBlob ?? undefined} />
+        <GlbPreview glbBlob={undefined} />
       </div>
     </div>
   );

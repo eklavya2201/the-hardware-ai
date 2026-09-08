@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { Pencil } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
+import { updateConversation } from '@/lib/studioData';
 
 /**
  * One row of the sidebar's Creations list, renamable in place.
@@ -39,11 +39,7 @@ export function RenamableCreation({
 
   const rename = useMutation({
     mutationFn: async (newTitle: string) => {
-      const { error } = await supabase
-        .from('conversations')
-        .update({ title: newTitle })
-        .eq('id', id);
-      if (error) throw error;
+      await updateConversation(id, { title: newTitle });
     },
     // Both lists read the same rows: the sidebar's recent ten and the history
     // page's full set.

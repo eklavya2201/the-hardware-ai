@@ -1,5 +1,10 @@
 import { useConversation } from '@/contexts/ConversationContext';
-import { supabase } from '@/lib/supabase';
+import {
+  listMessages,
+  MessageNotFoundError,
+  patchMessage,
+  putMessage,
+} from '@/lib/studioData';
 import type { AppUIMessage } from '@shared/chatAi';
 import type { Conversation, Message } from '@shared/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -28,15 +33,15 @@ export async function persistUserMessage({
   parentMessageId: string | null;
 }): Promise<string> {
   const id = crypto.randomUUID();
-  const { error } = await supabase.from('messages').insert({
+  // The engine advances the conversation leaf to this row, which is what the
+  // chat handler walks back from to build the branch.
+  await putMessage(conversationId, {
     id,
-    conversation_id: conversationId,
     role: 'user',
     parts: JSON.parse(JSON.stringify(parts)),
     metadata: JSON.parse(JSON.stringify(metadata ?? {})),
     parent_message_id: parentMessageId,
   });
-  if (error) throw error;
   return id;
 }
 
@@ -90,14 +95,12 @@ export async function persistAssistantParts({
   const MAX_ATTEMPTS = 6;
   const RETRY_DELAY_MS = 350;
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    const { data, error } = await supabase
-      .from('messages')
-      .update(payload)
-      .eq('id', messageId)
-      .eq('conversation_id', conversationId)
-      .select('id');
-    if (error) throw error;
-    if (data && data.length > 0) return;
+    try {
+      await patchMessage(conversationId, messageId, payload);
+      return;
+    } catch (error) {
+      if (!(error instanceof MessageNotFoundError)) throw error;
+    }
     if (attempt < MAX_ATTEMPTS) {
       await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
     }
@@ -116,15 +119,7 @@ export const useMessagesQuery = () => {
     queryKey: ['messages', conversation.id],
     initialData: [],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('messages')
-        .select('*')
-        .eq('conversation_id', conversation.id)
-        .order('created_at', { ascending: true })
-        .overrideTypes<Message[]>();
-
-      if (error) throw error;
-      return data ?? [];
+      return (await listMessages(conversation.id)) as unknown as Message[];
     },
   });
 };
@@ -154,11 +149,7 @@ export function useChangeRatingMutation({
         (oldMessages) =>
           oldMessages?.map((m) => (m.id === messageId ? { ...m, rating } : m)),
       );
-      const { error } = await supabase
-        .from('messages')
-        .update({ rating })
-        .eq('id', messageId);
-      if (error) throw error;
+      await patchMessage(conversationId, messageId, { rating });
     },
   });
 }
@@ -195,16 +186,17 @@ export function useRestoreMessageMutation({
       >;
     }) => {
       const newId = crypto.randomUUID();
-      const { error } = await supabase.from('messages').insert({
+      // The leaf is set explicitly below, after the copy exists, so the engine
+      // must not advance it here.
+      await putMessage(conversation.id, {
         id: newId,
-        conversation_id: conversation.id,
         role: message.role,
         parts: JSON.parse(JSON.stringify(message.parts)),
         metadata: JSON.parse(JSON.stringify(message.metadata ?? {})),
         parent_message_id: message.parent_message_id,
         rating: 0,
+        advance_leaf: false,
       });
-      if (error) throw error;
 
       if (updateConversationAsync) {
         await updateConversationAsync({

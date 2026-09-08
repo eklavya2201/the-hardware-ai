@@ -22,7 +22,7 @@ export function ImageViewer({
   const { conversation } = useConversation();
 
   const {
-    data: { data: imageData, isLoading: isImageDataLoading },
+    data: { isLoading: isImageDataLoading },
     url: { data: imageUrl, isLoading: isImageLoading },
   } = useImageData(image);
 
@@ -50,21 +50,9 @@ export function ImageViewer({
     [images, image],
   );
 
-  if (imageData?.status === 'failure') {
-    return (
-      <div
-        className={cn(
-          'flex aspect-square h-full w-full flex-col items-center justify-center gap-2 rounded-lg text-sq-text-primary',
-          className,
-        )}
-      >
-        <Frown className="h-10 w-10" />
-        <span>Image generation failed</span>
-      </div>
-    );
-  }
-
-  if (isImageDataLoading || isImageLoading || imageData?.status === 'pending') {
+  // No generation states any more: an attached image is either loading from
+  // the engine or it is there.
+  if (isImageDataLoading || isImageLoading) {
     return (
       <div
         className={cn(

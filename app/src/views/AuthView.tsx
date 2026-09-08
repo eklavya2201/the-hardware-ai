@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { Loader2 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
 import BlueprintBackground from '@/components/marketing/BlueprintBackground';
+import { useAuth } from '@/contexts/AuthContext';
 
 const LINE = '#E5E4E0';
 
@@ -18,6 +18,7 @@ const LINE = '#E5E4E0';
  */
 export function AuthView({ mode }: { mode: 'signin' | 'signup' }) {
   const navigate = useNavigate();
+  const { signIn, signUp } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -31,25 +32,8 @@ export function AuthView({ mode }: { mode: 'signin' | 'signup' }) {
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch(`${import.meta.env.BASE_URL}api/synqit-login`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ email, password, name: isSignup ? name : undefined, signup: isSignup }),
-      });
-      const data = (await res.json().catch(() => ({}))) as {
-        access_token?: string;
-        refresh_token?: string;
-        error?: string;
-      };
-      if (!res.ok || !data.access_token || !data.refresh_token) {
-        throw new Error(data.error || 'Could not sign in.');
-      }
-      const { error: sessionError } = await supabase.auth.setSession({
-        access_token: data.access_token,
-        refresh_token: data.refresh_token,
-      });
-      if (sessionError) throw new Error(sessionError.message);
+      if (isSignup) await signUp(email, password, name);
+      else await signIn(email, password);
       await navigate({ to: '/app' });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not sign in.');

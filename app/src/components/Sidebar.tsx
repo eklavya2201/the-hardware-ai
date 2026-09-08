@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase, ssoProvider } from '@/lib/supabase';
+import { listConversations } from '@/lib/studioData';
 import { BILLING_URL } from '@/config/billing';
 import {
   Sheet,
@@ -43,7 +43,7 @@ const SynqitMark = ({ className }: { className?: string }) => (
   />
 );
 import { cn } from '@/lib/utils';
-import { Conversation, ConversationSettings } from '@shared/types';
+import { Conversation } from '@shared/types';
 import { UserAvatar } from '@/components/chat/UserAvatar';
 import { useProfile } from '@/services/profileService';
 
@@ -65,34 +65,14 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
   const { data: recentConversations } = useQuery<Conversation[]>({
     queryKey: ['conversations', 'recent'],
     initialData: [],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('conversations')
-        .select('*')
-        .order('updated_at', { ascending: false })
-        .eq('user_id', user?.id ?? '')
-        .limit(10)
-        .overrideTypes<Array<{ settings: ConversationSettings }>>();
-
-      if (error) throw error;
-
-      return data;
-    },
+    queryFn: async () =>
+      (await listConversations(10)) as unknown as Conversation[],
   });
 
   const handleSignOut = async () => {
     try {
-      if (ssoProvider) {
-        // In SSO mode root is the app's only auth surface, so sign-out lands
-        // there. Navigate BEFORE the session dies: on a guarded route the
-        // AuthGuard would otherwise fire the provider redirect the moment the
-        // session goes away and sign the user straight back in.
-        await navigate({ to: '/app' });
-        await signOut();
-        return;
-      }
+      // signOut clears the cookie and lands on the landing page.
       await signOut();
-      navigate({ to: '/signin' });
     } catch (error) {
       console.error('Error signing out:', error);
     }

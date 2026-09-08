@@ -30,7 +30,7 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { HistoryConversation } from '../../types/misc.ts';
 import { GoodEarth } from '../icons/ui/GoodEarth';
-import { supabase } from '@/lib/supabase';
+import { fileUrl, listMessages } from '@/lib/studioData';
 import { useOpenSCAD } from '@/hooks/useOpenSCAD';
 import { usePreview } from '@/hooks/usePreview';
 import { generatePreview, generateColoredPreview } from '@/utils/meshUtils';
@@ -79,15 +79,12 @@ export function VisualCard({
     queryKey: ['conversation-latest-preview', conversation.id],
     enabled: isVisible,
     queryFn: async () => {
-      const { data: messages, error } = await supabase
-        .from('messages')
-        .select('id, parts')
-        .eq('conversation_id', conversation.id)
-        .eq('role', 'assistant')
-        .order('created_at', { ascending: false })
-        .limit(50);
-      if (error) throw error;
-      for (const message of messages ?? []) {
+      // Newest assistant turn first: the card wants the most recent thing
+      // this conversation produced.
+      const messages = (await listMessages(conversation.id))
+        .filter((message) => message.role === 'assistant')
+        .reverse();
+      for (const message of messages) {
         const latest = findLatestVisualPreview(message.parts, message.id);
         if (latest) return latest;
       }
@@ -104,13 +101,9 @@ export function VisualCard({
     generateBlob: async () => {
       if (!preview) throw new Error('No preview');
       if (preview.type === 'mesh') {
-        const { data: meshBlob, error } = await supabase.storage
-          .from('meshes')
-          .download(
-            `${conversation.user_id}/${conversation.id}/${preview.meshId}.${preview.fileType}`,
-          );
-        if (error || !meshBlob) throw error ?? new Error('Mesh blob missing');
-        return dataUrlToBlob(await generatePreview(meshBlob, preview.fileType));
+        const res = await fetch(fileUrl(preview.meshId), { credentials: 'include' });
+        if (!res.ok) throw new Error('Mesh blob missing');
+        return dataUrlToBlob(await generatePreview(await res.blob(), preview.fileType));
       }
       // Use the PREVIEW path (not EXPORT) so we get the OFF companion file
       // with per-face color() data alongside the STL — matches what the live
@@ -265,14 +258,6 @@ function findLatestVisualPreview(
   const messageParts = asParametricParts(parts);
   for (let index = messageParts.length - 1; index >= 0; index -= 1) {
     const part = messageParts[index];
-    if (part.type === 'tool-create_mesh' && part.state === 'output-available') {
-      return {
-        type: 'mesh',
-        key: part.output.id,
-        meshId: part.output.id,
-        fileType: part.output.fileType,
-      };
-    }
     if (part.type === 'tool-build_parametric_model') {
       const artifact = getBuildParametricModelOutput([part]);
       if (artifact?.code) {

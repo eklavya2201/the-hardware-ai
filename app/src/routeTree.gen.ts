@@ -9,30 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UpdatePasswordRouteImport } from './routes/update-password'
 import { Route as TermsOfServiceRouteImport } from './routes/terms-of-service'
-import { Route as SsoRouteImport } from './routes/sso'
-import { Route as SignupEmailRouteImport } from './routes/signup-email'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SigninRouteImport } from './routes/signin'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as DocsRouteImport } from './routes/docs'
-import { Route as ConfirmEmailRouteImport } from './routes/confirm-email'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AssetsSplatRouteImport } from './routes/assets.$'
 import { Route as ApiTitleGeneratorRouteImport } from './routes/api/title-generator'
-import { Route as ApiSynqitSsoRouteImport } from './routes/api/synqit-sso'
 import { Route as ApiSynqitSessionRouteImport } from './routes/api/synqit-session'
 import { Route as ApiSynqitLoginRouteImport } from './routes/api/synqit-login'
 import { Route as ApiPromptGeneratorRouteImport } from './routes/api/prompt-generator'
 import { Route as ApiPartsRouteImport } from './routes/api/parts'
 import { Route as ApiParametricChatRouteImport } from './routes/api/parametric-chat'
-import { Route as ApiMeshRouteImport } from './routes/api/mesh'
-import { Route as ApiFalWebhookRouteImport } from './routes/api/fal-webhook'
-import { Route as ApiDeleteUserRouteImport } from './routes/api/delete-user'
-import { Route as ApiCreativeChatRouteImport } from './routes/api/creative-chat'
 import { Route as ApiBillingStatusRouteImport } from './routes/api/billing-status'
 import { Route as ApiBillingProductsRouteImport } from './routes/api/billing-products'
 import { Route as ApiBillingCheckoutRouteImport } from './routes/api/billing-checkout'
@@ -45,27 +35,11 @@ import { Route as ApiJacksonPollockSplatRouteImport } from './routes/api/jackson
 import { Route as LayoutShareIdRouteImport } from './routes/_layout/share/$id'
 import { Route as LayoutAuthSettingsRouteImport } from './routes/_layout/_auth/settings'
 import { Route as LayoutAuthHistoryRouteImport } from './routes/_layout/_auth/history'
-import { Route as ApiInternalAccountDeleteRouteImport } from './routes/api/internal/account/delete'
 import { Route as LayoutAuthEditorIdRouteImport } from './routes/_layout/_auth/editor/$id'
 
-const UpdatePasswordRoute = UpdatePasswordRouteImport.update({
-  id: '/update-password',
-  path: '/update-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const TermsOfServiceRoute = TermsOfServiceRouteImport.update({
   id: '/terms-of-service',
   path: '/terms-of-service',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SsoRoute = SsoRouteImport.update({
-  id: '/sso',
-  path: '/sso',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SignupEmailRoute = SignupEmailRouteImport.update({
-  id: '/signup-email',
-  path: '/signup-email',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignupRoute = SignupRouteImport.update({
@@ -78,11 +52,6 @@ const SigninRoute = SigninRouteImport.update({
   path: '/signin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
   id: '/privacy-policy',
   path: '/privacy-policy',
@@ -91,11 +60,6 @@ const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
 const DocsRoute = DocsRouteImport.update({
   id: '/docs',
   path: '/docs',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ConfirmEmailRoute = ConfirmEmailRouteImport.update({
-  id: '/confirm-email',
-  path: '/confirm-email',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LayoutRoute = LayoutRouteImport.update({
@@ -115,11 +79,6 @@ const AssetsSplatRoute = AssetsSplatRouteImport.update({
 const ApiTitleGeneratorRoute = ApiTitleGeneratorRouteImport.update({
   id: '/api/title-generator',
   path: '/api/title-generator',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiSynqitSsoRoute = ApiSynqitSsoRouteImport.update({
-  id: '/api/synqit-sso',
-  path: '/api/synqit-sso',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiSynqitSessionRoute = ApiSynqitSessionRouteImport.update({
@@ -145,26 +104,6 @@ const ApiPartsRoute = ApiPartsRouteImport.update({
 const ApiParametricChatRoute = ApiParametricChatRouteImport.update({
   id: '/api/parametric-chat',
   path: '/api/parametric-chat',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiMeshRoute = ApiMeshRouteImport.update({
-  id: '/api/mesh',
-  path: '/api/mesh',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiFalWebhookRoute = ApiFalWebhookRouteImport.update({
-  id: '/api/fal-webhook',
-  path: '/api/fal-webhook',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiDeleteUserRoute = ApiDeleteUserRouteImport.update({
-  id: '/api/delete-user',
-  path: '/api/delete-user',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiCreativeChatRoute = ApiCreativeChatRouteImport.update({
-  id: '/api/creative-chat',
-  path: '/api/creative-chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiBillingStatusRoute = ApiBillingStatusRouteImport.update({
@@ -226,12 +165,6 @@ const LayoutAuthHistoryRoute = LayoutAuthHistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => LayoutAuthRoute,
 } as any)
-const ApiInternalAccountDeleteRoute =
-  ApiInternalAccountDeleteRouteImport.update({
-    id: '/api/internal/account/delete',
-    path: '/api/internal/account/delete',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const LayoutAuthEditorIdRoute = LayoutAuthEditorIdRouteImport.update({
   id: '/editor/$id',
   path: '/editor/$id',
@@ -240,32 +173,22 @@ const LayoutAuthEditorIdRoute = LayoutAuthEditorIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/confirm-email': typeof ConfirmEmailRoute
   '/docs': typeof DocsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
-  '/reset-password': typeof ResetPasswordRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
-  '/signup-email': typeof SignupEmailRoute
-  '/sso': typeof SsoRoute
   '/terms-of-service': typeof TermsOfServiceRoute
-  '/update-password': typeof UpdatePasswordRoute
   '/$': typeof LayoutSplatRoute
   '/app': typeof LayoutAppRoute
   '/subscription': typeof LayoutSubscriptionRoute
   '/api/billing-checkout': typeof ApiBillingCheckoutRoute
   '/api/billing-products': typeof ApiBillingProductsRoute
   '/api/billing-status': typeof ApiBillingStatusRoute
-  '/api/creative-chat': typeof ApiCreativeChatRoute
-  '/api/delete-user': typeof ApiDeleteUserRoute
-  '/api/fal-webhook': typeof ApiFalWebhookRoute
-  '/api/mesh': typeof ApiMeshRoute
   '/api/parametric-chat': typeof ApiParametricChatRoute
   '/api/parts': typeof ApiPartsRoute
   '/api/prompt-generator': typeof ApiPromptGeneratorRoute
   '/api/synqit-login': typeof ApiSynqitLoginRoute
   '/api/synqit-session': typeof ApiSynqitSessionRoute
-  '/api/synqit-sso': typeof ApiSynqitSsoRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
   '/assets/$': typeof AssetsSplatRoute
   '/history': typeof LayoutAuthHistoryRoute
@@ -274,36 +197,25 @@ export interface FileRoutesByFullPath {
   '/api/jackson-pollock/$': typeof ApiJacksonPollockSplatRoute
   '/api/synqit/$': typeof ApiSynqitSplatRoute
   '/editor/$id': typeof LayoutAuthEditorIdRoute
-  '/api/internal/account/delete': typeof ApiInternalAccountDeleteRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/confirm-email': typeof ConfirmEmailRoute
   '/docs': typeof DocsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
-  '/reset-password': typeof ResetPasswordRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
-  '/signup-email': typeof SignupEmailRoute
-  '/sso': typeof SsoRoute
   '/terms-of-service': typeof TermsOfServiceRoute
-  '/update-password': typeof UpdatePasswordRoute
   '/$': typeof LayoutSplatRoute
   '/app': typeof LayoutAppRoute
   '/subscription': typeof LayoutSubscriptionRoute
   '/api/billing-checkout': typeof ApiBillingCheckoutRoute
   '/api/billing-products': typeof ApiBillingProductsRoute
   '/api/billing-status': typeof ApiBillingStatusRoute
-  '/api/creative-chat': typeof ApiCreativeChatRoute
-  '/api/delete-user': typeof ApiDeleteUserRoute
-  '/api/fal-webhook': typeof ApiFalWebhookRoute
-  '/api/mesh': typeof ApiMeshRoute
   '/api/parametric-chat': typeof ApiParametricChatRoute
   '/api/parts': typeof ApiPartsRoute
   '/api/prompt-generator': typeof ApiPromptGeneratorRoute
   '/api/synqit-login': typeof ApiSynqitLoginRoute
   '/api/synqit-session': typeof ApiSynqitSessionRoute
-  '/api/synqit-sso': typeof ApiSynqitSsoRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
   '/assets/$': typeof AssetsSplatRoute
   '/history': typeof LayoutAuthHistoryRoute
@@ -312,22 +224,16 @@ export interface FileRoutesByTo {
   '/api/jackson-pollock/$': typeof ApiJacksonPollockSplatRoute
   '/api/synqit/$': typeof ApiSynqitSplatRoute
   '/editor/$id': typeof LayoutAuthEditorIdRoute
-  '/api/internal/account/delete': typeof ApiInternalAccountDeleteRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_layout': typeof LayoutRouteWithChildren
-  '/confirm-email': typeof ConfirmEmailRoute
   '/docs': typeof DocsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
-  '/reset-password': typeof ResetPasswordRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
-  '/signup-email': typeof SignupEmailRoute
-  '/sso': typeof SsoRoute
   '/terms-of-service': typeof TermsOfServiceRoute
-  '/update-password': typeof UpdatePasswordRoute
   '/_layout/$': typeof LayoutSplatRoute
   '/_layout/_auth': typeof LayoutAuthRouteWithChildren
   '/_layout/app': typeof LayoutAppRoute
@@ -335,16 +241,11 @@ export interface FileRoutesById {
   '/api/billing-checkout': typeof ApiBillingCheckoutRoute
   '/api/billing-products': typeof ApiBillingProductsRoute
   '/api/billing-status': typeof ApiBillingStatusRoute
-  '/api/creative-chat': typeof ApiCreativeChatRoute
-  '/api/delete-user': typeof ApiDeleteUserRoute
-  '/api/fal-webhook': typeof ApiFalWebhookRoute
-  '/api/mesh': typeof ApiMeshRoute
   '/api/parametric-chat': typeof ApiParametricChatRoute
   '/api/parts': typeof ApiPartsRoute
   '/api/prompt-generator': typeof ApiPromptGeneratorRoute
   '/api/synqit-login': typeof ApiSynqitLoginRoute
   '/api/synqit-session': typeof ApiSynqitSessionRoute
-  '/api/synqit-sso': typeof ApiSynqitSsoRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
   '/assets/$': typeof AssetsSplatRoute
   '/_layout/_auth/history': typeof LayoutAuthHistoryRoute
@@ -353,38 +254,27 @@ export interface FileRoutesById {
   '/api/jackson-pollock/$': typeof ApiJacksonPollockSplatRoute
   '/api/synqit/$': typeof ApiSynqitSplatRoute
   '/_layout/_auth/editor/$id': typeof LayoutAuthEditorIdRoute
-  '/api/internal/account/delete': typeof ApiInternalAccountDeleteRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/confirm-email'
     | '/docs'
     | '/privacy-policy'
-    | '/reset-password'
     | '/signin'
     | '/signup'
-    | '/signup-email'
-    | '/sso'
     | '/terms-of-service'
-    | '/update-password'
     | '/$'
     | '/app'
     | '/subscription'
     | '/api/billing-checkout'
     | '/api/billing-products'
     | '/api/billing-status'
-    | '/api/creative-chat'
-    | '/api/delete-user'
-    | '/api/fal-webhook'
-    | '/api/mesh'
     | '/api/parametric-chat'
     | '/api/parts'
     | '/api/prompt-generator'
     | '/api/synqit-login'
     | '/api/synqit-session'
-    | '/api/synqit-sso'
     | '/api/title-generator'
     | '/assets/$'
     | '/history'
@@ -393,36 +283,25 @@ export interface FileRouteTypes {
     | '/api/jackson-pollock/$'
     | '/api/synqit/$'
     | '/editor/$id'
-    | '/api/internal/account/delete'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/confirm-email'
     | '/docs'
     | '/privacy-policy'
-    | '/reset-password'
     | '/signin'
     | '/signup'
-    | '/signup-email'
-    | '/sso'
     | '/terms-of-service'
-    | '/update-password'
     | '/$'
     | '/app'
     | '/subscription'
     | '/api/billing-checkout'
     | '/api/billing-products'
     | '/api/billing-status'
-    | '/api/creative-chat'
-    | '/api/delete-user'
-    | '/api/fal-webhook'
-    | '/api/mesh'
     | '/api/parametric-chat'
     | '/api/parts'
     | '/api/prompt-generator'
     | '/api/synqit-login'
     | '/api/synqit-session'
-    | '/api/synqit-sso'
     | '/api/title-generator'
     | '/assets/$'
     | '/history'
@@ -431,21 +310,15 @@ export interface FileRouteTypes {
     | '/api/jackson-pollock/$'
     | '/api/synqit/$'
     | '/editor/$id'
-    | '/api/internal/account/delete'
   id:
     | '__root__'
     | '/'
     | '/_layout'
-    | '/confirm-email'
     | '/docs'
     | '/privacy-policy'
-    | '/reset-password'
     | '/signin'
     | '/signup'
-    | '/signup-email'
-    | '/sso'
     | '/terms-of-service'
-    | '/update-password'
     | '/_layout/$'
     | '/_layout/_auth'
     | '/_layout/app'
@@ -453,16 +326,11 @@ export interface FileRouteTypes {
     | '/api/billing-checkout'
     | '/api/billing-products'
     | '/api/billing-status'
-    | '/api/creative-chat'
-    | '/api/delete-user'
-    | '/api/fal-webhook'
-    | '/api/mesh'
     | '/api/parametric-chat'
     | '/api/parts'
     | '/api/prompt-generator'
     | '/api/synqit-login'
     | '/api/synqit-session'
-    | '/api/synqit-sso'
     | '/api/title-generator'
     | '/assets/$'
     | '/_layout/_auth/history'
@@ -471,70 +339,37 @@ export interface FileRouteTypes {
     | '/api/jackson-pollock/$'
     | '/api/synqit/$'
     | '/_layout/_auth/editor/$id'
-    | '/api/internal/account/delete'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LayoutRoute: typeof LayoutRouteWithChildren
-  ConfirmEmailRoute: typeof ConfirmEmailRoute
   DocsRoute: typeof DocsRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
-  ResetPasswordRoute: typeof ResetPasswordRoute
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
-  SignupEmailRoute: typeof SignupEmailRoute
-  SsoRoute: typeof SsoRoute
   TermsOfServiceRoute: typeof TermsOfServiceRoute
-  UpdatePasswordRoute: typeof UpdatePasswordRoute
   ApiBillingCheckoutRoute: typeof ApiBillingCheckoutRoute
   ApiBillingProductsRoute: typeof ApiBillingProductsRoute
   ApiBillingStatusRoute: typeof ApiBillingStatusRoute
-  ApiCreativeChatRoute: typeof ApiCreativeChatRoute
-  ApiDeleteUserRoute: typeof ApiDeleteUserRoute
-  ApiFalWebhookRoute: typeof ApiFalWebhookRoute
-  ApiMeshRoute: typeof ApiMeshRoute
   ApiParametricChatRoute: typeof ApiParametricChatRoute
   ApiPartsRoute: typeof ApiPartsRoute
   ApiPromptGeneratorRoute: typeof ApiPromptGeneratorRoute
   ApiSynqitLoginRoute: typeof ApiSynqitLoginRoute
   ApiSynqitSessionRoute: typeof ApiSynqitSessionRoute
-  ApiSynqitSsoRoute: typeof ApiSynqitSsoRoute
   ApiTitleGeneratorRoute: typeof ApiTitleGeneratorRoute
   AssetsSplatRoute: typeof AssetsSplatRoute
   ApiJacksonPollockSplatRoute: typeof ApiJacksonPollockSplatRoute
   ApiSynqitSplatRoute: typeof ApiSynqitSplatRoute
-  ApiInternalAccountDeleteRoute: typeof ApiInternalAccountDeleteRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/update-password': {
-      id: '/update-password'
-      path: '/update-password'
-      fullPath: '/update-password'
-      preLoaderRoute: typeof UpdatePasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/terms-of-service': {
       id: '/terms-of-service'
       path: '/terms-of-service'
       fullPath: '/terms-of-service'
       preLoaderRoute: typeof TermsOfServiceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sso': {
-      id: '/sso'
-      path: '/sso'
-      fullPath: '/sso'
-      preLoaderRoute: typeof SsoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/signup-email': {
-      id: '/signup-email'
-      path: '/signup-email'
-      fullPath: '/signup-email'
-      preLoaderRoute: typeof SignupEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signup': {
@@ -551,13 +386,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SigninRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/privacy-policy': {
       id: '/privacy-policy'
       path: '/privacy-policy'
@@ -570,13 +398,6 @@ declare module '@tanstack/react-router' {
       path: '/docs'
       fullPath: '/docs'
       preLoaderRoute: typeof DocsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/confirm-email': {
-      id: '/confirm-email'
-      path: '/confirm-email'
-      fullPath: '/confirm-email'
-      preLoaderRoute: typeof ConfirmEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_layout': {
@@ -605,13 +426,6 @@ declare module '@tanstack/react-router' {
       path: '/api/title-generator'
       fullPath: '/api/title-generator'
       preLoaderRoute: typeof ApiTitleGeneratorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/synqit-sso': {
-      id: '/api/synqit-sso'
-      path: '/api/synqit-sso'
-      fullPath: '/api/synqit-sso'
-      preLoaderRoute: typeof ApiSynqitSsoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/synqit-session': {
@@ -647,34 +461,6 @@ declare module '@tanstack/react-router' {
       path: '/api/parametric-chat'
       fullPath: '/api/parametric-chat'
       preLoaderRoute: typeof ApiParametricChatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/mesh': {
-      id: '/api/mesh'
-      path: '/api/mesh'
-      fullPath: '/api/mesh'
-      preLoaderRoute: typeof ApiMeshRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/fal-webhook': {
-      id: '/api/fal-webhook'
-      path: '/api/fal-webhook'
-      fullPath: '/api/fal-webhook'
-      preLoaderRoute: typeof ApiFalWebhookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/delete-user': {
-      id: '/api/delete-user'
-      path: '/api/delete-user'
-      fullPath: '/api/delete-user'
-      preLoaderRoute: typeof ApiDeleteUserRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/creative-chat': {
-      id: '/api/creative-chat'
-      path: '/api/creative-chat'
-      fullPath: '/api/creative-chat'
-      preLoaderRoute: typeof ApiCreativeChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/billing-status': {
@@ -761,13 +547,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutAuthHistoryRouteImport
       parentRoute: typeof LayoutAuthRoute
     }
-    '/api/internal/account/delete': {
-      id: '/api/internal/account/delete'
-      path: '/api/internal/account/delete'
-      fullPath: '/api/internal/account/delete'
-      preLoaderRoute: typeof ApiInternalAccountDeleteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_layout/_auth/editor/$id': {
       id: '/_layout/_auth/editor/$id'
       path: '/editor/$id'
@@ -816,34 +595,23 @@ const LayoutRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LayoutRoute: LayoutRouteWithChildren,
-  ConfirmEmailRoute: ConfirmEmailRoute,
   DocsRoute: DocsRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
-  ResetPasswordRoute: ResetPasswordRoute,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
-  SignupEmailRoute: SignupEmailRoute,
-  SsoRoute: SsoRoute,
   TermsOfServiceRoute: TermsOfServiceRoute,
-  UpdatePasswordRoute: UpdatePasswordRoute,
   ApiBillingCheckoutRoute: ApiBillingCheckoutRoute,
   ApiBillingProductsRoute: ApiBillingProductsRoute,
   ApiBillingStatusRoute: ApiBillingStatusRoute,
-  ApiCreativeChatRoute: ApiCreativeChatRoute,
-  ApiDeleteUserRoute: ApiDeleteUserRoute,
-  ApiFalWebhookRoute: ApiFalWebhookRoute,
-  ApiMeshRoute: ApiMeshRoute,
   ApiParametricChatRoute: ApiParametricChatRoute,
   ApiPartsRoute: ApiPartsRoute,
   ApiPromptGeneratorRoute: ApiPromptGeneratorRoute,
   ApiSynqitLoginRoute: ApiSynqitLoginRoute,
   ApiSynqitSessionRoute: ApiSynqitSessionRoute,
-  ApiSynqitSsoRoute: ApiSynqitSsoRoute,
   ApiTitleGeneratorRoute: ApiTitleGeneratorRoute,
   AssetsSplatRoute: AssetsSplatRoute,
   ApiJacksonPollockSplatRoute: ApiJacksonPollockSplatRoute,
   ApiSynqitSplatRoute: ApiSynqitSplatRoute,
-  ApiInternalAccountDeleteRoute: ApiInternalAccountDeleteRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

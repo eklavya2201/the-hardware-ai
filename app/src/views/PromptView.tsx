@@ -4,8 +4,7 @@ import { LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase, ssoProvider } from '@/lib/supabase';
-import { signInWithSsoProvider } from '@/lib/ssoAuth';
+import { createConversation } from '@/lib/studioData';
 import TextAreaChat from '@/components/TextAreaChat';
 import { INSERT_EVENT } from '@/components/synqit/LibraryDialog';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
@@ -29,7 +28,6 @@ import {
 } from 'ai';
 import { createAndCacheAiChat } from '@/hooks/useCachedAiChat';
 import type { AppUIMessage } from '@shared/chatAi';
-import { ensureInputRecords } from '@/lib/aiMessages';
 import { persistUserMessage } from '@/services/messageService';
 
 export function PromptView() {
@@ -108,18 +106,6 @@ export function PromptView() {
   // affordances below fire it directly instead of navigating to the native
   // auth routes (which bounce back to root in this mode). Same UI, same
   // pixels — only where the click goes changes.
-  const { mutate: signInWithSso } = useMutation({
-    mutationFn: () => signInWithSsoProvider('/'),
-    onError: (error) => {
-      toast({
-        title: 'Whoopsies',
-        description:
-          error instanceof Error ? error.message : 'Something went wrong',
-        variant: 'destructive',
-      });
-    },
-  });
-
   const { mutate: handleGenerate, isPending: isGenerating } = useMutation({
     mutationFn: async (parts: AppUIMessage['parts']) => {
       if (!user?.id) throw new Error('User must be authenticated');
@@ -146,28 +132,11 @@ export function PromptView() {
       });
 
       // Create conversation immediately with 'New Conversation'
-      const { data: conversation, error: conversationError } = await supabase
-        .from('conversations')
-        .insert([
-          {
-            id: conversationId,
-            user_id: user.id,
-            title: 'New Conversation',
-            type: type,
-            settings: {
-              model: model,
-            },
-          },
-        ])
-        .select()
-        .single();
-
-      if (conversationError) throw conversationError;
-
-      await ensureInputRecords({
-        parts,
-        conversationId: conversation.id,
-        userId: user.id,
+      const conversation = await createConversation({
+        id: conversationId,
+        title: 'New Conversation',
+        type,
+        settings: { model },
       });
       if (parts.length === 0) throw new Error('No message parts to send');
 
@@ -191,13 +160,8 @@ export function PromptView() {
           api: apiUrl(
             type === 'creative' ? 'creative-chat' : 'parametric-chat',
           ),
-          headers: async (): Promise<Record<string, string>> => {
-            const accessToken = (await supabase.auth.getSession()).data.session
-              ?.access_token;
-            const headers: Record<string, string> = {};
-            if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
-            return headers;
-          },
+          // Same origin, so the engine cookie is attached automatically.
+          headers: async (): Promise<Record<string, string>> => ({}),
           prepareSendMessagesRequest: ({ body }) => ({
             body: {
               conversationId: conversation.id,
@@ -279,7 +243,7 @@ export function PromptView() {
             <Button
               variant="light"
               onClick={() =>
-                ssoProvider ? signInWithSso() : navigate({ to: '/signup' })
+                navigate({ to: '/signup' })
               }
               className="w-auto"
             >
@@ -287,7 +251,7 @@ export function PromptView() {
             </Button>
             <Button
               onClick={() =>
-                ssoProvider ? signInWithSso() : navigate({ to: '/signin' })
+                navigate({ to: '/signin' })
               }
               className="w-auto"
             >
@@ -331,10 +295,6 @@ export function PromptView() {
                   }}
                   onFocus={() => {
                     if (!user) {
-                      if (ssoProvider) {
-                        signInWithSso();
-                        return;
-                      }
                       navigate({ to: '/signin' });
                       return;
                     }
@@ -370,12 +330,6 @@ export function PromptView() {
                 <p className="text-center text-sm text-gray-500">
                   <Link
                     to="/signin"
-                    onClick={(e) => {
-                      if (ssoProvider) {
-                        e.preventDefault();
-                        signInWithSso();
-                      }
-                    }}
                     className="!text-sq-blue hover:!text-sq-blue/80"
                   >
                     Sign in
@@ -383,12 +337,6 @@ export function PromptView() {
                   or{' '}
                   <Link
                     to="/signup"
-                    onClick={(e) => {
-                      if (ssoProvider) {
-                        e.preventDefault();
-                        signInWithSso();
-                      }
-                    }}
                     className="!text-sq-blue hover:!text-sq-blue/80"
                   >
                     create an account

@@ -1,62 +1,32 @@
-import { useConversation } from '@/contexts/ConversationContext';
-import { supabase } from '@/lib/supabase';
-import { MeshData } from '@shared/types';
 import { useQuery } from '@tanstack/react-query';
+import { MeshData } from '@shared/types';
+import { fileUrl } from '@/lib/studioData';
 
+/**
+ * An attached mesh, by id.
+ *
+ * No status polling: a mesh is a file the person attached, so it is ready the
+ * moment it exists. The old store also tracked generated meshes, which had a
+ * pending state worth polling; that lane is gone.
+ */
 export const useMeshData = ({ id }: { id: string }) => {
-  const { conversation } = useConversation();
-
   const dataQuery = useQuery({
     queryKey: ['meshData', id],
     enabled: !!id,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('meshes')
-        .select('*')
-        .eq('id', id)
-        .limit(1)
-        .single()
-        .overrideTypes<MeshData>();
-
-      if (error) {
-        throw error;
-      }
-
-      return data;
-    },
-    // Poll while pending to ensure UI progresses past 95% as soon as status flips
-    refetchInterval: (query) => {
-      const current = query.state.data as MeshData | undefined;
-      return current && current.status === 'pending' ? 3000 : false;
-    },
+    queryFn: async () =>
+      ({ id, status: 'success', file_type: 'glb' }) as unknown as MeshData,
   });
 
   const blobQuery = useQuery({
     queryKey: ['mesh', id],
-    enabled:
-      !!id &&
-      !dataQuery.isLoading &&
-      dataQuery.data &&
-      dataQuery.data.status === 'success',
-    queryFn: async () => {
-      const fileExtension = dataQuery.data?.file_type || 'glb';
-      const { data, error } = await supabase.storage
-        .from('meshes')
-        .download(
-          `${conversation.user_id}/${conversation.id}/${id}.${fileExtension}`,
-        );
-
-      if (error) {
-        throw error;
-      }
-
-      return data;
-    },
+    enabled: !!id,
     refetchOnMount: false,
+    queryFn: async () => {
+      const res = await fetch(fileUrl(id), { credentials: 'include' });
+      if (!res.ok) throw new Error(`Could not read mesh ${id} (${res.status}).`);
+      return res.blob();
+    },
   });
 
-  return {
-    data: dataQuery,
-    blob: blobQuery,
-  };
+  return { data: dataQuery, blob: blobQuery };
 };

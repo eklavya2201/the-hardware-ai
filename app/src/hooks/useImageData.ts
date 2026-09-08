@@ -1,112 +1,51 @@
-import { useConversation } from '@/contexts/ConversationContext';
-import { supabase } from '@/lib/supabase';
-import { Prompt } from '@shared/types';
 import { useQueries, useQuery } from '@tanstack/react-query';
+import { fileUrl } from '@/lib/studioData';
+
+/**
+ * An attached image, by id.
+ *
+ * There is no status to poll and no signed URL to mint any more: an image
+ * exists the moment it is uploaded, and the engine serves it from a
+ * same-origin URL the browser can put straight in an `img` tag. The old store
+ * needed a row to say whether generation had finished, and a download to build
+ * a data URL, because the bucket was on another origin.
+ */
+export type ImageRecord = { id: string; status: 'success'; url: string };
+
+function record(id: string): ImageRecord {
+  return { id, status: 'success', url: fileUrl(id) };
+}
 
 export function useImageData(id: string) {
-  const { conversation } = useConversation();
-
   const dataQuery = useQuery({
-    queryKey: ['imageData', conversation.user_id, conversation.id, id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('images')
-        .select('*')
-        .eq('id', id)
-        .single()
-        .overrideTypes<{
-          prompt: Prompt;
-        }>();
-
-      if (error) {
-        throw error;
-      }
-
-      return data;
-    },
-    refetchInterval: (query) => {
-      if (query.state.data?.status === 'pending') {
-        return 10 * 1000;
-      }
-      return false;
-    },
+    queryKey: ['imageData', id],
+    enabled: !!id,
+    queryFn: async () => record(id),
   });
 
   const urlQuery = useQuery({
-    queryKey: ['image', conversation.user_id, conversation.id, id],
-    enabled: dataQuery.data?.status === 'success',
-    queryFn: async () => {
-      const reader = new FileReader();
-      const { data } = await supabase.storage
-        .from('images')
-        .download(`${conversation.user_id}/${conversation.id}/${id}`);
-      if (!data) {
-        throw new Error('Failed to download image');
-      }
-      const urlPromise = new Promise((resolve) => {
-        reader.onload = () => {
-          resolve(reader.result as string);
-        };
-      });
-      reader.readAsDataURL(data);
-      const url = (await urlPromise) as string;
-      return { id, url };
-    },
+    queryKey: ['image', id],
+    enabled: !!id,
+    queryFn: async () => ({ id, url: fileUrl(id) }),
   });
 
   return { data: dataQuery, url: urlQuery };
 }
 
 export function useImagesData(ids: string[]) {
-  const { conversation } = useConversation();
-
   const dataQueries = useQueries({
     queries: ids.map((id) => ({
-      queryKey: ['imageData', conversation.user_id, conversation.id, id],
+      queryKey: ['imageData', id],
       enabled: !!id,
-      queryFn: async () => {
-        const { data, error } = await supabase
-          .from('images')
-          .select('*')
-          .eq('id', id)
-          .single()
-          .overrideTypes<{
-            prompt: Prompt;
-          }>();
-
-        if (error) {
-          throw error;
-        }
-
-        return data;
-      },
+      queryFn: async () => record(id),
     })),
   });
 
   const urlQueries = useQueries({
     queries: ids.map((id) => ({
-      queryKey: ['image', conversation.user_id, conversation.id, id],
-      enabled: dataQueries.some(
-        (query) =>
-          query.data && query.data.id === id && query.data.status === 'success',
-      ),
-      queryFn: async () => {
-        const reader = new FileReader();
-        const { data } = await supabase.storage
-          .from('images')
-          .download(`${conversation.user_id}/${conversation.id}/${id}`);
-        if (!data) {
-          throw new Error('Failed to download image');
-        }
-        const urlPromise = new Promise((resolve) => {
-          reader.onload = () => {
-            resolve(reader.result as string);
-          };
-        });
-        reader.readAsDataURL(data);
-        const url = (await urlPromise) as string;
-        return { id, url };
-      },
+      queryKey: ['image', id],
+      enabled: !!id,
+      queryFn: async () => ({ id, url: fileUrl(id) }),
     })),
   });
 

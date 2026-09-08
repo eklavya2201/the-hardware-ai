@@ -158,3 +158,35 @@ export async function designBoard(
     boardSize: board ? `${board.width.toFixed(1)} x ${board.height.toFixed(1)} mm` : undefined,
   };
 }
+
+/**
+ * Place and route a board that already has a schematic.
+ *
+ * `designBoard` creates a project from a brief; this is the other half — the
+ * one the studio agent had no way to reach, so asking it to "place and route
+ * this board" made it build a CAD model instead, because that was the only
+ * verb it had.
+ */
+export async function layoutExistingBoard(
+  projectId: string,
+  onProgress?: (p: BoardProgress) => void,
+): Promise<BoardResult> {
+  await layoutBoard(projectId, onProgress);
+  const project = await fetchSynqitProject(projectId, true);
+  window.dispatchEvent(new Event('synqit-project-change'));
+
+  const issues = project.issues ?? [];
+  const board = project.board;
+  return {
+    projectId,
+    name: project.name,
+    components: project.ir?.components?.length ?? 0,
+    nets: project.ir?.nets?.length ?? 0,
+    placed: board?.components?.length ?? 0,
+    traces: board?.traces?.length ?? 0,
+    unrouted: board?.rats?.length ?? 0,
+    errors: issues.filter((i) => i.severity === 'error').length,
+    warnings: issues.filter((i) => i.severity === 'warning').length,
+    boardSize: board ? `${board.width} x ${board.height} mm` : undefined,
+  };
+}

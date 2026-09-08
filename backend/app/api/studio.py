@@ -12,6 +12,7 @@ on the caller. Someone else's row is "not found" rather than "forbidden" — a
 from __future__ import annotations
 
 import os
+import re
 import uuid
 from datetime import datetime
 from pathlib import Path
@@ -36,6 +37,10 @@ router = APIRouter(prefix="/studio", tags=["studio"])
 # Uploads live beside the database on the data volume.
 FILES_ROOT = Path(os.environ.get("STUDIO_FILES_DIR", "/data/studio-files"))
 MAX_UPLOAD_BYTES = 25 * 1024 * 1024
+
+# A file id becomes a path segment, so it must not be able to escape the
+# directory it is written into.
+_SAFE_ID = re.compile(r"[A-Za-z0-9_-]{1,120}")
 
 
 def _iso(value: Optional[datetime]) -> Optional[str]:
@@ -211,6 +216,7 @@ class MessageUpsert(BaseModel):
     metadata: dict = Field(default_factory=dict)
     parent_message_id: Optional[str] = None
     rating: Optional[int] = None
+    advance_leaf: bool = True
 
 
 @router.get("/conversations/{conversation_id}/messages", response_model=list[MessageOut])
@@ -239,6 +245,7 @@ def upsert_message(
         _owned(db, conversation_id, user)
         message_id = body.id or uuid.uuid4().hex
         row = db.get(StudioMessageRow, message_id)
+        created = row is None
         if row is None:
             row = StudioMessageRow(
                 id=message_id,
@@ -253,6 +260,53 @@ def upsert_message(
         row.content = body.content
         row.metadata_json = body.metadata
         row.parent_message_id = body.parent_message_id
+        if body.rating is not None:
+            row.rating = body.rating
+        if created and body.advance_leaf:
+            # Replaces the database trigger the old store had: a new message is
+            # the tip of the branch, and the chat handler walks parents back
+            # from that tip to build the request. Without this the branch is
+            # stuck on whatever the leaf was before.
+            conversation = db.get(StudioConversationRow, conversation_id)
+            if conversation is not None:
+                conversation.current_message_leaf_id = row.id
+        db.commit()
+        db.refresh(row)
+        return MessageOut.of(row)
+
+
+class MessagePatch(BaseModel):
+    parts: Optional[list] = None
+    metadata: Optional[dict] = None
+    rating: Optional[int] = None
+
+
+@router.patch(
+    "/conversations/{conversation_id}/messages/{message_id}", response_model=MessageOut
+)
+def patch_message(
+    conversation_id: str,
+    message_id: str,
+    body: MessagePatch,
+    user: UserRow = Depends(current_user),
+):
+    """Update an existing message, or 404.
+
+    Deliberately not an upsert. The studio rewrites an assistant row after it
+    finishes a tool call locally, and that row is written by the server when
+    the stream closes — the two can race. Creating the row here would hide the
+    race behind a phantom message with no place in the branch; a 404 lets the
+    caller retry until the real row lands.
+    """
+    with SessionLocal() as db:
+        _owned(db, conversation_id, user)
+        row = db.get(StudioMessageRow, message_id)
+        if row is None or row.user_id != user.id or row.conversation_id != conversation_id:
+            raise HTTPException(404, "No such message")
+        if body.parts is not None:
+            row.parts = body.parts
+        if body.metadata is not None:
+            row.metadata_json = body.metadata
         if body.rating is not None:
             row.rating = body.rating
         db.commit()
@@ -288,13 +342,21 @@ async def upload_file(
     file: UploadFile = File(...),
     kind: str = Form(default="image"),
     conversation_id: Optional[str] = Form(default=None),
+    file_id: Optional[str] = Form(default=None),
     user: UserRow = Depends(current_user),
 ):
     payload = await file.read()
     if len(payload) > MAX_UPLOAD_BYTES:
         raise HTTPException(413, "Files are limited to 25 MB.")
 
-    file_id = uuid.uuid4().hex
+    # The caller may name the file. Renders that the server has to find again
+    # are keyed on the tool call that produced them, so both sides can derive
+    # the same id without a round trip. Re-uploading the same id replaces it.
+    if file_id:
+        if not _SAFE_ID.fullmatch(file_id):
+            raise HTTPException(400, "file_id may contain letters, digits, dashes and underscores.")
+    else:
+        file_id = uuid.uuid4().hex
     # One directory per user: a listing cannot cross accounts, and no single
     # directory grows without bound.
     folder = FILES_ROOT / user.id
@@ -303,6 +365,12 @@ async def upload_file(
     path.write_bytes(payload)
 
     with SessionLocal() as db:
+        existing = db.get(StudioFileRow, file_id)
+        if existing is not None and existing.user_id != user.id:
+            raise HTTPException(409, "That file id is taken.")
+        if existing is not None:
+            db.delete(existing)
+            db.commit()
         row = StudioFileRow(
             id=file_id,
             user_id=user.id,

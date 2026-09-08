@@ -4,10 +4,10 @@ import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { chatTools, type AppUIMessage, type AppTools } from '@shared/chatAi';
 import { cleanAssistantText, getParametricText } from '@shared/parametricParts';
-import { imageIdFromFilename, imageStoragePath } from '@shared/imageRefs';
+import { imageIdFromFilename } from '@shared/imageRefs';
 import { normalizeConversationSuggestions } from '@shared/suggestions';
 import { normalizeModelId } from '@shared/models';
-import type { Conversation, Message, MeshFileType, Model } from '@shared/types';
+import type { Conversation, Message, Model } from '@shared/types';
 import {
   convertToModelMessages,
   consumeStream,
@@ -23,7 +23,6 @@ import {
   type UIMessageStreamWriter,
 } from 'ai';
 import type { ProviderOptions } from '@ai-sdk/provider-utils';
-import imageType from 'image-type';
 import { z } from 'zod';
 import { billing, BillingClientError } from './billingClient';
 import { corsHeaders, isRecord } from './api';
@@ -35,8 +34,7 @@ import {
   isDanglingToolPart,
   resolveDanglingToolParts,
 } from './chatToolPersistence';
-import { handleMeshRequest } from './mesh';
-import { getAnonSupabaseClient } from './supabaseClient';
+import { NotSignedIn, studioStore, type StudioStore } from './studioStore';
 
 /**
  * USD list price per **million** tokens, keyed by the same model IDs the
@@ -257,6 +255,7 @@ Color:
   a color picker. Defaults must be CSS named colors or \`#RRGGBB\` hex.
 
 Electronics: design_board
+Place and route: if a board is already linked to this conversation and the user asks to place, route, lay out or finish it, call layout_board. Never answer that request with build_parametric_model -- a CAD model is not a placed board.
 - You build BOTH sides of a product here: the electronics through
   design_board, and the 3D geometry through build_parametric_model.
 - Call design_board when the user asks for a circuit, schematic, PCB, wiring,
@@ -352,7 +351,7 @@ Say what you're doing in natural language ("I'll make that for you"), not how
 
 const CREATIVE_AGENT_PROMPT = `You are Synqit, a concise 3D mesh assistant.
 
-Use the create_mesh tool whenever the user asks for a generated, edited, or stylized 3D asset.
+
 
 Creative rules:
 - Keep replies short.
@@ -682,7 +681,6 @@ function billingTokensFromUsage(
   return Math.max(1, Math.ceil(usdCost / USD_PER_BILLING_TOKEN));
 }
 
-type SupabaseAnon = ReturnType<typeof getAnonSupabaseClient>;
 
 type BranchMessageRow = Pick<
   Message,
@@ -792,23 +790,15 @@ function messageRowToUIMessage(
  * the server (mirrors the same defense in shared/Tree.ts on the client).
  */
 async function loadBranchFromDb({
-  supabaseClient,
+  store,
   conversationId,
   leafId,
 }: {
-  supabaseClient: SupabaseAnon;
+  store: StudioStore;
   conversationId: string;
   leafId: string;
 }): Promise<{ branch: AppUIMessage[]; leafRole: 'user' | 'assistant' }> {
-  const { data: rows, error } = await supabaseClient
-    .from('messages')
-    .select('id, role, parts, metadata, parent_message_id')
-    .eq('conversation_id', conversationId)
-    .overrideTypes<BranchMessageRow[]>();
-
-  if (error || !rows) {
-    throw new Error('Failed to load conversation messages');
-  }
+  const rows = (await store.messages(conversationId)) as unknown as BranchMessageRow[];
 
   const byId = new Map<string, BranchMessageRow>();
   for (const row of rows) byId.set(row.id, row);
@@ -927,113 +917,54 @@ async function generateConversationSuggestions({
   }
 }
 
-function creativeTools({
-  conversation,
-  req,
-  model,
-}: {
-  conversation: ConversationAccess;
-  req: Request;
-  model: Model;
-}) {
-  return {
-    create_mesh: {
-      ...chatTools.create_mesh,
-      execute: async (input: AppTools['create_mesh']['input']) => {
-        const response = await handleMeshRequest(
-          new Request(new URL(`${import.meta.env.BASE_URL}api/mesh`, req.url), {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: req.headers.get('Authorization') ?? '',
-            },
-            body: JSON.stringify({
-              conversationId: conversation.id,
-              text: input.text,
-              images: input.imageIds,
-              mesh: input.meshId,
-              model: input.model ?? model,
-              meshTopology: input.meshTopology,
-              polygonCount: input.polygonCount,
-            }),
-            signal: req.signal,
-          }),
-        );
-        const data: {
-          id?: string;
-          fileType?: MeshFileType;
-          error?: unknown;
-        } = await response.json();
-
-        if (!response.ok || !data.id || !data.fileType) {
-          throw new Error(
-            isRecord(data.error) && typeof data.error.message === 'string'
-              ? data.error.message
-              : 'Mesh generation failed',
-          );
-        }
-
-        return { id: data.id, fileType: data.fileType };
-      },
-    },
-  };
-}
-
-// The only image media types Anthropic (and our other providers) accept. We
-// gate `image-type`'s broader detection to this set so we never hand the model
-// a sniffed-but-unsupported mime (HEIC, AVIF, …) that it would reject anyway.
-const ACCEPTED_IMAGE_MEDIA_TYPES = new Set([
-  'image/png',
-  'image/jpeg',
-  'image/gif',
-  'image/webp',
-]);
-
 /**
- * Sniff an image's real media type from its leading magic bytes. The stored
- * object's content-type metadata is NOT trustworthy: uploads don't pin a
- * content type and file parts hardcode a `.png` filename, so a JPEG routinely
- * ends up labeled `image/png` in storage. Providers like Anthropic reject a
- * declared-mime/actual-bytes mismatch ("specified image/png … appears to be
- * image/jpeg"), so we derive the type from the bytes themselves.
+ * The real media type, from the first bytes.
+ *
+ * Stored metadata mislabels JPEG and WebP uploads as PNG, and providers reject
+ * a mime/bytes mismatch, so the bytes are the authority.
  */
 async function sniffImageMediaType(bytes: Uint8Array): Promise<string | null> {
-  const sniffed = (await imageType(bytes))?.mime;
-  return sniffed && ACCEPTED_IMAGE_MEDIA_TYPES.has(sniffed) ? sniffed : null;
+  if (bytes.length >= 8 && bytes[0] === 0x89 && bytes[1] === 0x50) return 'image/png';
+  if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8) return 'image/jpeg';
+  if (
+    bytes.length >= 12 &&
+    String.fromCharCode(...bytes.slice(0, 4)) === 'RIFF' &&
+    String.fromCharCode(...bytes.slice(8, 12)) === 'WEBP'
+  ) {
+    return 'image/webp';
+  }
+  if (bytes.length >= 6 && String.fromCharCode(...bytes.slice(0, 3)) === 'GIF') return 'image/gif';
+  return null;
 }
 
+/** A stored image, as a data URL the model can read. */
 async function downloadAsBase64(
-  supabaseClient: SupabaseAnon,
-  bucket: string,
-  path: string,
+  store: StudioStore,
+  fileId: string,
 ): Promise<{ base64: string; mediaType: string } | null> {
-  const { data, error } = await supabaseClient.storage
-    .from(bucket)
-    .download(path);
-  if (error || !data) return null;
-
-  const bytes = new Uint8Array(await data.arrayBuffer());
+  let bytes: Uint8Array;
+  try {
+    ({ bytes } = await store.fileBytes(fileId));
+  } catch {
+    return null;
+  }
   let binary = '';
   const chunkSize = 0x8000;
   for (let index = 0; index < bytes.length; index += chunkSize) {
     binary += String.fromCharCode(...bytes.slice(index, index + chunkSize));
   }
-  // Trust the bytes over the stored content type: the metadata mislabels
-  // JPEG/WebP uploads as PNG, and providers reject a mime/bytes mismatch.
-  // `||` (not `??`) on purpose: a Blob with no Content-Type header reports
-  // `data.type` as `''`, which must fall through to the PNG default rather
-  // than emit an empty media type.
-  const mediaType =
-    (await sniffImageMediaType(bytes)) || data.type || 'image/png';
+  // Sniff the bytes rather than trust stored metadata, which mislabels
+  // JPEG/WebP uploads as PNG; providers reject a mime/bytes mismatch.
+  const mediaType = (await sniffImageMediaType(bytes)) || 'image/png';
   return { base64: btoa(binary), mediaType };
 }
 
 function parametricTools({
   previewPathForToolCall,
-  supabaseClient,
+  store,
 }: {
   previewPathForToolCall: (toolCallId: string) => string;
-  supabaseClient: SupabaseAnon;
+  store: StudioStore;
 }) {
   return {
     build_parametric_model: {
@@ -1050,11 +981,7 @@ function parametricTools({
         // ChatSession's `onToolCall`). If for any reason the upload
         // didn't land, `downloadAsBase64` returns null and we fall back
         // to text-only — never block the loop on a missing inspection sheet.
-        const downloaded = await downloadAsBase64(
-          supabaseClient,
-          'images',
-          previewPathForToolCall(toolCallId),
-        );
+        const downloaded = await downloadAsBase64(store, previewPathForToolCall(toolCallId));
         const views =
           output.inspection?.views.join(', ') ??
           'ISO, FRONT, BACK, LEFT, RIGHT, TOP, BOTTOM';
@@ -1104,17 +1031,13 @@ export async function handleAiChatRequest(req: Request) {
     return jsonResponse({ error: 'Method not allowed' }, 405);
   }
 
-  const supabaseClient = getAnonSupabaseClient({
-    global: {
-      headers: { Authorization: req.headers.get('Authorization') ?? '' },
-    },
-  });
-  const {
-    data: { user },
-  } = await supabaseClient.auth.getUser();
-
-  if (!user?.id || !user.email) {
-    return jsonResponse({ error: 'Unauthorized' }, 401);
+  const store = studioStore(req);
+  let user: { id: string; email: string };
+  try {
+    user = await store.user();
+  } catch (error) {
+    if (error instanceof NotSignedIn) return jsonResponse({ error: 'Unauthorized' }, 401);
+    throw error;
   }
 
   const rawBody = await req.json().catch(() => null);
@@ -1122,15 +1045,11 @@ export async function handleAiChatRequest(req: Request) {
     return jsonResponse({ error: 'Invalid request body' }, 400);
   }
 
-  const { data: conversation, error: conversationError } = await supabaseClient
-    .from('conversations')
-    .select('id, type, user_id, current_message_leaf_id')
-    .eq('id', rawBody.conversationId)
-    .eq('user_id', user.id)
-    .single()
-    .overrideTypes<ConversationAccess>();
-
-  if (conversationError || !conversation) {
+  let conversation: ConversationAccess;
+  try {
+    // Ownership is the engine's to enforce; someone else's id is a 404 there.
+    conversation = (await store.conversation(rawBody.conversationId)) as unknown as ConversationAccess;
+  } catch {
     return jsonResponse({ error: 'Conversation not found' }, 404);
   }
 
@@ -1170,20 +1089,19 @@ export async function handleAiChatRequest(req: Request) {
     return jsonResponse({ error: 'Billing service unavailable' }, 503);
   }
 
-  const tools =
-    conversation.type === 'creative'
-      ? creativeTools({ conversation, req, model: rawBody.model })
-      : parametricTools({
-          supabaseClient,
-          previewPathForToolCall: (toolCallId) =>
-            `${user.id}/${conversation.id}/inspection-preview-${toolCallId}`,
-        });
+  // One tool set. The "creative" lane generated meshes through fal.ai and
+  // stored them in the old database; it could not run without FAL_KEY, which
+  // no deployment sets, and it held most of what tied this app to that store.
+  const tools = parametricTools({
+    store,
+    previewPathForToolCall: (toolCallId) => `inspection-preview-${toolCallId}`,
+  });
 
   let branchMessages: AppUIMessage[];
   let leafRole: 'user' | 'assistant';
   try {
     const branchResult = await loadBranchFromDb({
-      supabaseClient,
+      store,
       conversationId: conversation.id,
       leafId: conversation.current_message_leaf_id,
     });
@@ -1250,11 +1168,7 @@ export async function handleAiChatRequest(req: Request) {
             }
             const imageId = imageIdFromFilename(part.filename);
             if (!imageId) return null;
-            const downloaded = await downloadAsBase64(
-              supabaseClient,
-              'images',
-              imageStoragePath(conversation.user_id, conversation.id, imageId),
-            );
+            const downloaded = await downloadAsBase64(store, imageId);
             if (!downloaded) return null;
             return {
               ...part,
@@ -1514,7 +1428,7 @@ export async function handleAiChatRequest(req: Request) {
         void emitConversationTitle({
           writer,
           model: utilityModel(providers),
-          supabaseClient,
+          store,
           conversation,
           firstMessage: branchMessages[0],
         });
@@ -1587,32 +1501,30 @@ export async function handleAiChatRequest(req: Request) {
               hasPendingToolCall,
             });
             let error: { message: string } | null = null;
-            if (persistAction === 'update') {
-              ({ error } = await supabaseClient
-                .from('messages')
-                .update(serializedMessage)
-                .eq('id', responseMessage.id)
-                .eq('conversation_id', conversation.id));
-            } else if (persistAction === 'insert') {
-              ({ error } = await supabaseClient.from('messages').insert({
-                id: responseMessage.id,
-                conversation_id: conversation.id,
-                role: responseMessage.role,
-                ...serializedMessage,
-                parent_message_id: leafMessageId,
-              }));
-            } else {
-              // persistAction === 'skip': the client owns this row's `parts`
-              // (it persists the resolved tool output). Still record this
-              // turn's billing metadata via a metadata-ONLY update — it touches
-              // a different column than the client's `parts` write, and
-              // Postgres re-evaluates concurrent same-row updates, so the
-              // client's parts are never clobbered.
-              ({ error } = await supabaseClient
-                .from('messages')
-                .update({ metadata: serializedMessage.metadata })
-                .eq('id', responseMessage.id)
-                .eq('conversation_id', conversation.id));
+            try {
+              if (persistAction === 'update') {
+                await store.patchMessage(conversation.id, responseMessage.id, serializedMessage);
+              } else if (persistAction === 'insert') {
+                await store.putMessage(conversation.id, {
+                  id: responseMessage.id,
+                  role: responseMessage.role,
+                  ...serializedMessage,
+                  parent_message_id: leafMessageId,
+                });
+              } else {
+                // persistAction === 'skip': the client owns this row's parts
+                // (it persists the resolved tool output). Still record this
+                // turn's billing metadata with a metadata-only update, which
+                // touches a different column than the client's parts write.
+                await store.patchMessage(conversation.id, responseMessage.id, {
+                  metadata: serializedMessage.metadata,
+                });
+              }
+            } catch (persistError) {
+              error = {
+                message:
+                  persistError instanceof Error ? persistError.message : String(persistError),
+              };
             }
 
             if (error) {
@@ -1671,7 +1583,7 @@ export async function handleAiChatRequest(req: Request) {
               await emitConversationSuggestions({
                 writer,
                 model: utilityModel(providers),
-                supabaseClient,
+                store,
                 conversation,
                 branch: [
                   ...branchMessages,
@@ -1703,22 +1615,19 @@ export async function handleAiChatRequest(req: Request) {
 async function emitConversationTitle({
   writer,
   model,
-  supabaseClient,
+  store,
   conversation,
   firstMessage,
 }: {
   writer: UIMessageStreamWriter<AppUIMessage>;
   model: LanguageModel;
-  supabaseClient: SupabaseAnon;
+  store: StudioStore;
   conversation: ConversationAccess;
   firstMessage: AppUIMessage;
 }) {
   try {
     const title = await generateConversationTitle({ model, firstMessage });
-    await supabaseClient
-      .from('conversations')
-      .update({ title })
-      .eq('id', conversation.id);
+    await store.patchConversation(conversation.id, { title });
     writer.write({
       transient: true,
       type: 'data-title-update',
@@ -1745,13 +1654,13 @@ async function emitConversationTitle({
 async function emitConversationSuggestions({
   writer,
   model,
-  supabaseClient,
+  store,
   conversation,
   branch,
 }: {
   writer: UIMessageStreamWriter<AppUIMessage>;
   model: LanguageModel;
-  supabaseClient: SupabaseAnon;
+  store: StudioStore;
   conversation: ConversationAccess;
   branch: AppUIMessage[];
 }) {
@@ -1765,21 +1674,14 @@ async function emitConversationSuggestions({
 
     // Merge into existing settings (which holds `model`, etc.) instead of
     // clobbering — keep the row's other fields intact.
-    const { data: convRow } = await supabaseClient
-      .from('conversations')
-      .select('settings')
-      .eq('id', conversation.id)
-      .single();
+    const convRow = await store.conversation(conversation.id);
     const currentSettings =
-      convRow?.settings &&
-      typeof convRow.settings === 'object' &&
-      !Array.isArray(convRow.settings)
-        ? (convRow.settings as Record<string, unknown>)
+      convRow.settings && typeof convRow.settings === 'object' && !Array.isArray(convRow.settings)
+        ? convRow.settings
         : {};
-    await supabaseClient
-      .from('conversations')
-      .update({ settings: { ...currentSettings, suggestions } })
-      .eq('id', conversation.id);
+    await store.patchConversation(conversation.id, {
+      settings: { ...currentSettings, suggestions },
+    });
 
     writer.write({
       transient: true,

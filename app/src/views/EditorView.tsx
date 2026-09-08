@@ -23,13 +23,12 @@ import { ConversationContext } from '@/contexts/ConversationContext';
 import { SelectedItemsContext } from '@/contexts/SelectedItemsContext';
 import { useConversation } from '@/contexts/ConversationContext';
 import {
-  ensureInputRecords,
   messageRowToChatMessage,
   type ChatMessage,
 } from '@/lib/aiMessages';
 import parseParameters from '@shared/parseParameters';
 import { normalizeModelId } from '@shared/models';
-import { supabase } from '@/lib/supabase';
+import { getConversation, putMessage, updateConversation as patchConversation } from '@/lib/studioData';
 import { updateParameter } from '@/lib/utils';
 import {
   persistAssistantParts,
@@ -69,7 +68,6 @@ export default function EditorView() {
   const { id: conversationId } = useParams({
     from: '/_layout/_auth/editor/$id',
   });
-  const { user } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [images, setImages] = useState<MessageItem[]>([]);
@@ -80,29 +78,20 @@ export default function EditorView() {
     enabled: !!conversationId,
     queryFn: async () => {
       if (!conversationId) throw new Error('Conversation ID is required');
-      const { data, error } = await supabase
-        .from('conversations')
-        .select('*')
-        .eq('id', conversationId)
-        .eq('user_id', user?.id ?? '')
-        .limit(1)
-        .single();
-      if (error) throw error;
-      return data as Conversation;
+      // Ownership is the engine's to enforce; someone else's id is a 404.
+      return (await getConversation(conversationId)) as unknown as Conversation;
     },
   });
 
   const { mutate: updateConversation, mutateAsync: updateConversationAsync } =
     useMutation({
       mutationFn: async (conversation: Conversation) => {
-        const { data, error } = await supabase
-          .from('conversations')
-          .update(conversation)
-          .eq('id', conversation.id)
-          .select()
-          .single()
-          .overrideTypes<Conversation>();
-        if (error) throw error;
+        const data = (await patchConversation(conversation.id, {
+          title: conversation.title,
+          privacy: conversation.privacy,
+          settings: (conversation.settings ?? {}) as Record<string, unknown>,
+          current_message_leaf_id: conversation.current_message_leaf_id,
+        })) as unknown as Conversation;
         return data;
       },
       onMutate(conversation) {
@@ -272,11 +261,6 @@ function ConversationEditor() {
   const handleSendParts = useCallback(
     async (parts: AppUIMessage['parts']) => {
       if (!user?.id) throw new Error('User must be authenticated');
-      await ensureInputRecords({
-        parts,
-        conversationId: conversation.id,
-        userId: user.id,
-      });
       const parentMessageId = conversation.current_message_leaf_id ?? null;
       const userMessageId = await persistUserMessage({
         conversationId: conversation.id,
@@ -312,11 +296,6 @@ function ConversationEditor() {
   const handleEdit = useCallback(
     async (original: ChatMessage, parts: AppUIMessage['parts']) => {
       if (!user?.id) throw new Error('User must be authenticated');
-      await ensureInputRecords({
-        parts,
-        conversationId: conversation.id,
-        userId: user.id,
-      });
       const parentId = original.parent_message_id;
       const newUserMessageId = await persistUserMessage({
         conversationId: conversation.id,
@@ -345,16 +324,16 @@ function ConversationEditor() {
       // 'assistant'); the broader `'system'` slot on UIMessage is
       // never legitimate to copy.
       const role: Message['role'] = 'assistant';
-      const { error } = await supabase.from('messages').insert({
+      // The leaf is advanced explicitly below, so the engine must not do it.
+      await putMessage(conversation.id, {
         id: newId,
-        conversation_id: conversation.id,
         role,
         parts,
         metadata,
         parent_message_id: assistant.parent_message_id,
         rating: 0,
+        advance_leaf: false,
       });
-      if (error) throw error;
 
       // Mirror the trigger's leaf advance + add the copy to the messages
       // cache optimistically so the new branch resolves before refetch.
@@ -870,16 +849,6 @@ function findLatestPreview(messages: AppUIMessage[]): LatestPreview {
           type: 'artifact',
           messageId: message.id,
           artifact: part.input,
-        };
-      }
-      if (
-        part.type === 'tool-create_mesh' &&
-        part.state === 'output-available'
-      ) {
-        return {
-          type: 'mesh',
-          messageId: message.id,
-          meshId: part.output.id,
         };
       }
     }

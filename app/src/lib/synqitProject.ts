@@ -24,6 +24,11 @@ function read(): SynqitProjectRef {
 let cached: SynqitProjectRef = read();
 let cachedRaw: string | null = typeof window === 'undefined' ? null : localStorage.getItem(KEY);
 
+/** The linked project, outside React — tool handlers need it too. */
+export function getSynqitProject(): SynqitProjectRef {
+  return cached;
+}
+
 export function setSynqitProject(ref: SynqitProjectRef) {
   if (typeof window === 'undefined') return;
   try {

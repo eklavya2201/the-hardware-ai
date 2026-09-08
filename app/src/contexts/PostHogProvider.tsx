@@ -23,11 +23,7 @@ export function PostHogProvider({ children }: PostHogProviderProps) {
       return;
     }
 
-    analytics.identify(user.id, {
-      email: user.email,
-      created_at: user.created_at,
-      is_anonymous: user.is_anonymous,
-    });
+    analytics.identify(user.id, { email: user.email });
   }, [user]);
 
   // Track page views on route change

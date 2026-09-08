@@ -9,6 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import admin as admin_api
+from app.api import studio as studio_api
 from app.api import auth as auth_api
 from app.api import build_guide as build_guide_api
 from app.api import events as events_api
@@ -74,6 +75,8 @@ def create_app() -> FastAPI:
     app.include_router(events_api.router, prefix="/api")
     app.include_router(feedback_api.router, prefix="/api")
     app.include_router(admin_api.router, prefix="/api")
+    # The studio's own data: conversations, messages, files, profile.
+    app.include_router(studio_api.router, prefix="/api")
 
     @app.get("/api/health")
     def health() -> dict:

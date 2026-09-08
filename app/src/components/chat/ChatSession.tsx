@@ -1,6 +1,6 @@
 import { MessageBubble } from '@/components/chat/MessageBubble';
-import { requestSynqitSignIn } from '@/components/synqit/SynqitConnection';
 import { endBoardActivity, reportBoardActivity, startBoardActivity } from '@/lib/boardProgress';
+import { getSynqitProject } from '@/lib/synqitProject';
 import { SuggestionPills } from '@/components/chat/SuggestionPills';
 import { LimitReachedMessage } from '@/components/LimitReachedMessage';
 import TextAreaChat from '@/components/TextAreaChat';
@@ -10,12 +10,12 @@ import { useCachedAiChat } from '@/hooks/useCachedAiChat';
 import { useToast } from '@/hooks/use-toast';
 import { previewScadColoredViaToolWorker } from '@/worker/toolWorker';
 import { describeFacts, meshFacts, type MeshFacts } from '@/utils/meshFacts';
-import { designBoard } from '@/lib/synqitBoardAgent';
+import { designBoard, layoutExistingBoard } from '@/lib/synqitBoardAgent';
 import { apiUrl } from '@/services/api';
 import { messageRowToChatMessage, type ChatMessage } from '@/lib/aiMessages';
 import { collectStuckToolRecovery } from '@/components/chat/stuckToolRecovery';
 import { AssistantRowMissingError } from '@/services/messageService';
-import { supabase } from '@/lib/supabase';
+import { uploadFile } from '@/lib/studioData';
 import {
   generateColoredPreview,
   generateInspectionPreview,
@@ -170,10 +170,9 @@ export function ChatSession({
   // branch from `conversations.current_message_leaf_id` and walks parents
   // in the DB, so anything the SDK might put in `messages` is ignored.
   // ───────────────────────────────────────────────────────────────────────
-  const authHeaders = useCallback(async (): Promise<Record<string, string>> => {
-    const token = (await supabase.auth.getSession()).data.session?.access_token;
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  }, []);
+  // The engine cookie travels with the request because this is the same
+  // origin, so there is no token to read and no header to add.
+  const authHeaders = useCallback(async (): Promise<Record<string, string>> => ({}), []);
 
   // The chat endpoint returns 402 when the user is out of tokens. The AI
   // SDK transport doesn't expose the response status on its `onError`
@@ -260,7 +259,8 @@ export function ChatSession({
       if (
         toolCall.toolName !== 'build_parametric_model' &&
         toolCall.toolName !== 'answer_user' &&
-        toolCall.toolName !== 'design_board'
+        toolCall.toolName !== 'design_board' &&
+        toolCall.toolName !== 'layout_board'
       ) {
         return;
       }
@@ -287,6 +287,62 @@ export function ChatSession({
       const assistant =
         findAssistant(chat.messages as AppUIMessage[]) ??
         findAssistant(messagesRef.current);
+
+      if (toolCall.toolName === 'layout_board') {
+        const settleLayout = async (output: {
+          status: 'success' | 'error';
+          message: string;
+          [k: string]: unknown;
+        }) => {
+          chat.addToolOutput({
+            state: 'output-available',
+            tool: 'layout_board',
+            toolCallId: toolCall.toolCallId,
+            output,
+          });
+        };
+
+        const projectId = getSynqitProject()?.id;
+        if (!projectId) {
+          await settleLayout({
+            status: 'error',
+            message:
+              'No board is linked to this conversation, so there is nothing to place. Design one first with design_board.',
+          });
+          return;
+        }
+
+        try {
+          startBoardActivity('placing');
+          const r = await layoutExistingBoard(projectId, reportBoardActivity);
+          await settleLayout({
+            status: 'success',
+            projectId: r.projectId,
+            placed: r.placed,
+            traces: r.traces,
+            unrouted: r.unrouted,
+            errors: r.errors,
+            warnings: r.warnings,
+            boardSize: r.boardSize,
+            message:
+              `Placed ${r.placed} of ${r.components} parts on a ${r.boardSize ?? 'sized'} board with ` +
+              `${r.traces} traces, ${r.unrouted} nets still unrouted, ${r.errors} errors and ` +
+              `${r.warnings} warnings. The PCB view now shows it. Report these numbers honestly.`,
+          });
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          await settleLayout({
+            status: 'error',
+            message:
+              msg === 'not_signed_in'
+                ? 'The user is signed out, so the board could not be placed. Tell them to sign in again.'
+                : `Synqit could not place and route the board: ${msg}`,
+          });
+        } finally {
+          endBoardActivity();
+        }
+        return;
+      }
 
       if (toolCall.toolName === 'design_board') {
         const input = toolCall.input as { name?: unknown; brief?: unknown } | null;
@@ -358,12 +414,11 @@ export function ChatSession({
           });
         } catch (err) {
           const msg = err instanceof Error ? err.message : String(err);
-          if (msg === 'not_signed_in') requestSynqitSignIn();
           await settle({
             status: 'error',
             message:
               msg === 'not_signed_in'
-                ? 'The studio has no Synqit account connected, so the board could not be created. A sign-in box has been opened for the user; tell them to connect their Synqit account there and ask again.'
+                ? 'The user is signed out, so the board could not be created. Tell them to sign in again and ask once more.'
                 : `Synqit could not design the board: ${msg}`,
           });
         } finally {
@@ -568,14 +623,14 @@ export function ChatSession({
             const inspectionBlob = await fetch(inspectionDataUrl).then(
               (response) => response.blob(),
             );
-            const inspectionPath = `${user.id}/${conversation.id}/inspection-preview-${toolCall.toolCallId}`;
-            const { error: inspectionUploadError } = await supabase.storage
-              .from('images')
-              .upload(inspectionPath, inspectionBlob, {
-                contentType: 'image/png',
-                upsert: true,
-              });
-            if (inspectionUploadError) throw inspectionUploadError;
+            // Keyed on the tool call, so the server can attach this sheet to
+            // the model's next turn without being told where it went.
+            await uploadFile(inspectionBlob, {
+              kind: 'preview',
+              conversationId: conversation.id,
+              fileId: `inspection-preview-${toolCall.toolCallId}`,
+              filename: 'inspection.png',
+            });
             inspectionUploaded = true;
           }
         } catch (uploadError) {
@@ -597,14 +652,12 @@ export function ChatSession({
             const thumbnailBlob = await fetch(thumbnailDataUrl).then(
               (response) => response.blob(),
             );
-            const previewPath = `${user.id}/${conversation.id}/preview-${toolCall.toolCallId}`;
-            const { error: thumbnailUploadError } = await supabase.storage
-              .from('images')
-              .upload(previewPath, thumbnailBlob, {
-                contentType: 'image/png',
-                upsert: true,
-              });
-            if (thumbnailUploadError) throw thumbnailUploadError;
+            await uploadFile(thumbnailBlob, {
+              kind: 'preview',
+              conversationId: conversation.id,
+              fileId: `preview-${toolCall.toolCallId}`,
+              filename: 'thumbnail.png',
+            });
           }
         } catch (uploadError) {
           console.warn('Failed to upload OpenSCAD thumbnail:', uploadError);
@@ -1029,7 +1082,6 @@ export function ChatSession({
                   node.role === 'user' ? handleEditUserText : undefined
                 }
                 onViewArtifact={(artifact) => onViewArtifact(artifact, node.id)}
-                onViewMesh={(meshId) => onViewMesh(meshId, node.id)}
                 onChangeRating={
                   node.role === 'assistant'
                     ? (rating) => onChangeRating(node.id, rating)
@@ -1123,16 +1175,6 @@ function findLatestPreview(messages: AppUIMessage[]): LatestPreview {
           type: 'artifact',
           messageId: message.id,
           artifact: part.input,
-        };
-      }
-      if (
-        part.type === 'tool-create_mesh' &&
-        part.state === 'output-available'
-      ) {
-        return {
-          type: 'mesh',
-          messageId: message.id,
-          meshId: part.output.id,
         };
       }
     }

@@ -1,5 +1,3 @@
-import { supabase } from '@/lib/supabase';
-
 /**
  * Where the studio talks to the Synqit engine.
  *
@@ -44,26 +42,6 @@ export async function getSynqitSession(): Promise<SynqitSession> {
   const res = await fetch(SYNQIT_SESSION_URL, { credentials: 'include' });
   if (!res.ok) return { signedIn: false };
   return (await res.json()) as SynqitSession;
-}
-
-/**
- * Link the signed-in studio user to their engine account.
- *
- * There is no second password to type: the studio server proves who we are
- * with our own token and asks the engine to provision or open that person's
- * account. Safe to call whenever a board call comes back 401.
- */
-export async function linkSynqitSession(): Promise<SynqitSession> {
-  const token = (await supabase.auth.getSession()).data.session?.access_token;
-  if (!token) throw new Error('Sign in to the studio first.');
-  const res = await fetch(SYNQIT_SESSION_URL, {
-    method: 'POST',
-    credentials: 'include',
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  const data = (await res.json().catch(() => ({}))) as SynqitSession & { error?: string };
-  if (!res.ok) throw new Error(data.error || 'Could not connect to the Synqit engine.');
-  return data;
 }
 
 export async function signOutOfSynqit(): Promise<void> {

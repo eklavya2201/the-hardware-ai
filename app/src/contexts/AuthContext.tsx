@@ -1,8 +1,22 @@
 import { createContext, useContext } from 'react';
-import { Session, User } from '@supabase/supabase-js';
 
 export type SubscriptionLevel = 'standard' | 'pro' | 'max';
 export type PlanLevel = SubscriptionLevel | 'free';
+
+/**
+ * A person, as the engine knows them.
+ *
+ * There is one account system now: the engine's. This used to be a Supabase
+ * `User`, which meant the studio carried a second identity that had to be kept
+ * in step with the one that actually owns the boards.
+ */
+export type StudioUser = {
+  id: string;
+  email: string;
+  full_name?: string | null;
+  avatar_url?: string | null;
+  is_admin?: boolean;
+};
 
 export type BillingStatus = {
   user: {
@@ -30,17 +44,12 @@ export function getLevel(billing: BillingStatus | null | undefined): PlanLevel {
 }
 
 interface AuthContextType {
-  session: Session | null;
-  user: User | null;
+  user: StudioUser | null;
   billing: BillingStatus | null;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, name: string) => Promise<void>;
   signOut: () => Promise<void>;
-  signInWithMagicLink: (email: string) => Promise<void>;
-  verifyOtp: (email: string, token: string) => Promise<void>;
-  resetPassword: (email: string) => Promise<void>;
-  updatePassword: (password: string) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(

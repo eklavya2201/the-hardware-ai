@@ -7,7 +7,6 @@ import { cn } from '@/lib/utils';
 import { DeleteAccountDialog } from '@/components/auth/DeleteAccountDialog';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { useMutation } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import * as Sentry from '@sentry/react';
@@ -16,7 +15,11 @@ import { AvatarUpdateDialog } from '@/components/auth/AvatarUpdateDialog';
 import { useTokenPacks } from '@/hooks/useTokenPacks';
 import { PLAN_DISPLAY_NAMES } from '@/config/plan-features';
 import { BILLING_URL, BILLING_UPGRADE_URL } from '@/config/billing';
-import { accountUrl, ssoManaged } from '@/lib/supabase';
+import { SYNQIT_APP_URL } from '@/lib/synqitApi';
+
+// The engine owns the account, so its settings page is the place to change it.
+const accountUrl = `${SYNQIT_APP_URL}/settings`;
+const ssoManaged = true;
 import { UserAvatar } from '@/components/chat/UserAvatar';
 
 function formatPeriodEnd(iso: string | null | undefined): string | null {
@@ -31,7 +34,7 @@ function formatPeriodEnd(iso: string | null | undefined): string | null {
 }
 
 export default function SettingsView() {
-  const { billing, user, resetPassword } = useAuth();
+  const { billing, user } = useAuth();
   const level = getLevel(billing);
   const freeTokens = billing?.tokens.free ?? 0;
   const subscriptionTokens = billing?.tokens.subscription ?? 0;
@@ -112,33 +115,10 @@ export default function SettingsView() {
     );
   };
 
-  const { mutate: handleResetPassword, isPending: isResetLoading } =
-    useMutation({
-      mutationFn: async () => {
-        if (!user?.email) throw new Error('User email not found');
-        await resetPassword(user?.email);
-      },
-      onSuccess: () => {
-        toast({
-          title: 'Success',
-          description:
-            'Password reset instructions have been sent to your email',
-        });
-      },
-      onError: () => {
-        toast({
-          title: 'Error',
-          description: 'Failed to reset password',
-          variant: 'destructive',
-        });
-      },
-    });
-
   // When SSO owns the identity and an external account page is configured,
   // profile / email / password / delete are managed there (the
   // accounts.google.com model) rather than edited in-app. Self-host (no SSO
-  // or no account URL) keeps the native controls. `ssoManaged` is imported from
-  // @/lib/supabase so every SSO gate shares one definition.
+  // The engine owns the account, so its own settings page is the place.
 
   const tierLabel = `Synqit ${PLAN_DISPLAY_NAMES[level]}`;
 
@@ -270,26 +250,6 @@ export default function SettingsView() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between gap-4 pt-5">
-                  <div className="min-w-0">
-                    <div className="text-sm text-sq-neutral-50">Password</div>
-                    <div className="mt-0.5 text-xs text-sq-neutral-200">
-                      Send a reset link to your email
-                    </div>
-                  </div>
-                  <Button
-                    onClick={() => handleResetPassword()}
-                    disabled={isResetLoading}
-                    variant="dark"
-                    className="flex-shrink-0 rounded-full font-light"
-                  >
-                    {isResetLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      'Reset Password'
-                    )}
-                  </Button>
-                </div>
               </div>
             )}
           </section>

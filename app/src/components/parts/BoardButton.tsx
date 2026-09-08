@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 import { CircuitBoard, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,6 @@ import {
 } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { SYNQIT_API_BASE } from '@/lib/synqitApi';
-import { synqitHandoffUrl } from '@/components/auth/SynqitSignInButton';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { setSynqitProject } from '@/lib/synqitProject';
@@ -148,9 +148,9 @@ export function BoardButton({
           <p className="text-xs text-sq-text-secondary">
             {error}{' '}
             {error.startsWith('Sign in') && (
-              <a href={synqitHandoffUrl('/')} className="text-sq-blue hover:underline">
-                Continue with Synqit
-              </a>
+              <Link to="/signin" className="text-sq-blue hover:underline">
+                Sign in
+              </Link>
             )}
           </p>
         )}

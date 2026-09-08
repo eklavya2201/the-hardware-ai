@@ -1,6 +1,6 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { Conversation } from '@shared/types';
-import { supabase } from '@/lib/supabase';
+import { getConversation, updateConversation as patchConversation } from '@/lib/studioData';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from '@tanstack/react-router';
 
@@ -36,37 +36,22 @@ export function useConversation() {
           throw new Error('User must be authenticated');
         }
 
-        const { data, error } = await supabase
-          .from('conversations')
-          .select('*')
-          .eq('id', conversationId)
-          .eq('user_id', user.id)
-          .limit(1)
-          .single()
-          .overrideTypes<Conversation>();
-
-        if (error) {
-          throw error;
-        }
-        return data as Conversation;
+        // Ownership is enforced by the engine: someone else's conversation is
+        // a 404, so there is no user_id filter to remember here.
+        return (await getConversation(conversationId)) as unknown as Conversation;
       },
     });
 
   const { mutate: updateConversation, mutateAsync: updateConversationAsync } =
     useMutation({
       mutationFn: async (conversation: Conversation) => {
-        const { data, error } = await supabase
-          .from('conversations')
-          .update(conversation)
-          .eq('id', conversation.id)
-          .select()
-          .single();
-
-        if (error) {
-          throw error;
-        }
-
-        return data;
+        const updated = await patchConversation(conversation.id, {
+          title: conversation.title,
+          privacy: conversation.privacy,
+          settings: (conversation.settings ?? {}) as Record<string, unknown>,
+          current_message_leaf_id: conversation.current_message_leaf_id,
+        });
+        return updated as unknown as Conversation;
       },
       onMutate: async (conversation) => {
         // Cancel any outgoing refetches

@@ -7,7 +7,7 @@ import { MeshPreview } from '@/components/viewer/MeshPreview';
 import { OpenSCADPreview } from '@/components/viewer/OpenSCADViewer';
 import { ConversationContext } from '@/contexts/ConversationContext';
 import { messageRowToChatMessage } from '@/lib/aiMessages';
-import { supabase } from '@/lib/supabase';
+import { getConversation, listMessages } from '@/lib/studioData';
 import { updateParameter } from '@/lib/utils';
 import parseParameters from '@shared/parseParameters';
 import type { AppUIMessage } from '@shared/chatAi';
@@ -49,15 +49,7 @@ export default function ShareView() {
     enabled: !!conversationId,
     queryFn: async () => {
       if (!conversationId) throw new Error('Conversation ID is required');
-      const { data, error } = await supabase
-        .from('conversations')
-        .select('*')
-        .eq('id', conversationId)
-        .limit(1)
-        .single()
-        .overrideTypes<Conversation>();
-      if (error) throw error;
-      return data;
+      return (await getConversation(conversationId)) as unknown as Conversation;
     },
   });
 
@@ -65,14 +57,7 @@ export default function ShareView() {
     queryKey: ['share-messages', conversationId],
     enabled: !!conversationId && !!conversation,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('messages')
-        .select('*')
-        .eq('conversation_id', conversationId)
-        .order('created_at', { ascending: true })
-        .overrideTypes<Message[]>();
-      if (error) throw error;
-      return data ?? [];
+      return (await listMessages(conversationId!)) as unknown as Message[];
     },
   });
 
@@ -185,12 +170,6 @@ function ConversationShare({ conversation, messages }: ConversationShareProps) {
     },
     [],
   );
-  const handleViewMesh = useCallback((meshId: string, messageId: string) => {
-    setCurrentOutput(undefined);
-    setActivePreview({ type: 'mesh', messageId, meshId });
-    setMobilePreviewVersion((version) => version + 1);
-  }, []);
-
   const changeParameters = useCallback(
     (nextParameters: Parameter[]) => {
       if (!baseCodeRef.current || activePreview?.type !== 'artifact') return;
@@ -255,7 +234,6 @@ function ConversationShare({ conversation, messages }: ConversationShareProps) {
                   onViewArtifact={(artifact) =>
                     handleViewArtifact(artifact, node.id)
                   }
-                  onViewMesh={(meshId) => handleViewMesh(meshId, node.id)}
                 />
               ))}
             </div>
@@ -359,16 +337,6 @@ function findLatestPreview(
           type: 'artifact',
           messageId: message.id,
           artifact: part.input,
-        };
-      }
-      if (
-        part.type === 'tool-create_mesh' &&
-        part.state === 'output-available'
-      ) {
-        return {
-          type: 'mesh',
-          messageId: message.id,
-          meshId: part.output.id,
         };
       }
     }
