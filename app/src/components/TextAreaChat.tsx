@@ -63,6 +63,7 @@ import {
 import { useMeshFiles } from '@/contexts/MeshFilesContext';
 import { PartsButton } from '@/components/parts/PartsButton';
 import { BoardButton } from '@/components/parts/BoardButton';
+import { INSERT_EVENT } from '@/components/synqit/LibraryDialog';
 import { AnimatePresence, motion } from 'framer-motion';
 import { apiJson } from '@/services/api';
 import { z } from 'zod';
@@ -479,6 +480,22 @@ function TextAreaChat({
   const [isFocused, setIsFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [input, setInput] = useState('');
+
+  // The library overlay (and anything else outside the composer) appends to
+  // the prompt through one event, so it needs no reference to this component.
+  useEffect(() => {
+    const onInsert = (e: Event) => {
+      const text = (e as CustomEvent<string>).detail;
+      if (typeof text !== 'string' || !text) return;
+      setInput((v) => (v.trim() ? `${v.trimEnd()}
+
+${text}
+` : `${text}
+`));
+    };
+    window.addEventListener(INSERT_EVENT, onInsert);
+    return () => window.removeEventListener(INSERT_EVENT, onInsert);
+  }, []);
   const [isDragging, setIsDragging] = useState(false);
   const [isDragHover, setIsDragHover] = useState(false);
   const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);

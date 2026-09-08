@@ -96,6 +96,25 @@ while hidden, so switching back never recompiles.
 - The side panel keeps the list-shaped Synqit views (BOM, Build guide,
   Library) as embeds for now.
 
+### 6. No embedded Synqit anywhere (2026-09-08, evening)
+
+Framing the Synqit app inside the studio looked like a mini web app in a
+column and behaved like one. Every Synqit surface is now drawn natively in the
+studio theme, from the same APIs:
+
+| Surface | Where | Source |
+|---|---|---|
+| Schematic, PCB | centre viewport, floating switcher | `GET /projects/{id}` |
+| BOM | left panel tab | the project's `bom` array + CSV export link |
+| Build guide | left panel tab | `GET/POST /projects/{id}/build-guide[/generate]`, checkable steps, Markdown export |
+| Part library | overlay from the sidebar | `GET /library/index` once per session, filtered in the browser; Insert appends the part's facts to the prompt |
+
+Layout also changed: the conversation moved to the **right**, the tool panel
+(Parameters / BOM / Build guide) to the **left**, matching the Synqit editor
+where the copilot sits on the right. Library sits in the left rail above
+Support. Panels use a new `autoSaveId` so old saved sizes do not fight the new
+order.
+
 ## Where the code lives
 
 | Piece | Repo / path |

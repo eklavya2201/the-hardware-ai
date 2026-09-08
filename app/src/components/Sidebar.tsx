@@ -29,7 +29,8 @@ import {
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { useQuery } from '@tanstack/react-query';
 import { ConditionalWrapper } from './ConditionalWrapper';
-import { LifeBuoy } from 'lucide-react';
+import { LibraryBig, LifeBuoy } from 'lucide-react';
+import { LibraryDialog } from '@/components/synqit/LibraryDialog';
 
 const SYNQIT_HOME = 'https://synqit.in';
 const SYNQIT_SUPPORT = 'mailto:hello@synqit.in';
@@ -57,6 +58,7 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
   const { user, signOut } = useAuth();
   const isMobile = useIsMobile();
   const { data: profile } = useProfile();
+  const [libraryOpen, setLibraryOpen] = useState(false);
 
   // Get 10 most recent conversations
   const { data: recentConversations } = useQuery<Conversation[]>({
@@ -133,6 +135,7 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
     <div
       className={`${isSidebarOpen ? 'w-64' : 'w-16'} flex h-full flex-shrink-0 flex-col bg-sq-bg-dark pb-2 transition-all duration-300 ease-in-out dark:bg-gray-950`}
     >
+      <LibraryDialog open={libraryOpen} onClose={() => setLibraryOpen(false)} />
       <div className="p-4 dark:border-gray-800">
         <ConditionalWrapper
           condition={!isSidebarOpen}
@@ -334,6 +337,26 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
             {!isSidebarOpen && (
               <Tooltip>
                 <TooltipTrigger asChild>
+                  <Button
+                    variant="sq_dark_collapsed"
+                    className="mb-0 ml-[1px] h-[46px] w-[46px] p-0"
+                    onClick={() => setLibraryOpen(true)}
+                  >
+                    <LibraryBig className="h-[22px] w-[22px]" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="flex flex-col">
+                  <span className="font-semibold">Library</span>
+                  <span className="text-xs text-muted-foreground">
+                    Synqit's part library
+                  </span>
+                </TooltipContent>
+              </Tooltip>
+            )}
+
+            {!isSidebarOpen && (
+              <Tooltip>
+                <TooltipTrigger asChild>
                   <a href={SYNQIT_SUPPORT}>
                     <Button
                       variant="sq_dark_collapsed"
@@ -354,15 +377,25 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
 
             {/* Discord Button - Expanded state */}
             {isSidebarOpen && (
-              <a href={SYNQIT_SUPPORT}>
+              <>
                 <Button
                   variant="sq_dark"
                   className="flex h-10 w-full items-center justify-start gap-2"
+                  onClick={() => setLibraryOpen(true)}
                 >
-                  <LifeBuoy className="h-[22px] w-[22px] min-w-[22px]" />
-                  Support
+                  <LibraryBig className="h-[22px] w-[22px] min-w-[22px]" />
+                  Library
                 </Button>
-              </a>
+                <a href={SYNQIT_SUPPORT}>
+                  <Button
+                    variant="sq_dark"
+                    className="flex h-10 w-full items-center justify-start gap-2"
+                  >
+                    <LifeBuoy className="h-[22px] w-[22px] min-w-[22px]" />
+                    Support
+                  </Button>
+                </a>
+              </>
             )}
 
             <DropdownMenu>

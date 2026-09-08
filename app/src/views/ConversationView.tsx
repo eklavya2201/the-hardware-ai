@@ -324,45 +324,55 @@ export function ConversationView({
       <PanelGroup
         direction="horizontal"
         className="h-full w-full"
-        autoSaveId="editor-panels"
+        autoSaveId="editor-panels-v2"
       >
+        {/* Left: parameters + the Synqit views. Mount stays stable; collapses
+            to 0 when there is no artifact so react-resizable-panels does not
+            reshuffle when the user switches between mesh and parametric. */}
         <Panel
           collapsible
-          ref={chatPanelRef}
-          defaultSize={chatPanelSizes.defaultSize}
-          minSize={chatPanelSizes.minSize}
-          maxSize={chatPanelSizes.maxSize}
-          id="chat-panel"
+          collapsedSize={0}
+          ref={parametersPanelRef}
+          defaultSize={parametersPanelSizes.defaultSize}
+          minSize={parametersPanelSizes.minSize}
+          maxSize={parametersPanelSizes.maxSize}
+          id="parameters-panel"
           order={0}
         >
-          <div className="relative flex h-full min-w-0 flex-col border-r border-sq-neutral-700 bg-sq-bg-secondary-dark">
-            {chatPanelSlot}
+          <div className="h-full border-r border-sq-neutral-700 bg-sq-bg-secondary-dark">
+            {hasParameters && parametersSlot}
           </div>
         </Panel>
 
-        <PanelResizeHandle className="resize-handle group relative">
-          {!isChatCollapsed && (
+        <PanelResizeHandle
+          disabled={!hasParameters}
+          className={cn(
+            'resize-handle group relative',
+            !hasParameters && 'pointer-events-none !w-0 before:hidden',
+          )}
+        >
+          {hasParameters && !isParametersCollapsed && (
             <div className="absolute left-1 top-1/2 z-50 -translate-y-1/2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
               <Button
                 variant="ghost"
                 className="rounded-l-none rounded-r-lg border-b border-r border-t border-gray-200/20 bg-sq-bg-secondary-dark p-2 text-sq-text-primary transition-colors [@media(hover:hover)]:hover:bg-sq-neutral-950 [@media(hover:hover)]:hover:text-sq-neutral-10"
-                onClick={handleChatCollapse}
+                onClick={handleParametersCollapse}
               >
                 <ChevronsRight className="h-5 w-5 rotate-180" />
               </Button>
             </div>
           )}
-          {isChatCollapsed && (
+          {hasParameters && isParametersCollapsed && (
             <div className="absolute left-0 top-1/2 z-50 -translate-y-1/2">
               <Button
-                aria-label="Expand chat panel"
-                onClick={handleChatExpand}
-                className="flex h-[100px] w-9 flex-col items-center rounded-l-none rounded-r-lg bg-sq-bg-secondary-dark px-1.5 py-2 text-sq-text-primary"
+                aria-label="Expand parameters panel"
+                onClick={handleParametersExpand}
+                className="flex h-[140px] w-9 flex-col items-center rounded-l-none rounded-r-lg bg-sq-bg-secondary-dark px-1.5 py-2 text-sq-text-primary"
               >
-                <ChevronsRight className="h-5 w-5 text-white" />
+                <ChevronsRight className="mb-3 h-5 w-5 text-white" />
                 <div className="flex flex-1 items-center justify-center">
-                  <span className="rotate-90 transform text-center text-base font-semibold text-white">
-                    Chat
+                  <span className="min-w-[100px] rotate-90 transform text-center text-base font-semibold text-white">
+                    Parameters
                   </span>
                 </div>
               </Button>
@@ -385,38 +395,29 @@ export function ConversationView({
           {previewSlot}
         </Panel>
 
-        {/* Parameter panel mount stays stable; collapses to 0 when no artifact
-            so react-resizable-panels doesn't reshuffle layout when the user
-            switches between mesh and parametric outputs. */}
-        <PanelResizeHandle
-          disabled={!hasParameters}
-          className={cn(
-            'resize-handle group relative',
-            !hasParameters && 'pointer-events-none !w-0 before:hidden',
-          )}
-        >
-          {hasParameters && !isParametersCollapsed && (
+        <PanelResizeHandle className="resize-handle group relative">
+          {!isChatCollapsed && (
             <div className="absolute right-1 top-1/2 z-50 -translate-y-1/2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
               <Button
                 variant="ghost"
                 className="rounded-l-lg rounded-r-none border-b border-l border-t border-gray-200/20 bg-sq-bg-secondary-dark p-2 text-sq-text-primary transition-colors [@media(hover:hover)]:hover:bg-sq-neutral-950 [@media(hover:hover)]:hover:text-sq-neutral-10"
-                onClick={handleParametersCollapse}
+                onClick={handleChatCollapse}
               >
                 <ChevronsRight className="h-5 w-5" />
               </Button>
             </div>
           )}
-          {hasParameters && isParametersCollapsed && (
+          {isChatCollapsed && (
             <div className="absolute right-0 top-1/2 z-50 -translate-y-1/2">
               <Button
-                aria-label="Expand parameters panel"
-                onClick={handleParametersExpand}
-                className="flex h-[140px] w-9 flex-col items-center rounded-l-lg rounded-r-none bg-sq-bg-secondary-dark p-2 px-1.5 py-2 text-sq-text-primary"
+                aria-label="Expand chat panel"
+                onClick={handleChatExpand}
+                className="flex h-[100px] w-9 flex-col items-center rounded-l-lg rounded-r-none bg-sq-bg-secondary-dark px-1.5 py-2 text-sq-text-primary"
               >
-                <ChevronsRight className="mb-3 h-5 w-5 rotate-180 text-white" />
+                <ChevronsRight className="h-5 w-5 rotate-180 text-white" />
                 <div className="flex flex-1 items-center justify-center">
-                  <span className="min-w-[100px] -rotate-90 transform text-center text-base font-semibold text-white">
-                    Parameters
+                  <span className="-rotate-90 transform text-center text-base font-semibold text-white">
+                    Chat
                   </span>
                 </div>
               </Button>
@@ -424,17 +425,19 @@ export function ConversationView({
           )}
         </PanelResizeHandle>
 
+        {/* Right: the conversation. */}
         <Panel
           collapsible
-          collapsedSize={0}
-          ref={parametersPanelRef}
-          defaultSize={parametersPanelSizes.defaultSize}
-          minSize={parametersPanelSizes.minSize}
-          maxSize={parametersPanelSizes.maxSize}
-          id="parameters-panel"
+          ref={chatPanelRef}
+          defaultSize={chatPanelSizes.defaultSize}
+          minSize={chatPanelSizes.minSize}
+          maxSize={chatPanelSizes.maxSize}
+          id="chat-panel"
           order={2}
         >
-          {hasParameters && parametersSlot}
+          <div className="relative flex h-full min-w-0 flex-col border-l border-sq-neutral-700 bg-sq-bg-secondary-dark">
+            {chatPanelSlot}
+          </div>
         </Panel>
       </PanelGroup>
     </div>
