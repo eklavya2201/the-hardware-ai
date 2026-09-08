@@ -1,6 +1,12 @@
 import { useMemo, useState } from 'react';
 import { usePanZoom, ZoomControls } from './usePanZoom';
-import type { SqBoard, SqMechanical, SqPlaced } from '@/lib/synqitData';
+import {
+  shortPartName,
+  type SqBoard,
+  type SqComponent,
+  type SqMechanical,
+  type SqPlaced,
+} from '@/lib/synqitData';
 
 /**
  * Native, read-only PCB view in the studio theme. Draws exactly what the
@@ -34,12 +40,35 @@ function rotatePad(px: number, py: number, rot: number): [number, number] {
   }
 }
 
-export function PcbView({ board, mechanical }: { board: SqBoard; mechanical: SqMechanical | null }) {
-  const [show, setShow] = useState<{ top: boolean; bottom: boolean; rats: boolean; labels: boolean }>({
+export function PcbView({
+  board,
+  mechanical,
+  components = [],
+}: {
+  board: SqBoard;
+  mechanical: SqMechanical | null;
+  /** IR components, for value and description when naming parts. */
+  components?: SqComponent[];
+}) {
+  // Silkscreen labels: the part's short name ("ESP32", "10uF") rather than the
+  // order code, with the reference designator as the alternative view.
+  const [labelMode, setLabelMode] = useState<'name' | 'ref' | 'none'>('name');
+  const names = useMemo(() => {
+    const byRef = new Map(components.map((c) => [c.refdes, c]));
+    const out = new Map<string, string>();
+    for (const pc of board.components) {
+      const ir = byRef.get(pc.refdes);
+      out.set(
+        pc.refdes,
+        shortPartName({ mpn: pc.mpn, value: ir?.value, description: ir?.description, refdes: pc.refdes }),
+      );
+    }
+    return out;
+  }, [board.components, components]);
+  const [show, setShow] = useState<{ top: boolean; bottom: boolean; rats: boolean }>({
     top: true,
     bottom: true,
     rats: true,
-    labels: true,
   });
 
   const W = board.width;
@@ -110,18 +139,18 @@ export function PcbView({ board, mechanical }: { board: SqBoard; mechanical: SqM
             </g>
           );
         })}
-        {show.labels && (
+        {labelMode !== 'none' && (
           <text
             x={pc.x}
             y={pc.y}
-            fontSize={Math.min(fontSize, Math.max(0.8, Math.min(w, h) * 0.55))}
+            fontSize={Math.min(fontSize, Math.max(0.7, Math.min(h * 0.5, (w * 1.7) / Math.max(2, (labelMode === 'name' ? names.get(pc.refdes) ?? pc.refdes : pc.refdes).length))))}
             fill={SILK}
             textAnchor="middle"
             dominantBaseline="middle"
             transform={`translate(${pc.x} ${pc.y}) scale(1 -1) translate(${-pc.x} ${-pc.y})`}
             style={{ fontFamily: 'ui-monospace, monospace', pointerEvents: 'none' }}
           >
-            {pc.refdes}
+            {labelMode === 'name' ? names.get(pc.refdes) ?? pc.refdes : pc.refdes}
           </text>
         )}
       </g>
@@ -179,16 +208,24 @@ export function PcbView({ board, mechanical }: { board: SqBoard; mechanical: SqM
       </div>
       <div className="pointer-events-none absolute bottom-3 left-3 flex flex-col gap-1 text-[11px] text-sq-text-secondary">
         <div className="pointer-events-auto flex gap-1 rounded-md bg-sq-bg-dark/80 p-1 backdrop-blur">
-          {(['top', 'bottom', 'rats', 'labels'] as const).map((k) => (
+          {(['top', 'bottom', 'rats'] as const).map((k) => (
             <button
               key={k}
               type="button"
               onClick={() => setShow((s) => ({ ...s, [k]: !s[k] }))}
               className={`rounded px-2 py-0.5 ${show[k] ? 'bg-sq-neutral-800 text-sq-text-primary' : 'opacity-60'}`}
             >
-              {k === 'top' ? 'Top' : k === 'bottom' ? 'Bottom' : k === 'rats' ? 'Rats' : 'Refdes'}
+              {k === 'top' ? 'Top' : k === 'bottom' ? 'Bottom' : 'Rats'}
             </button>
           ))}
+          <button
+            type="button"
+            onClick={() => setLabelMode((m) => (m === 'name' ? 'ref' : m === 'ref' ? 'none' : 'name'))}
+            title="Silkscreen labels: part name, reference designator, or none"
+            className="rounded bg-sq-neutral-800 px-2 py-0.5 text-sq-text-primary"
+          >
+            {labelMode === 'name' ? 'Names' : labelMode === 'ref' ? 'Refs' : 'No labels'}
+          </button>
         </div>
         <div className="rounded-md bg-sq-bg-dark/80 px-2 py-1 backdrop-blur">
           {W.toFixed(1)} × {H.toFixed(1)} mm · {board.layer_count} layers · {board.components.length} parts · {board.traces.length} traces · {board.vias.length} vias

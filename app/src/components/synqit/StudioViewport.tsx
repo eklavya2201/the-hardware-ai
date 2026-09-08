@@ -6,6 +6,7 @@ import { fetchSynqitProject, useSynqitProjectData } from '@/lib/synqitData';
 import { PcbView } from './PcbView';
 import { SchematicView } from './SchematicView';
 import { synqitHandoffUrl } from '@/components/auth/SynqitSignInButton';
+import { SYNQIT_APP_URL } from '@/lib/synqitProject';
 
 /**
  * The studio's centre space. A floating 3D / PCB / Schematic switcher sits
@@ -46,7 +47,21 @@ export function StudioViewport({ children }: { children: ReactNode }) {
         <div className="absolute inset-0">
           {!project?.id ? (
             <Empty>
-              No Synqit project linked. Use the <b>Board</b> button in the composer to pick one, or open the studio from a Synqit project.
+              <p className="mb-2 text-sq-text-primary">
+                {mode === 'pcb' ? 'No board here yet' : 'No schematic here yet'}
+              </p>
+              <p className="mb-4">
+                This studio builds the 3D model. Schematics and PCBs are designed in Synqit — describe the
+                circuit there, then bring the finished board back with the <b>Board</b> button in the composer.
+              </p>
+              <a
+                href={`${SYNQIT_APP_URL}/projects`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-block rounded-md bg-sq-blue/15 px-3 py-1.5 text-xs text-sq-blue hover:bg-sq-blue/25"
+              >
+                Design the board in Synqit
+              </a>
             </Empty>
           ) : loading ? (
             <Empty>
@@ -67,7 +82,7 @@ export function StudioViewport({ children }: { children: ReactNode }) {
             </Empty>
           ) : mode === 'pcb' ? (
             data?.board && data.board.components.length ? (
-              <PcbView board={data.board} mechanical={data.mechanical} />
+              <PcbView board={data.board} mechanical={data.mechanical} components={data.ir?.components ?? []} />
             ) : (
               <Empty>This project has no placed board yet. Place parts in Synqit first.</Empty>
             )

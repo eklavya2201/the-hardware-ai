@@ -1,6 +1,13 @@
 import { useMemo, useState } from 'react';
 import { usePanZoom, ZoomControls } from './usePanZoom';
-import { classifyNet, hashedColor, NET_COLORS, type SqComponent, type SqNet } from '@/lib/synqitData';
+import {
+  classifyNet,
+  hashedColor,
+  NET_COLORS,
+  shortPartName,
+  type SqComponent,
+  type SqNet,
+} from '@/lib/synqitData';
 
 /**
  * Native, read-only schematic in the studio theme. Symbols are boxes with
@@ -146,7 +153,7 @@ export function SchematicView({ components, nets }: { components: SqComponent[];
               {p.c.refdes}
             </text>
             <text x={p.x + p.w / 2} y={p.y + p.h + fs + 1} fontSize={fs * 0.9} fill="#9ca3af" textAnchor="middle">
-              {(p.c.value || p.c.mpn).slice(0, 22)}
+              {shortPartName(p.c)}
             </text>
             {[...p.pinPos.entries()].map(([num, pin]) => {
               const inward = pin.side === 'left' ? 1 : pin.side === 'right' ? -1 : 0;
