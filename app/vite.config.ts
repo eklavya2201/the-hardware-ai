@@ -9,6 +9,9 @@ import { defineConfig, type Plugin } from 'vite';
 // Where the studio is mounted. Production serves it at the root of
 // synqit.in; set APP_BASE=/cad to mount it under a path instead.
 const appBase = process.env.APP_BASE || '/';
+// Trailing slash stripped for the router, Nitro and the SPA mask. At the root
+// this is the empty string, which is what those three want -- passing '/'
+// instead makes the Start plugin reject spa.maskPath during post-build.
 const normalizedAppBase = appBase.replace(/\/$/, '');
 
 function serveOpenScadWasmInDev(): Plugin {
