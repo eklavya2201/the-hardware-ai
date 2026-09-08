@@ -258,7 +258,7 @@ export function SignInView() {
           <div className="mb-4 flex flex-col items-center justify-center">
             <div>
               <img
-                src={`${import.meta.env.BASE_URL}/synqit-wordmark.svg`}
+                src={`${import.meta.env.BASE_URL}synqit-wordmark.svg`}
                 alt="Synqit CAD Logo"
                 className="w-32"
               />

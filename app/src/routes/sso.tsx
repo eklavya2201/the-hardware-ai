@@ -66,7 +66,7 @@ function SsoView() {
     <div className="flex min-h-screen items-center justify-center bg-sq-bg-dark p-4 text-sq-text-primary">
       <div className="w-full max-w-md rounded-lg bg-sq-bg-secondary-dark p-8 text-center shadow-md">
         <img
-          src={`${import.meta.env.BASE_URL}/synqit-wordmark.svg`}
+          src={`${import.meta.env.BASE_URL}synqit-wordmark.svg`}
           alt="Synqit"
           className="mx-auto mb-6 h-8"
         />

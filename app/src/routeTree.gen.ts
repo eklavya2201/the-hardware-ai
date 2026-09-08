@@ -25,6 +25,7 @@ import { Route as AssetsSplatRouteImport } from './routes/assets.$'
 import { Route as ApiTitleGeneratorRouteImport } from './routes/api/title-generator'
 import { Route as ApiSynqitSsoRouteImport } from './routes/api/synqit-sso'
 import { Route as ApiSynqitSessionRouteImport } from './routes/api/synqit-session'
+import { Route as ApiSynqitLoginRouteImport } from './routes/api/synqit-login'
 import { Route as ApiPromptGeneratorRouteImport } from './routes/api/prompt-generator'
 import { Route as ApiPartsRouteImport } from './routes/api/parts'
 import { Route as ApiParametricChatRouteImport } from './routes/api/parametric-chat'
@@ -124,6 +125,11 @@ const ApiSynqitSsoRoute = ApiSynqitSsoRouteImport.update({
 const ApiSynqitSessionRoute = ApiSynqitSessionRouteImport.update({
   id: '/api/synqit-session',
   path: '/api/synqit-session',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSynqitLoginRoute = ApiSynqitLoginRouteImport.update({
+  id: '/api/synqit-login',
+  path: '/api/synqit-login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPromptGeneratorRoute = ApiPromptGeneratorRouteImport.update({
@@ -257,6 +263,7 @@ export interface FileRoutesByFullPath {
   '/api/parametric-chat': typeof ApiParametricChatRoute
   '/api/parts': typeof ApiPartsRoute
   '/api/prompt-generator': typeof ApiPromptGeneratorRoute
+  '/api/synqit-login': typeof ApiSynqitLoginRoute
   '/api/synqit-session': typeof ApiSynqitSessionRoute
   '/api/synqit-sso': typeof ApiSynqitSsoRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
@@ -294,6 +301,7 @@ export interface FileRoutesByTo {
   '/api/parametric-chat': typeof ApiParametricChatRoute
   '/api/parts': typeof ApiPartsRoute
   '/api/prompt-generator': typeof ApiPromptGeneratorRoute
+  '/api/synqit-login': typeof ApiSynqitLoginRoute
   '/api/synqit-session': typeof ApiSynqitSessionRoute
   '/api/synqit-sso': typeof ApiSynqitSsoRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
@@ -334,6 +342,7 @@ export interface FileRoutesById {
   '/api/parametric-chat': typeof ApiParametricChatRoute
   '/api/parts': typeof ApiPartsRoute
   '/api/prompt-generator': typeof ApiPromptGeneratorRoute
+  '/api/synqit-login': typeof ApiSynqitLoginRoute
   '/api/synqit-session': typeof ApiSynqitSessionRoute
   '/api/synqit-sso': typeof ApiSynqitSsoRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
@@ -373,6 +382,7 @@ export interface FileRouteTypes {
     | '/api/parametric-chat'
     | '/api/parts'
     | '/api/prompt-generator'
+    | '/api/synqit-login'
     | '/api/synqit-session'
     | '/api/synqit-sso'
     | '/api/title-generator'
@@ -410,6 +420,7 @@ export interface FileRouteTypes {
     | '/api/parametric-chat'
     | '/api/parts'
     | '/api/prompt-generator'
+    | '/api/synqit-login'
     | '/api/synqit-session'
     | '/api/synqit-sso'
     | '/api/title-generator'
@@ -449,6 +460,7 @@ export interface FileRouteTypes {
     | '/api/parametric-chat'
     | '/api/parts'
     | '/api/prompt-generator'
+    | '/api/synqit-login'
     | '/api/synqit-session'
     | '/api/synqit-sso'
     | '/api/title-generator'
@@ -485,6 +497,7 @@ export interface RootRouteChildren {
   ApiParametricChatRoute: typeof ApiParametricChatRoute
   ApiPartsRoute: typeof ApiPartsRoute
   ApiPromptGeneratorRoute: typeof ApiPromptGeneratorRoute
+  ApiSynqitLoginRoute: typeof ApiSynqitLoginRoute
   ApiSynqitSessionRoute: typeof ApiSynqitSessionRoute
   ApiSynqitSsoRoute: typeof ApiSynqitSsoRoute
   ApiTitleGeneratorRoute: typeof ApiTitleGeneratorRoute
@@ -606,6 +619,13 @@ declare module '@tanstack/react-router' {
       path: '/api/synqit-session'
       fullPath: '/api/synqit-session'
       preLoaderRoute: typeof ApiSynqitSessionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/synqit-login': {
+      id: '/api/synqit-login'
+      path: '/api/synqit-login'
+      fullPath: '/api/synqit-login'
+      preLoaderRoute: typeof ApiSynqitLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/prompt-generator': {
@@ -816,6 +836,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiParametricChatRoute: ApiParametricChatRoute,
   ApiPartsRoute: ApiPartsRoute,
   ApiPromptGeneratorRoute: ApiPromptGeneratorRoute,
+  ApiSynqitLoginRoute: ApiSynqitLoginRoute,
   ApiSynqitSessionRoute: ApiSynqitSessionRoute,
   ApiSynqitSsoRoute: ApiSynqitSsoRoute,
   ApiTitleGeneratorRoute: ApiTitleGeneratorRoute,

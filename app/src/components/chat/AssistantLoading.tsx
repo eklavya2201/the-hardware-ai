@@ -7,7 +7,7 @@ export function AssistantLoading() {
       <div className="mr-2 mt-1 hidden sm:block">
         <Avatar className="h-9 w-9 border border-sq-neutral-700 bg-sq-neutral-950 p-1.5">
           <AvatarImage
-            src={`${import.meta.env.BASE_URL}/synqit-logo.png`}
+            src={`${import.meta.env.BASE_URL}synqit-logo.png`}
             alt="Synqit"
           />
         </Avatar>

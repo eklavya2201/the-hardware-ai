@@ -7,7 +7,7 @@ export function PrivacyPolicyView() {
       <div className="w-full max-w-xl">
         <div className="rounded-lg bg-sq-bg-secondary-dark p-8 text-center shadow-md">
           <img
-            src={`${import.meta.env.BASE_URL}/synqit-wordmark.svg`}
+            src={`${import.meta.env.BASE_URL}synqit-wordmark.svg`}
             alt="Synqit"
             className="mx-auto mb-6 h-8"
           />

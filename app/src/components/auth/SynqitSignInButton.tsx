@@ -39,7 +39,7 @@ export function SynqitSignInButton({
       }}
     >
       <img
-        src={`${import.meta.env.BASE_URL}/synqit-logo.png`}
+        src={`${import.meta.env.BASE_URL}synqit-logo.png`}
         alt=""
         className="h-4 w-4 object-contain"
       />

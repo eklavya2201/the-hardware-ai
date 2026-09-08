@@ -49,7 +49,7 @@ export function MeshGifPreview({
   const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
   const logoImage = useMemo(() => {
     const img = new Image();
-    img.src = `${import.meta.env.BASE_URL}/synqit-logo.png`; // served from public folder root
+    img.src = `${import.meta.env.BASE_URL}synqit-logo.png`; // served from public folder root
     return img;
   }, []);
   const isGeneratingRef = useRef(false);
@@ -690,7 +690,7 @@ export function MeshGifPreview({
           ref={canvasRefCallback}
         />
         <img
-          src={`${import.meta.env.BASE_URL}/synqit-logo.png`}
+          src={`${import.meta.env.BASE_URL}synqit-logo.png`}
           alt="Synqit logo"
           className="pointer-events-none absolute bottom-3 right-3 w-[15%] select-none"
         />

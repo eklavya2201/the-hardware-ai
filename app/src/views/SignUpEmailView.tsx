@@ -94,7 +94,7 @@ export function SignUpEmailView() {
         <div className="rounded-lg bg-sq-bg-secondary-dark p-8 shadow-md">
           <div className="mb-4 flex flex-col items-center justify-center gap-2">
             <img
-              src={`${import.meta.env.BASE_URL}/synqit-wordmark.svg`}
+              src={`${import.meta.env.BASE_URL}synqit-wordmark.svg`}
               alt="Synqit CAD Logo"
               className="h-8 w-auto"
             />

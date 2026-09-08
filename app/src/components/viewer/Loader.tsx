@@ -32,7 +32,7 @@ const Loader = ({ showLoadingText = false }: Props) => {
       <div className="relative flex h-32 w-32 items-center justify-center">
         <div className="absolute inset-0 animate-ping rounded-full bg-sq-blue/10" />
         <img
-          src={`${import.meta.env.BASE_URL}/synqit-logo.png`}
+          src={`${import.meta.env.BASE_URL}synqit-logo.png`}
           alt="Synqit"
           className="h-16 w-16 animate-pulse object-contain"
         />

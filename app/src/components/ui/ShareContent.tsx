@@ -40,7 +40,7 @@ export function ShareContent({
     null,
   );
 
-  const shareLink = `${window.location.origin}${import.meta.env.BASE_URL}/share/${conversationId}`;
+  const shareLink = `${window.location.origin}${import.meta.env.BASE_URL}share/${conversationId}`;
   const isPublic = privacy === 'public';
 
   const copyToClipboard = () => {

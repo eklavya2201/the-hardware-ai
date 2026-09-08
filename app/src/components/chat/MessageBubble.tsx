@@ -496,7 +496,7 @@ function AssistantBubble({
         <Avatar className="h-9 w-9 border border-sq-neutral-700 bg-sq-neutral-950">
           <div style={{ padding: '0.6rem 0.5rem 0.5rem 0.55rem' }}>
             <AvatarImage
-              src={`${import.meta.env.BASE_URL}/synqit-logo.png`}
+              src={`${import.meta.env.BASE_URL}synqit-logo.png`}
               alt="Synqit"
             />
           </div>

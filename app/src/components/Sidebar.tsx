@@ -37,7 +37,7 @@ const SYNQIT_HOME = 'https://synqit.in';
 const SYNQIT_SUPPORT = 'mailto:hello@synqit.in';
 const SynqitMark = ({ className }: { className?: string }) => (
   <img
-    src={`${import.meta.env.BASE_URL}/synqit-logo.png`}
+    src={`${import.meta.env.BASE_URL}synqit-logo.png`}
     alt=""
     className={cn('object-contain', className)}
   />
@@ -159,13 +159,13 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
               <div className="flex w-full">
                 <img
                   className="mx-auto h-8 w-full"
-                  src={`${import.meta.env.BASE_URL}/synqit-wordmark.svg`}
+                  src={`${import.meta.env.BASE_URL}synqit-wordmark.svg`}
                   alt="Logo"
                 />
               </div>
             ) : (
               <img
-                src={`${import.meta.env.BASE_URL}/synqit-logo.png`}
+                src={`${import.meta.env.BASE_URL}synqit-logo.png`}
                 alt="Logo"
                 className="h-8 w-8 min-w-8"
               />
