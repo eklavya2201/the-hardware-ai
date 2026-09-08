@@ -1,0 +1,30 @@
+# Lean image for the studio's electronics engine.
+#
+# The full `Dockerfile` also installs KiCad, FreeRouting (Java) and the
+# OpenCASCADE CAD kernel — about 4.5 GB, and 20+ minutes to build. Those back
+# the *export* lane: Gerbers, .kicad_pcb, KiCad DRC, Finalize routing, STEP.
+# The studio's own flow — schematic agent, 96 verifier rules, the part library,
+# placement, the in-house router, BOM, build guide, cad-brief, queries — needs
+# none of them, and every one of those endpoints degrades with a clear 503
+# rather than failing oddly (`/api/health` reports which lanes are present).
+#
+# Result: ~400 MB, builds in a few minutes. Switch the service to ./Dockerfile
+# when the fab exports need to run in the cloud.
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+# SQLite lives on the mounted disk so projects survive a redeploy.
+ENV DATABASE_URL=sqlite:////data/voltron.db
+
+# Render injects $PORT; default to 10000 for a local `docker run`.
+CMD ["sh", "-c", "mkdir -p /data && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-10000}"]
