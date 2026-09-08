@@ -443,6 +443,21 @@ type ChatProviders = {
   openrouter: () => ReturnType<typeof createOpenRouter>;
 };
 
+/**
+ * The model used for the two housekeeping calls — naming a conversation and
+ * proposing follow-up prompts. Anthropic Haiku when a key is configured,
+ * otherwise the Azure deployment this deployment already runs on.
+ *
+ * These used to be hard-wired to Haiku *and* gated on ANTHROPIC_API_KEY, so on
+ * a deployment without that key every conversation stayed "New Conversation"
+ * for ever and the suggestion pills never refreshed — silently, because the
+ * gate skipped the call rather than failing it.
+ */
+function utilityModel(providers: ChatProviders) {
+  if (env('ANTHROPIC_API_KEY')) return providers.anthropic()('claude-haiku-4-5');
+  return providers.azure()(env('UTILITY_AZURE_DEPLOYMENT') || 'gpt-5.1');
+}
+
 function createChatProviders(): ChatProviders {
   let anthropic: AnthropicProvider | undefined;
   let azure: ReturnType<typeof createAzure> | undefined;
@@ -832,18 +847,19 @@ async function loadBranchFromDb({
 }
 
 async function generateConversationTitle({
-  anthropic,
+  model,
   firstMessage,
 }: {
-  anthropic: AnthropicProvider;
+  model: LanguageModel;
   firstMessage: AppUIMessage;
 }) {
   const text = getParametricText(firstMessage.parts) || 'New conversation';
   try {
     const result = await generateText({
-      model: anthropic('claude-haiku-4-5'),
+      model,
       system:
-        'Generate a short title for a 3D creation conversation. Return only the title.',
+        'Name this hardware conversation in three to six words, from what the ' +
+        'person asked for. No quotes, no trailing punctuation. Return only the title.',
       prompt: text,
       output: Output.object({
         schema: z.object({ title: z.string().min(1) }),
@@ -864,11 +880,11 @@ async function generateConversationTitle({
  * specific assistant turn.
  */
 async function generateConversationSuggestions({
-  anthropic,
+  model,
   branch,
   conversationType,
 }: {
-  anthropic: AnthropicProvider;
+  model: LanguageModel;
   branch: AppUIMessage[];
   conversationType: 'parametric' | 'creative';
 }): Promise<string[]> {
@@ -886,7 +902,7 @@ async function generateConversationSuggestions({
   const summary = `User request: ${firstUserText.slice(0, 400)}\n\nMost recent assistant reply: ${lastAssistantText.slice(0, 400)}`;
   try {
     const result = await generateText({
-      model: anthropic('claude-haiku-4-5'),
+      model,
       system:
         conversationType === 'creative'
           ? 'Given a 3D mesh design conversation, return an array of exactly 2 follow-up prompts the user might want to send next. Each prompt is a concise instruction of 3 words or fewer, not a question. Return exactly 2 items — no more, no fewer.'
@@ -1494,10 +1510,10 @@ export async function handleAiChatRequest(req: Request) {
     execute: async ({ writer }) => {
       // Title (first user turn only) runs in parallel with the model
       // stream — fire-and-forget; the assistant doesn't wait on it.
-      if (isFirstUserTurn && env('ANTHROPIC_API_KEY')) {
+      if (isFirstUserTurn) {
         void emitConversationTitle({
           writer,
-          anthropic: providers.anthropic(),
+          model: utilityModel(providers),
           supabaseClient,
           conversation,
           firstMessage: branchMessages[0],
@@ -1640,7 +1656,7 @@ export async function handleAiChatRequest(req: Request) {
             // continuation `onFinish` will fire suggestions for the real
             // final state. Avoids a wasted Haiku call AND prevents
             // mid-turn placeholder pills.
-            if (!hasPendingToolCall && env('ANTHROPIC_API_KEY')) {
+            if (!hasPendingToolCall) {
               // MUST be awaited (not `void`). `createUIMessageStream`
               // closes the SSE controller as soon as the merged stream
               // drains — and the merged stream resolves once this
@@ -1654,7 +1670,7 @@ export async function handleAiChatRequest(req: Request) {
               // tradeoff for getting pills delivered.
               await emitConversationSuggestions({
                 writer,
-                anthropic: providers.anthropic(),
+                model: utilityModel(providers),
                 supabaseClient,
                 conversation,
                 branch: [
@@ -1682,23 +1698,23 @@ export async function handleAiChatRequest(req: Request) {
  * `data-title-update` part so the client's title bar updates without a
  * round-trip refetch. Fire-and-forget — runs in parallel with the
  * assistant message stream so the user sees their message echo back
- * immediately even if Haiku is still naming the thread.
+ * immediately even if the naming call is still running.
  */
 async function emitConversationTitle({
   writer,
-  anthropic,
+  model,
   supabaseClient,
   conversation,
   firstMessage,
 }: {
   writer: UIMessageStreamWriter<AppUIMessage>;
-  anthropic: AnthropicProvider;
+  model: LanguageModel;
   supabaseClient: SupabaseAnon;
   conversation: ConversationAccess;
   firstMessage: AppUIMessage;
 }) {
   try {
-    const title = await generateConversationTitle({ anthropic, firstMessage });
+    const title = await generateConversationTitle({ model, firstMessage });
     await supabaseClient
       .from('conversations')
       .update({ title })
@@ -1728,20 +1744,20 @@ async function emitConversationTitle({
  */
 async function emitConversationSuggestions({
   writer,
-  anthropic,
+  model,
   supabaseClient,
   conversation,
   branch,
 }: {
   writer: UIMessageStreamWriter<AppUIMessage>;
-  anthropic: AnthropicProvider;
+  model: LanguageModel;
   supabaseClient: SupabaseAnon;
   conversation: ConversationAccess;
   branch: AppUIMessage[];
 }) {
   try {
     const suggestions = await generateConversationSuggestions({
-      anthropic,
+      model,
       branch,
       conversationType: conversation.type,
     });

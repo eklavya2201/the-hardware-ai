@@ -37,7 +37,14 @@ function runPrompt(text: string) {
  */
 type Mode = '3d' | 'pcb' | 'schematic';
 
-export function StudioViewport({ children }: { children: ReactNode }) {
+export function StudioViewport({
+  children,
+  hasConversation = false,
+}: {
+  children: ReactNode;
+  /** Whether this conversation already has a brief in it. */
+  hasConversation?: boolean;
+}) {
   const [mode, setMode] = useState<Mode>('3d');
   const project = useSynqitProject();
   const { data, error, loading } = useSynqitProjectData(mode === '3d' ? null : (project?.id ?? null));
@@ -75,18 +82,30 @@ export function StudioViewport({ children }: { children: ReactNode }) {
                 Describe the circuit in the chat and it is designed here — parts chosen from the library,
                 schematic wired, board placed and routed, then drawn in this space.
               </p>
-              <div className="flex flex-col items-stretch gap-1.5">
-                {STARTERS.map((prompt) => (
-                  <button
-                    key={prompt}
-                    type="button"
-                    onClick={() => insertPrompt(prompt)}
-                    className="rounded-md border border-sq-neutral-600 px-3 py-1.5 text-left text-xs text-sq-text-secondary hover:border-sq-blue hover:text-sq-text-primary"
-                  >
-                    {prompt}
-                  </button>
-                ))}
-              </div>
+              {hasConversation ? (
+                // Once there is a conversation, generic examples are noise: the
+                // brief is already in the chat, so offer to act on it.
+                <button
+                  type="button"
+                  onClick={() => runPrompt('Design the board for what we have been discussing: choose real parts, wire the schematic, then place and route it.')}
+                  className="rounded-md bg-sq-blue/15 px-3 py-1.5 text-xs text-sq-blue hover:bg-sq-blue/25"
+                >
+                  Design the board for this
+                </button>
+              ) : (
+                <div className="flex flex-col items-stretch gap-1.5">
+                  {STARTERS.map((prompt) => (
+                    <button
+                      key={prompt}
+                      type="button"
+                      onClick={() => insertPrompt(prompt)}
+                      className="rounded-md border border-sq-neutral-600 px-3 py-1.5 text-left text-xs text-sq-text-secondary hover:border-sq-blue hover:text-sq-text-primary"
+                    >
+                      {prompt}
+                    </button>
+                  ))}
+                </div>
+              )}
             </Empty>
           ) : loading ? (
             <Empty>

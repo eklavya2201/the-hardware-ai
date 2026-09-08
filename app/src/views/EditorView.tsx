@@ -733,7 +733,7 @@ function ConversationEditor() {
         </>
       }
       previewSlot={
-        <StudioViewport>
+        <StudioViewport hasConversation={dbMessages.length > 0}>
           <div className="flex h-full w-full items-center justify-center bg-sq-neutral-700">
             {isChatStreaming ? (
               <Loader showLoadingText />
