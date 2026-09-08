@@ -2,7 +2,6 @@ import { useState, type ReactNode } from 'react';
 import { CircuitBoard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSynqitProject } from '@/lib/synqitProject';
-import { requestSynqitSignIn } from './SynqitConnection';
 import { BomView } from './BomView';
 import { BuildGuideView } from './BuildGuideView';
 
@@ -64,16 +63,9 @@ function NoProject() {
       <CircuitBoard className="h-8 w-8 opacity-60" />
       <p>No board in this creation yet.</p>
       <p className="text-xs">
-        Ask for a circuit in the chat and the parts, BOM and build guide fill in here. Already have one in
-        Synqit? Pick it with the <span className="text-sq-text-primary">Board</span> button in the composer.
+        Ask for a circuit in the chat and the parts, BOM and build guide fill in here. Already have one?
+        Pick it with the <span className="text-sq-text-primary">Board</span> button in the composer.
       </p>
-      <button
-        type="button"
-        onClick={requestSynqitSignIn}
-        className="text-xs text-sq-blue hover:underline"
-      >
-        Connect a Synqit account
-      </button>
     </div>
   );
 }

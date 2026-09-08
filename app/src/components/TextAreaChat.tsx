@@ -63,7 +63,7 @@ import {
 import { useMeshFiles } from '@/contexts/MeshFilesContext';
 import { PartsButton } from '@/components/parts/PartsButton';
 import { BoardButton } from '@/components/parts/BoardButton';
-import { INSERT_EVENT } from '@/components/synqit/LibraryDialog';
+import { INSERT_EVENT, SEND_EVENT } from '@/components/synqit/LibraryDialog';
 import { AnimatePresence, motion } from 'framer-motion';
 import { apiJson } from '@/services/api';
 import { z } from 'zod';
@@ -496,6 +496,19 @@ ${text}
     window.addEventListener(INSERT_EVENT, onInsert);
     return () => window.removeEventListener(INSERT_EVENT, onInsert);
   }, []);
+
+  // Buttons elsewhere in the studio ("Place and route it", "Design the
+  // schematic") ask for work, not for text to appear in a box. Inserting the
+  // sentence and leaving it there looked like the click did nothing.
+  useEffect(() => {
+    const onSend = (e: Event) => {
+      const text = (e as CustomEvent<string>).detail;
+      if (typeof text !== 'string' || !text.trim()) return;
+      submitTextRef.current?.(text.trim());
+    };
+    window.addEventListener(SEND_EVENT, onSend);
+    return () => window.removeEventListener(SEND_EVENT, onSend);
+  }, []);
   const [isDragging, setIsDragging] = useState(false);
   const [isDragHover, setIsDragHover] = useState(false);
   const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
@@ -747,6 +760,14 @@ ${text}
       }
     }
   }, [images, setModel, model, type]);
+
+  // The send listener is registered once; this keeps it pointed at a submit
+  // that closes over current state.
+  const submitTextRef = useRef<((text: string) => void) | null>(null);
+  submitTextRef.current = (text: string) => {
+    if (isLoading) return;
+    onSubmit([{ type: 'text', text }]);
+  };
 
   const handleSubmit = async () => {
     const hasNoInput = images.length === 0 && !input?.trim() && !mesh;

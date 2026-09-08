@@ -352,9 +352,11 @@ export function ConversationView({
           )}
         >
           {hasParameters && !isParametersCollapsed && (
-            <div className="absolute left-1 top-1/2 z-50 -translate-y-1/2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+            <div className="absolute left-1 top-1/2 z-50 -translate-y-1/2 opacity-70 transition-opacity duration-200 hover:opacity-100 group-hover:opacity-100">
               <Button
                 variant="ghost"
+                aria-label="Hide the tools panel"
+                title="Hide the tools panel"
                 className="rounded-l-none rounded-r-lg border-b border-r border-t border-gray-200/20 bg-sq-bg-secondary-dark p-2 text-sq-text-primary transition-colors [@media(hover:hover)]:hover:bg-sq-neutral-950 [@media(hover:hover)]:hover:text-sq-neutral-10"
                 onClick={handleParametersCollapse}
               >
@@ -365,14 +367,14 @@ export function ConversationView({
           {hasParameters && isParametersCollapsed && (
             <div className="absolute left-0 top-1/2 z-50 -translate-y-1/2">
               <Button
-                aria-label="Expand parameters panel"
+                aria-label="Show the tools panel"
                 onClick={handleParametersExpand}
                 className="flex h-[140px] w-9 flex-col items-center rounded-l-none rounded-r-lg bg-sq-bg-secondary-dark px-1.5 py-2 text-sq-text-primary"
               >
                 <ChevronsRight className="mb-3 h-5 w-5 text-white" />
                 <div className="flex flex-1 items-center justify-center">
                   <span className="min-w-[100px] rotate-90 transform text-center text-base font-semibold text-white">
-                    Parameters
+                    Parameters · BOM · Guide
                   </span>
                 </div>
               </Button>

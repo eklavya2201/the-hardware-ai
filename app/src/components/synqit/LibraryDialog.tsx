@@ -15,6 +15,9 @@ import { cn } from '@/lib/utils';
  */
 export const INSERT_EVENT = 'synqit-insert-prompt';
 
+/** Same channel, but "do it now" rather than "put it in the box". */
+export const SEND_EVENT = 'synqit-send-prompt';
+
 type Row = {
   mpn: string;
   description?: string;

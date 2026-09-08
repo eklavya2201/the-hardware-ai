@@ -5,8 +5,9 @@ import { useSynqitProject } from '@/lib/synqitProject';
 import { fetchSynqitProject, useSynqitProjectData } from '@/lib/synqitData';
 import { PcbView } from './PcbView';
 import { SchematicView } from './SchematicView';
-import { INSERT_EVENT } from './LibraryDialog';
-import { requestSynqitSignIn } from './SynqitConnection';
+import { INSERT_EVENT, SEND_EVENT } from './LibraryDialog';
+import { activityLabel, useBoardActivity } from '@/lib/boardProgress';
+import { Link } from '@tanstack/react-router';
 
 /**
  * Example briefs for the empty PCB and schematic space. Clicking one drops it
@@ -18,8 +19,14 @@ const STARTERS = [
   'Design a board: ATtiny85 driving four WS2812 LEDs from a coin cell.',
 ];
 
+/** Put it in the composer for the person to shape. */
 function insertPrompt(text: string) {
   window.dispatchEvent(new CustomEvent(INSERT_EVENT, { detail: text }));
+}
+
+/** Do it now — what a button labelled "Place and route it" should mean. */
+function runPrompt(text: string) {
+  window.dispatchEvent(new CustomEvent(SEND_EVENT, { detail: text }));
 }
 
 /**
@@ -89,14 +96,13 @@ export function StudioViewport({ children }: { children: ReactNode }) {
             <Empty>
               {error === 'not_signed_in' ? (
                 <>
-                  <p className="mb-3">Connect your Synqit account to design and see boards here.</p>
-                  <button
-                    type="button"
-                    onClick={requestSynqitSignIn}
+                  <p className="mb-3">Your session has expired. Sign in again to see this board.</p>
+                  <Link
+                    to="/signin"
                     className="rounded-md bg-sq-blue/15 px-3 py-1.5 text-xs text-sq-blue hover:bg-sq-blue/25"
                   >
-                    Connect Synqit
-                  </button>
+                    Sign in
+                  </Link>
                 </>
               ) : (
                 `Could not load the project (${error}).`
@@ -110,7 +116,7 @@ export function StudioViewport({ children }: { children: ReactNode }) {
                 <p className="mb-3">This board has a schematic but no placed parts yet.</p>
                 <button
                   type="button"
-                  onClick={() => insertPrompt('Place and route this board.')}
+                  onClick={() => runPrompt('Place and route this board.')}
                   className="rounded-md bg-sq-blue/15 px-3 py-1.5 text-xs text-sq-blue hover:bg-sq-blue/25"
                 >
                   Place and route it
@@ -124,7 +130,7 @@ export function StudioViewport({ children }: { children: ReactNode }) {
               <p className="mb-3">This project has no schematic yet.</p>
               <button
                 type="button"
-                onClick={() => insertPrompt('Design the schematic for this board.')}
+                onClick={() => runPrompt('Design the schematic for this board.')}
                 className="rounded-md bg-sq-blue/15 px-3 py-1.5 text-xs text-sq-blue hover:bg-sq-blue/25"
               >
                 Design the schematic
@@ -163,11 +169,28 @@ export function StudioViewport({ children }: { children: ReactNode }) {
           )}
         </div>
       </div>
-      {mode !== '3d' && project?.name && (
-        <div className="pointer-events-none absolute right-3 top-3 rounded-md bg-sq-bg-dark/80 px-2 py-1 text-[11px] text-sq-text-secondary backdrop-blur">
-          Synqit · {project.name}
-        </div>
-      )}
+      <BoardActivityOverlay />
+    </div>
+  );
+}
+
+/**
+ * What the board agent is doing, over whichever view is open. Without it a run
+ * that takes half a minute looks like a hang: the pane keeps showing the same
+ * empty state until everything lands at once.
+ */
+function BoardActivityOverlay() {
+  const activity = useBoardActivity();
+  if (!activity.active) return null;
+  return (
+    <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center">
+      <div className="flex items-center gap-2.5 rounded-full border border-sq-neutral-600 bg-sq-bg-dark/90 px-4 py-2 text-xs text-sq-text-primary shadow-lg backdrop-blur">
+        <Loader2 className="h-3.5 w-3.5 animate-spin text-sq-blue" />
+        <span>{activityLabel(activity)}</span>
+        {activity.detail && (
+          <span className="max-w-[240px] truncate text-sq-text-secondary">· {activity.detail}</span>
+        )}
+      </div>
     </div>
   );
 }

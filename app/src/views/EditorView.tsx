@@ -13,6 +13,8 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { ShareContent } from '@/components/ui/ShareContent';
+import { BoardActions } from '@/components/synqit/BoardActions';
+import { useSynqitProject } from '@/lib/synqitProject';
 import { OpenSCADPreview } from '@/components/viewer/OpenSCADViewer';
 import { MeshPreview } from '@/components/viewer/MeshPreview';
 import Loader from '@/components/viewer/Loader';
@@ -605,9 +607,13 @@ function ConversationEditor() {
     [initialBranch],
   );
   const sharePreview = activePreview ?? persistedLatestPreview;
+  const synqitProject = useSynqitProject();
 
+  // The left panel holds Parameters, BOM and Build guide. It used to open only
+  // for an OpenSCAD artifact, which meant a board with a BOM and a build guide
+  // had no way to show them: the panel stayed collapsed at zero width.
   const hasArtifact =
-    activePreview?.type === 'artifact' && parameters.length > 0;
+    (activePreview?.type === 'artifact' && parameters.length > 0) || Boolean(synqitProject?.id);
 
   // `useCachedAiChat` captures `initialBranch` once at Chat construction;
   // if the messages query hasn't completed its first fetch yet the
@@ -657,6 +663,7 @@ function ConversationEditor() {
               </div>
             </div>
             <div className="hidden items-center gap-3 md:flex">
+              <BoardActions />
               <Popover>
                 <PopoverTrigger asChild>
                   <Button

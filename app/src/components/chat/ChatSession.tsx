@@ -1,5 +1,6 @@
 import { MessageBubble } from '@/components/chat/MessageBubble';
 import { requestSynqitSignIn } from '@/components/synqit/SynqitConnection';
+import { endBoardActivity, reportBoardActivity, startBoardActivity } from '@/lib/boardProgress';
 import { SuggestionPills } from '@/components/chat/SuggestionPills';
 import { LimitReachedMessage } from '@/components/LimitReachedMessage';
 import TextAreaChat from '@/components/TextAreaChat';
@@ -335,7 +336,8 @@ export function ChatSession({
         }
 
         try {
-          const r = await designBoard(name, brief);
+          startBoardActivity('creating');
+          const r = await designBoard(name, brief, reportBoardActivity);
           await settle({
             status: 'success',
             projectId: r.projectId,
@@ -364,6 +366,9 @@ export function ChatSession({
                 ? 'The studio has no Synqit account connected, so the board could not be created. A sign-in box has been opened for the user; tell them to connect their Synqit account there and ask again.'
                 : `Synqit could not design the board: ${msg}`,
           });
+        } finally {
+          // The overlay must never outlive the run, however it ended.
+          endBoardActivity();
         }
         return;
       }

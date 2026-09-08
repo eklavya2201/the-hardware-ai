@@ -20,6 +20,24 @@ import { Share as ShareIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShareContent } from '@/components/ui/ShareContent';
+import { useSynqitProject } from '@/lib/synqitProject';
+
+/**
+ * The Synqit board this conversation is designing, named under its title.
+ *
+ * It used to be a floating badge in the top-right of the viewport, where it
+ * sat on top of the 3D / PCB / Schematic switcher. It belongs with the other
+ * name for this piece of work, not over the controls.
+ */
+function BoardName() {
+  const project = useSynqitProject();
+  if (!project?.name) return null;
+  return (
+    <span className="line-clamp-1 px-2 text-left text-[11px] text-sq-neutral-400">
+      Board · {project.name}
+    </span>
+  );
+}
 
 interface ChatTitleProps {
   activeMeshId?: string | null;
@@ -198,16 +216,19 @@ export function ChatTitle({
                   </Dialog>
                 ) : (
                   // Desktop view: Click to edit
-                  <div className="flex h-8 w-fit items-center rounded font-medium tracking-tight text-sq-neutral-10 transition-colors duration-200 hover:bg-black hover:text-sq-neutral-0">
-                    <span
-                      className={cn(
-                        'line-clamp-1 cursor-pointer px-2 text-left text-[17px]',
-                        isParametric && 'text-center',
-                      )}
-                      onClick={() => setIsEditingTitle(true)}
-                    >
-                      {conversation.title || 'Chat'}
-                    </span>
+                  <div className="flex w-fit flex-col">
+                    <div className="flex h-8 w-fit items-center rounded font-medium tracking-tight text-sq-neutral-10 transition-colors duration-200 hover:bg-black hover:text-sq-neutral-0">
+                      <span
+                        className={cn(
+                          'line-clamp-1 cursor-pointer px-2 text-left text-[17px]',
+                          isParametric && 'text-center',
+                        )}
+                        onClick={() => setIsEditingTitle(true)}
+                      >
+                        {conversation.title || 'Chat'}
+                      </span>
+                    </div>
+                    <BoardName />
                   </div>
                 )}
               </>
