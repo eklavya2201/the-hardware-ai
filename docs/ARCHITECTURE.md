@@ -42,7 +42,7 @@ person types a sentence
 │ tools: search_parts, add_component, connect, │
 │        record_requirements, set_form_factor, │
 │        auto_place, auto_route, run_drc, …    │
-│ guards: 96 deterministic verifier rules      │
+│ guards: 78 deterministic verifier rules      │
 └───────────────┬──────────────────────────────┘
                 │ returns COUNTS, not prose
                 ▼
@@ -70,7 +70,7 @@ in that same turn.
 Lives in Synqit's `backend/app/services/agent.py`. It owns a typed
 intermediate representation: components, pins, nets, board, mechanical. It
 never writes free-form netlists; every change goes through a tool that
-validates. After each turn, 96 deterministic rules run over the result — power
+validates. After each turn, 78 deterministic rules run over the result — power
 rails, pin types, footprint sanity, requirement counts, board size, duplicate
 controllers. Those rules are code, not opinion, which is why "0 errors" means
 something.

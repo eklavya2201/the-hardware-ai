@@ -60,7 +60,7 @@ services:
         sync: false
 
   # ------------------------------------------------- electronics engine
-  # FastAPI: the schematic agent, 96 verifier rules, the 23,941-part library,
+  # FastAPI: the schematic agent, 78 verifier rules, the 23,941-part library,
   # placement, routing, BOM, build guide, KiCad/Gerber/STEP exports.
   # Docker, because it needs KiCad, FreeRouting and the CAD kernel.
   - type: web
