@@ -1,4 +1,5 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { usePanZoom, ZoomControls } from './usePanZoom';
 import { classifyNet, hashedColor, NET_COLORS, type SqComponent, type SqNet } from '@/lib/synqitData';
 
 /**
@@ -68,7 +69,6 @@ function layout(components: SqComponent[]): Placed[] {
 }
 
 export function SchematicView({ components, nets }: { components: SqComponent[]; nets: SqNet[] }) {
-  const svgRef = useRef<SVGSVGElement>(null);
   const placed = useMemo(() => layout(components), [components]);
   const byRef = useMemo(() => new Map(placed.map((p) => [p.c.refdes, p])), [placed]);
 
@@ -79,8 +79,7 @@ export function SchematicView({ components, nets }: { components: SqComponent[];
     const y = Math.min(...ys, 0);
     return { x, y, w: Math.max(...xs, 100) - x, h: Math.max(...ys, 60) - y };
   }, [placed]);
-  const [view, setView] = useState(bounds);
-  const drag = useRef<{ x: number; y: number; vx: number; vy: number } | null>(null);
+  const { svgRef, view, viewBox, handlers, zoomIn, zoomOut, reset, dragged } = usePanZoom(bounds);
   const [selected, setSelected] = useState<string | null>(null);
 
   const netInfo = useMemo(
@@ -96,27 +95,6 @@ export function SchematicView({ components, nets }: { components: SqComponent[];
     [nets, byRef],
   );
 
-  const onWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
-    const svg = svgRef.current;
-    if (!svg) return;
-    const rect = svg.getBoundingClientRect();
-    const k = e.deltaY > 0 ? 1.15 : 1 / 1.15;
-    const mx = view.x + ((e.clientX - rect.left) / rect.width) * view.w;
-    const my = view.y + ((e.clientY - rect.top) / rect.height) * view.h;
-    setView({ x: mx - (mx - view.x) * k, y: my - (my - view.y) * k, w: view.w * k, h: view.h * k });
-  };
-  const onDown = (e: React.PointerEvent) => {
-    drag.current = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y };
-  };
-  const onMove = (e: React.PointerEvent) => {
-    if (!drag.current || !svgRef.current) return;
-    const rect = svgRef.current.getBoundingClientRect();
-    const dx = ((e.clientX - drag.current.x) / rect.width) * view.w;
-    const dy = ((e.clientY - drag.current.y) / rect.height) * view.h;
-    setView((v) => ({ ...v, x: drag.current!.vx - dx, y: drag.current!.vy - dy }));
-  };
-  const onUp = () => (drag.current = null);
   const fs = Math.max(2.2, view.w / 220);
 
   return (
@@ -124,13 +102,8 @@ export function SchematicView({ components, nets }: { components: SqComponent[];
       <svg
         ref={svgRef}
         className="h-full w-full cursor-grab active:cursor-grabbing"
-        viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
-        onWheel={onWheel}
-        onPointerDown={onDown}
-        onPointerMove={onMove}
-        onPointerUp={onUp}
-        onPointerLeave={onUp}
-        onDoubleClick={() => setView(bounds)}
+        viewBox={viewBox}
+        {...handlers}
         style={{ fontFamily: 'ui-monospace, monospace' }}
       >
         {/* wires first, then labels, then symbols on top */}
@@ -143,7 +116,7 @@ export function SchematicView({ components, nets }: { components: SqComponent[];
               stroke={color}
               strokeWidth={selected === n.name ? 1.4 : 0.7}
               opacity={selected && selected !== n.name ? 0.25 : 1}
-              onClick={() => setSelected(selected === n.name ? null : n.name)}
+              onClick={() => !dragged() && setSelected(selected === n.name ? null : n.name)}
               style={{ cursor: 'pointer' }}
             />
           ) : null,
@@ -156,7 +129,7 @@ export function SchematicView({ components, nets }: { components: SqComponent[];
                 const lx = e.x + dir * 6;
                 const ly = e.y + vdir * 6;
                 return (
-                  <g key={`${n.name}-${i}`} opacity={selected && selected !== n.name ? 0.25 : 1} onClick={() => setSelected(selected === n.name ? null : n.name)} style={{ cursor: 'pointer' }}>
+                  <g key={`${n.name}-${i}`} opacity={selected && selected !== n.name ? 0.25 : 1} onClick={() => !dragged() && setSelected(selected === n.name ? null : n.name)} style={{ cursor: 'pointer' }}>
                     <line x1={e.x} y1={e.y} x2={lx} y2={ly} stroke={color} strokeWidth={0.7} />
                     <text x={lx + dir * 1.2} y={ly + (vdir ? vdir * 3 : 0)} fontSize={fs} fill={color} textAnchor={dir < 0 ? 'end' : dir > 0 ? 'start' : 'middle'} dominantBaseline="middle">
                       {n.name}
@@ -193,8 +166,11 @@ export function SchematicView({ components, nets }: { components: SqComponent[];
           </g>
         ))}
       </svg>
-      <div className="pointer-events-none absolute bottom-3 right-3 rounded-md bg-sq-bg-dark/80 px-2 py-1 text-[11px] text-sq-text-secondary backdrop-blur">
+      <div className="pointer-events-none absolute bottom-3 right-3 flex flex-col items-end gap-1">
+        <ZoomControls zoomIn={zoomIn} zoomOut={zoomOut} reset={reset} />
+      <div className="rounded-md bg-sq-bg-dark/80 px-2 py-1 text-[11px] text-sq-text-secondary backdrop-blur">
         {components.length} parts · {nets.length} nets{selected ? ` · ${selected}` : ''} · wheel zoom, drag pan, double-click fit
+      </div>
       </div>
       <div className="pointer-events-none absolute bottom-3 left-3 flex flex-wrap gap-x-3 gap-y-1 rounded-md bg-sq-bg-dark/80 px-2 py-1 text-[10px] text-sq-text-secondary backdrop-blur">
         {(['power', 'ground', 'sda', 'scl', 'uart', 'spi', 'usb'] as const).map((k) => (

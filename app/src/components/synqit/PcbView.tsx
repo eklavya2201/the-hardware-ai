@@ -1,4 +1,5 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { usePanZoom, ZoomControls } from './usePanZoom';
 import type { SqBoard, SqMechanical, SqPlaced } from '@/lib/synqitData';
 
 /**
@@ -34,7 +35,6 @@ function rotatePad(px: number, py: number, rot: number): [number, number] {
 }
 
 export function PcbView({ board, mechanical }: { board: SqBoard; mechanical: SqMechanical | null }) {
-  const svgRef = useRef<SVGSVGElement>(null);
   const [show, setShow] = useState<{ top: boolean; bottom: boolean; rats: boolean; labels: boolean }>({
     top: true,
     bottom: true,
@@ -46,8 +46,7 @@ export function PcbView({ board, mechanical }: { board: SqBoard; mechanical: SqM
   const H = board.height;
   const margin = Math.max(W, H) * 0.08 + 2;
   const fit = useMemo(() => ({ x: -margin, y: -margin, w: W + 2 * margin, h: H + 2 * margin }), [W, H, margin]);
-  const [view, setView] = useState(fit);
-  const drag = useRef<{ x: number; y: number; vx: number; vy: number } | null>(null);
+  const { svgRef, view, viewBox, handlers, zoomIn, zoomOut, reset } = usePanZoom(fit);
 
   const outlinePath = useMemo(() => {
     const o = mechanical?.outline;
@@ -64,28 +63,6 @@ export function PcbView({ board, mechanical }: { board: SqBoard; mechanical: SqM
     return `M ${rr} 0 H ${W - rr} A ${rr} ${rr} 0 0 1 ${W} ${rr} V ${H - rr} A ${rr} ${rr} 0 0 1 ${W - rr} ${H} H ${rr} A ${rr} ${rr} 0 0 1 0 ${H - rr} V ${rr} A ${rr} ${rr} 0 0 1 ${rr} 0 Z`;
   }, [board, mechanical, W, H]);
 
-  const onWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
-    const svg = svgRef.current;
-    if (!svg) return;
-    const rect = svg.getBoundingClientRect();
-    const k = e.deltaY > 0 ? 1.15 : 1 / 1.15;
-    const mx = view.x + ((e.clientX - rect.left) / rect.width) * view.w;
-    const my = view.y + ((e.clientY - rect.top) / rect.height) * view.h;
-    setView({ x: mx - (mx - view.x) * k, y: my - (my - view.y) * k, w: view.w * k, h: view.h * k });
-  };
-  const onDown = (e: React.PointerEvent) => {
-    drag.current = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y };
-    (e.target as Element).setPointerCapture?.(e.pointerId);
-  };
-  const onMove = (e: React.PointerEvent) => {
-    if (!drag.current || !svgRef.current) return;
-    const rect = svgRef.current.getBoundingClientRect();
-    const dx = ((e.clientX - drag.current.x) / rect.width) * view.w;
-    const dy = ((e.clientY - drag.current.y) / rect.height) * view.h;
-    setView((v) => ({ ...v, x: drag.current!.vx - dx, y: drag.current!.vy - dy }));
-  };
-  const onUp = () => (drag.current = null);
 
   const strokeScale = view.w / 400; // keep hairlines readable at any zoom
   const fontSize = Math.max(0.9, view.w / 60);
@@ -157,13 +134,8 @@ export function PcbView({ board, mechanical }: { board: SqBoard; mechanical: SqM
       <svg
         ref={svgRef}
         className="h-full w-full cursor-grab active:cursor-grabbing"
-        viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
-        onWheel={onWheel}
-        onPointerDown={onDown}
-        onPointerMove={onMove}
-        onPointerUp={onUp}
-        onPointerLeave={onUp}
-        onDoubleClick={() => setView(fit)}
+        viewBox={viewBox}
+        {...handlers}
       >
         {/* flip to Y-up around the board's mid height */}
         <g transform={`translate(0 ${H}) scale(1 -1)`}>
@@ -202,6 +174,9 @@ export function PcbView({ board, mechanical }: { board: SqBoard; mechanical: SqM
             )}
         </g>
       </svg>
+      <div className="pointer-events-none absolute bottom-3 right-3">
+        <ZoomControls zoomIn={zoomIn} zoomOut={zoomOut} reset={reset} />
+      </div>
       <div className="pointer-events-none absolute bottom-3 left-3 flex flex-col gap-1 text-[11px] text-sq-text-secondary">
         <div className="pointer-events-auto flex gap-1 rounded-md bg-sq-bg-dark/80 p-1 backdrop-blur">
           {(['top', 'bottom', 'rats', 'labels'] as const).map((k) => (
