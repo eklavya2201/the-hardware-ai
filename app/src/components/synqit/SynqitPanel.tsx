@@ -26,7 +26,9 @@ export function SynqitPanel({ parameters }: { parameters: ReactNode }) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex shrink-0 gap-1 overflow-x-auto border-b border-sq-neutral-800 px-2 pt-2">
+      {/* pl-12 clears the app's fixed sidebar toggle, which sits ~16px into
+          whichever panel is leftmost — this one, since the swap. */}
+      <div className="flex shrink-0 gap-1 overflow-x-auto border-b border-sq-neutral-800 pl-12 pr-2 pt-2">
         {TABS.map((t) => (
           <button
             key={t.id}
