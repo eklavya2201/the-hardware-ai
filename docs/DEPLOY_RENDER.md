@@ -34,6 +34,47 @@ normal `User-Agent`, Cloudflare blocks `Python-urllib` with error 1010),
 buckets and the guest via `scripts/seed-remote.mjs`, auth config via
 `PATCH /v1/projects/{ref}/config/auth`.
 
+## The electronics engine on Render (2026-09-08) — deployed, needs more RAM
+
+| | |
+|---|---|
+| URL | https://synqit-api.onrender.com/api/health |
+| service id | `srv-dag151n40ujc73dc9s8g` |
+| image | `backend/Dockerfile.render` — lean (no KiCad, FreeRouting or CAD kernel); ~400 MB, builds in about 80 s |
+| database | the Supabase Postgres we already run, under its own role and schema `synqit_api` (Render's one free Postgres slot is taken by another project) |
+| plan | **free (512 MB) — not enough** |
+
+**What works on free:** health, signup, login, creating and listing projects,
+persistence across restarts (Postgres, not a disk).
+
+**What does not:** `GET /library/index` and any schematic-agent run kill the
+instance. The part library alone is ~400 MB resident once 23,941 parts are
+parsed, leaving ~100 MB for everything else, so the first real workload OOMs
+and Render restarts the container.
+
+**Two ways forward.**
+
+1. Add a card to the Render workspace and move the service to `standard`
+   (2 GB, $25/month). One call, no redeploy:
+
+   ```bash
+   curl -X PATCH https://api.render.com/v1/services/srv-dag151n40ujc73dc9s8g      -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: application/json"      -d '{"serviceDetails":{"plan":"standard"}}'
+   ```
+
+2. Make the library cheap to hold: keep the parts as plain dicts keyed by MPN
+   and build `LibraryPart` objects only when a part is actually used, and
+   precompute `/library/index` into a static gzipped file at image build time.
+   That is real work in `app/services/library.py`, but it would fit in 512 MB
+   and speed up cold starts everywhere, including production.
+
+Until one of those lands, the studio keeps pointing at production
+`api.synqit.in`, which is where the testers' projects already live.
+
+**Still missing for a full cut-over:** the studio has no way to create a Synqit
+*account*. Sign-in works when the user already has one; a new tester on a fresh
+backend cannot register from the studio UI. Either add a sign-up path or have
+the studio provision a backend account for its signed-in user.
+
 ## 1. Supabase (hosted, free tier is enough)
 
 1. https://supabase.com → New project. Region: Mumbai (ap-south-1) if offered.
