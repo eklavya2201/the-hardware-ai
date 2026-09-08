@@ -55,7 +55,7 @@ export const DeleteAccountDialog = ({
       // lives on a guarded route, and the AuthGuard would otherwise fire
       // the provider redirect and sign the just-deleted user back in.
       if (ssoProvider) {
-        await navigate({ to: '/' });
+        await navigate({ to: '/app' });
       }
       // Sign out locally and redirect after deletion
       supabase.auth.signOut();

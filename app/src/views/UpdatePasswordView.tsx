@@ -23,7 +23,7 @@ export function UpdatePasswordView() {
           title: 'Success',
           description: 'Password updated successfully',
         });
-        navigate({ to: '/' });
+        navigate({ to: '/app' });
       },
       onError: () => {
         toast({

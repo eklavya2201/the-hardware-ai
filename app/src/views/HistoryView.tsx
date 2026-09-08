@@ -404,7 +404,7 @@ export function HistoryView() {
                     <p className="mb-4 text-sm">
                       Start a new chat to begin building CAD
                     </p>
-                    <Button onClick={() => navigate({ to: '/' })}>
+                    <Button onClick={() => navigate({ to: '/app' })}>
                       Start New Chat
                     </Button>
                   </>
@@ -505,7 +505,7 @@ export function HistoryView() {
       <button
         type="button"
         aria-label="Create new item"
-        onClick={() => navigate({ to: '/' })}
+        onClick={() => navigate({ to: '/app' })}
         className="fixed bottom-8 right-8 flex h-14 w-14 items-center justify-center rounded-full bg-sq-neutral-100 text-sq-neutral-950 shadow-[0_4px_32px_rgba(0,0,0,0.48)] md:hidden"
       >
         <Plus className="h-10 w-10 stroke-[2px]" />

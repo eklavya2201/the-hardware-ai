@@ -17,9 +17,10 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as DocsRouteImport } from './routes/docs'
 import { Route as ConfirmEmailRouteImport } from './routes/confirm-email'
 import { Route as LayoutRouteImport } from './routes/_layout'
-import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AssetsSplatRouteImport } from './routes/assets.$'
 import { Route as ApiTitleGeneratorRouteImport } from './routes/api/title-generator'
 import { Route as ApiSynqitSsoRouteImport } from './routes/api/synqit-sso'
@@ -35,6 +36,7 @@ import { Route as ApiBillingStatusRouteImport } from './routes/api/billing-statu
 import { Route as ApiBillingProductsRouteImport } from './routes/api/billing-products'
 import { Route as ApiBillingCheckoutRouteImport } from './routes/api/billing-checkout'
 import { Route as LayoutSubscriptionRouteImport } from './routes/_layout/subscription'
+import { Route as LayoutAppRouteImport } from './routes/_layout/app'
 import { Route as LayoutAuthRouteImport } from './routes/_layout/_auth'
 import { Route as LayoutSplatRouteImport } from './routes/_layout/$'
 import { Route as ApiSynqitSplatRouteImport } from './routes/api/synqit/$'
@@ -85,6 +87,11 @@ const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
   path: '/privacy-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocsRoute = DocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ConfirmEmailRoute = ConfirmEmailRouteImport.update({
   id: '/confirm-email',
   path: '/confirm-email',
@@ -94,10 +101,10 @@ const LayoutRoute = LayoutRouteImport.update({
   id: '/_layout',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LayoutIndexRoute = LayoutIndexRouteImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => LayoutRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AssetsSplatRoute = AssetsSplatRouteImport.update({
   id: '/assets/$',
@@ -174,6 +181,11 @@ const LayoutSubscriptionRoute = LayoutSubscriptionRouteImport.update({
   path: '/subscription',
   getParentRoute: () => LayoutRoute,
 } as any)
+const LayoutAppRoute = LayoutAppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => LayoutRoute,
+} as any)
 const LayoutAuthRoute = LayoutAuthRouteImport.update({
   id: '/_auth',
   getParentRoute: () => LayoutRoute,
@@ -221,8 +233,9 @@ const LayoutAuthEditorIdRoute = LayoutAuthEditorIdRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof LayoutIndexRoute
+  '/': typeof IndexRoute
   '/confirm-email': typeof ConfirmEmailRoute
+  '/docs': typeof DocsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signin': typeof SigninRoute
@@ -232,6 +245,7 @@ export interface FileRoutesByFullPath {
   '/terms-of-service': typeof TermsOfServiceRoute
   '/update-password': typeof UpdatePasswordRoute
   '/$': typeof LayoutSplatRoute
+  '/app': typeof LayoutAppRoute
   '/subscription': typeof LayoutSubscriptionRoute
   '/api/billing-checkout': typeof ApiBillingCheckoutRoute
   '/api/billing-products': typeof ApiBillingProductsRoute
@@ -256,7 +270,9 @@ export interface FileRoutesByFullPath {
   '/api/internal/account/delete': typeof ApiInternalAccountDeleteRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/confirm-email': typeof ConfirmEmailRoute
+  '/docs': typeof DocsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signin': typeof SigninRoute
@@ -266,7 +282,7 @@ export interface FileRoutesByTo {
   '/terms-of-service': typeof TermsOfServiceRoute
   '/update-password': typeof UpdatePasswordRoute
   '/$': typeof LayoutSplatRoute
-  '/': typeof LayoutIndexRoute
+  '/app': typeof LayoutAppRoute
   '/subscription': typeof LayoutSubscriptionRoute
   '/api/billing-checkout': typeof ApiBillingCheckoutRoute
   '/api/billing-products': typeof ApiBillingProductsRoute
@@ -292,8 +308,10 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/_layout': typeof LayoutRouteWithChildren
   '/confirm-email': typeof ConfirmEmailRoute
+  '/docs': typeof DocsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signin': typeof SigninRoute
@@ -304,6 +322,7 @@ export interface FileRoutesById {
   '/update-password': typeof UpdatePasswordRoute
   '/_layout/$': typeof LayoutSplatRoute
   '/_layout/_auth': typeof LayoutAuthRouteWithChildren
+  '/_layout/app': typeof LayoutAppRoute
   '/_layout/subscription': typeof LayoutSubscriptionRoute
   '/api/billing-checkout': typeof ApiBillingCheckoutRoute
   '/api/billing-products': typeof ApiBillingProductsRoute
@@ -319,7 +338,6 @@ export interface FileRoutesById {
   '/api/synqit-sso': typeof ApiSynqitSsoRoute
   '/api/title-generator': typeof ApiTitleGeneratorRoute
   '/assets/$': typeof AssetsSplatRoute
-  '/_layout/': typeof LayoutIndexRoute
   '/_layout/_auth/history': typeof LayoutAuthHistoryRoute
   '/_layout/_auth/settings': typeof LayoutAuthSettingsRoute
   '/_layout/share/$id': typeof LayoutShareIdRoute
@@ -333,6 +351,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/confirm-email'
+    | '/docs'
     | '/privacy-policy'
     | '/reset-password'
     | '/signin'
@@ -342,6 +361,7 @@ export interface FileRouteTypes {
     | '/terms-of-service'
     | '/update-password'
     | '/$'
+    | '/app'
     | '/subscription'
     | '/api/billing-checkout'
     | '/api/billing-products'
@@ -366,7 +386,9 @@ export interface FileRouteTypes {
     | '/api/internal/account/delete'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/confirm-email'
+    | '/docs'
     | '/privacy-policy'
     | '/reset-password'
     | '/signin'
@@ -376,7 +398,7 @@ export interface FileRouteTypes {
     | '/terms-of-service'
     | '/update-password'
     | '/$'
-    | '/'
+    | '/app'
     | '/subscription'
     | '/api/billing-checkout'
     | '/api/billing-products'
@@ -401,8 +423,10 @@ export interface FileRouteTypes {
     | '/api/internal/account/delete'
   id:
     | '__root__'
+    | '/'
     | '/_layout'
     | '/confirm-email'
+    | '/docs'
     | '/privacy-policy'
     | '/reset-password'
     | '/signin'
@@ -413,6 +437,7 @@ export interface FileRouteTypes {
     | '/update-password'
     | '/_layout/$'
     | '/_layout/_auth'
+    | '/_layout/app'
     | '/_layout/subscription'
     | '/api/billing-checkout'
     | '/api/billing-products'
@@ -428,7 +453,6 @@ export interface FileRouteTypes {
     | '/api/synqit-sso'
     | '/api/title-generator'
     | '/assets/$'
-    | '/_layout/'
     | '/_layout/_auth/history'
     | '/_layout/_auth/settings'
     | '/_layout/share/$id'
@@ -439,8 +463,10 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   LayoutRoute: typeof LayoutRouteWithChildren
   ConfirmEmailRoute: typeof ConfirmEmailRoute
+  DocsRoute: typeof DocsRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SigninRoute: typeof SigninRoute
@@ -526,6 +552,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyPolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/confirm-email': {
       id: '/confirm-email'
       path: '/confirm-email'
@@ -540,12 +573,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_layout/': {
-      id: '/_layout/'
+    '/': {
+      id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof LayoutIndexRouteImport
-      parentRoute: typeof LayoutRoute
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/assets/$': {
       id: '/assets/$'
@@ -652,6 +685,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutSubscriptionRouteImport
       parentRoute: typeof LayoutRoute
     }
+    '/_layout/app': {
+      id: '/_layout/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof LayoutAppRouteImport
+      parentRoute: typeof LayoutRoute
+    }
     '/_layout/_auth': {
       id: '/_layout/_auth'
       path: ''
@@ -737,16 +777,16 @@ const LayoutAuthRouteWithChildren = LayoutAuthRoute._addFileChildren(
 interface LayoutRouteChildren {
   LayoutSplatRoute: typeof LayoutSplatRoute
   LayoutAuthRoute: typeof LayoutAuthRouteWithChildren
+  LayoutAppRoute: typeof LayoutAppRoute
   LayoutSubscriptionRoute: typeof LayoutSubscriptionRoute
-  LayoutIndexRoute: typeof LayoutIndexRoute
   LayoutShareIdRoute: typeof LayoutShareIdRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutSplatRoute: LayoutSplatRoute,
   LayoutAuthRoute: LayoutAuthRouteWithChildren,
+  LayoutAppRoute: LayoutAppRoute,
   LayoutSubscriptionRoute: LayoutSubscriptionRoute,
-  LayoutIndexRoute: LayoutIndexRoute,
   LayoutShareIdRoute: LayoutShareIdRoute,
 }
 
@@ -754,8 +794,10 @@ const LayoutRouteWithChildren =
   LayoutRoute._addFileChildren(LayoutRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   LayoutRoute: LayoutRouteWithChildren,
   ConfirmEmailRoute: ConfirmEmailRoute,
+  DocsRoute: DocsRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SigninRoute: SigninRoute,

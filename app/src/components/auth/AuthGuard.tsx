@@ -45,7 +45,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
           });
           // The redirect failed — fall back to root, whose signed-out state
           // offers the manual sign-in affordances.
-          navigate({ to: '/', replace: true });
+          navigate({ to: '/app', replace: true });
         });
         return;
       }

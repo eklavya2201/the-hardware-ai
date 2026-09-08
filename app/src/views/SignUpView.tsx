@@ -28,7 +28,7 @@ export function SignUpView() {
   // Redirect to home if already authenticated
   useEffect(() => {
     if (!authLoading && session && user) {
-      navigate({ to: '/', replace: true });
+      navigate({ to: '/app', replace: true });
     }
   }, [session, user, authLoading, navigate]);
 

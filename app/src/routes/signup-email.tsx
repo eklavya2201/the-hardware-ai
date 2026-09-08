@@ -7,7 +7,7 @@ export const Route = createFileRoute('/signup-email')({
   // the native auth routes bounce straight there without rendering.
   beforeLoad: () => {
     if (ssoProvider) {
-      throw redirect({ to: '/', replace: true });
+      throw redirect({ to: '/app', replace: true });
     }
   },
   component: SignUpEmailView,

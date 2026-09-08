@@ -52,7 +52,7 @@ interface SidebarProps {
   setIsSidebarOpen: (open: boolean) => void;
 }
 
-type SidebarPath = '/' | '/history';
+type SidebarPath = '/app' | '/history';
 
 function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
   const navigate = useNavigate();
@@ -87,7 +87,7 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
         // there. Navigate BEFORE the session dies: on a guarded route the
         // AuthGuard would otherwise fire the provider redirect the moment the
         // session goes away and sign the user straight back in.
-        await navigate({ to: '/' });
+        await navigate({ to: '/app' });
         await signOut();
         return;
       }
@@ -153,7 +153,7 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
           <button
             type="button"
             className="flex w-full cursor-pointer items-center space-x-2"
-            onClick={() => sidebarNavigate('/')}
+            onClick={() => sidebarNavigate('/app')}
           >
             {isSidebarOpen ? (
               <div className="flex w-full">
@@ -200,7 +200,7 @@ function DesktopSidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
                     ? 'flex w-[216px] items-center justify-start gap-2 rounded-[100px] border border-sq-blue bg-sq-background-1 px-4 py-3 text-[#D7D7D7] hover:bg-sq-blue/40 hover:text-sq-text-primary'
                     : 'flex h-[30px] w-[30px] items-center justify-center rounded-[8px] border-2 border-sq-blue bg-[#191A1A] p-[2px] text-[#D7D7D7] shadow-[0px_4px_10px_0px_rgba(0,166,255,0.24)] hover:bg-sq-blue/40 hover:text-sq-text-primary'
                 } mb-4`}
-                onClick={() => sidebarNavigate('/')}
+                onClick={() => sidebarNavigate('/app')}
               >
                 <Plus
                   className={`h-5 w-5 ${!isSidebarOpen ? 'text-sq-neutral-300 hover:text-sq-text-primary' : ''}`}

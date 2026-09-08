@@ -7,8 +7,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase, ssoProvider } from '@/lib/supabase';
 import { signInWithSsoProvider } from '@/lib/ssoAuth';
 import TextAreaChat from '@/components/TextAreaChat';
+import { INSERT_EVENT } from '@/components/synqit/LibraryDialog';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { Model } from '@shared/types';
 import { MessageItem } from '../types/misc.ts';
 import { LimitReachedMessage } from '@/components/LimitReachedMessage';
@@ -237,6 +238,25 @@ export function PromptView() {
       });
     },
   });
+
+  // A brief typed on the landing page arrives as ?prompt=. Run it if we can,
+  // otherwise drop it in the composer so signing in does not lose the sentence
+  // they wrote. Fires once: the parameter is stripped as soon as it is used.
+  const startedFromLanding = useRef(false);
+  useEffect(() => {
+    if (startedFromLanding.current || isLoading) return;
+    const params = new URLSearchParams(window.location.search);
+    const brief = params.get('prompt')?.trim();
+    if (!brief) return;
+    startedFromLanding.current = true;
+    window.history.replaceState({}, '', window.location.pathname);
+    if (user) {
+      handleGenerate([{ type: 'text', text: brief }]);
+    } else {
+      window.dispatchEvent(new CustomEvent(INSERT_EVENT, { detail: brief }));
+    }
+  }, [user, isLoading, handleGenerate]);
+
 
   return (
     <div

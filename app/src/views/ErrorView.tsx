@@ -22,7 +22,7 @@ export function ErrorView({ error }: { error?: unknown }) {
         <br />
         Please feel free to reach out to us so that we can resolve this issue.
       </p>
-      <Button onClick={() => navigate({ to: '/' })}>Go to Home</Button>
+      <Button onClick={() => navigate({ to: '/app' })}>Go to Home</Button>
     </div>
   );
 }

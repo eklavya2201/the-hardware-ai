@@ -129,7 +129,7 @@ export default function EditorView() {
     });
 
   useEffect(() => {
-    if (!conversationId) navigate({ to: '/' });
+    if (!conversationId) navigate({ to: '/app' });
   }, [conversationId, navigate]);
 
   if (isConversationLoading) {
@@ -695,7 +695,7 @@ function ConversationEditor() {
                 size="icon"
                 className="h-8 w-8 bg-transparent p-0 hover:bg-transparent"
                 onClick={() => {
-                  navigate({ to: '/' });
+                  navigate({ to: '/app' });
                 }}
                 aria-label="New Creation"
               >
