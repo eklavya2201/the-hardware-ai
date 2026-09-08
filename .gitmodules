@@ -1,4 +1,0 @@
-[submodule "synqit"]
-	path = synqit
-	url = https://github.com/eklavya2201/synqit.git
-	branch = cad-sso

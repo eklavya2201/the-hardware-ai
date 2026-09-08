@@ -4,3 +4,12 @@ dist/
 .env*
 !.env.local.template
 __pycache__/
+
+# backend runtime artifacts
+backend/.venv/
+backend/*.db
+backend/__pycache__/
+backend/**/__pycache__/
+backend/app/library/demand_log.jsonl
+backend/app/library/proposed_parts/
+backend/app/library/datasheets/*.pdf

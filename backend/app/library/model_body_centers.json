@@ -1,0 +1,242 @@
+{
+  "10118194-0001LF": {
+    "cx": -0.0,
+    "cy": -4.025,
+    "footprint": "Connector_USB:USB_Micro-B_Amphenol_10118194-0001LF_Horizontal"
+  },
+  "Arduino_Shield_Headers": {
+    "cx": 13.21,
+    "cy": 24.13,
+    "footprint": "Synqit:Synqit_Arduino_Shield_Headers"
+  },
+  "Audio_Jack_3.5mm": {
+    "cx": -1.053,
+    "cy": -2.412,
+    "footprint": "Connector_Audio:Jack_3.5mm_PJ320D_Horizontal"
+  },
+  "BarrelJack_DC_5.5x2.1mm": {
+    "cx": -6.7,
+    "cy": 0.15,
+    "footprint": "Connector_BarrelJack:BarrelJack_Horizontal"
+  },
+  "BatteryHolder_18650_Keystone1042": {
+    "cx": 0.0,
+    "cy": 0.0,
+    "footprint": "Battery:BatteryHolder_Keystone_1042_1x18650"
+  },
+  "BatteryHolder_CR2032": {
+    "cx": 0.0,
+    "cy": 0.445,
+    "footprint": "Battery:BatteryHolder_Keystone_3034_1x20mm"
+  },
+  "Battery_Snap_9V": {
+    "cx": 0.0,
+    "cy": -1.27,
+    "footprint": "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical"
+  },
+  "Coin_Cell_CR1220": {
+    "cx": 0.0,
+    "cy": -0.03,
+    "footprint": "Battery:BatteryHolder_Keystone_3000_1x12mm"
+  },
+  "DC_Jack_2.5mm": {
+    "cx": -6.7,
+    "cy": 0.15,
+    "footprint": "Connector_BarrelJack:BarrelJack_Horizontal"
+  },
+  "FFC_30P_0.5mm": {
+    "cx": 0.0,
+    "cy": 1.2,
+    "footprint": "Connector_FFC-FPC:Hirose_FH12-30S-0.5SH_1x30-1MP_P0.50mm_Horizontal"
+  },
+  "FPC_40P_0.5mm": {
+    "cx": 0.0,
+    "cy": 1.2,
+    "footprint": "Connector_FFC-FPC:Hirose_FH12-40S-0.5SH_1x40-1MP_P0.50mm_Horizontal"
+  },
+  "HDMI_MicroD": {
+    "cx": 0.0,
+    "cy": 1.35,
+    "footprint": "Connector_Video:HDMI_Micro-D_Molex_46765-1xxx"
+  },
+  "HDMI_TypeA": {
+    "cx": 1.925,
+    "cy": 0.0,
+    "footprint": "Connector_Video:HDMI_A_Molex_208658-1001_Horizontal"
+  },
+  "JST_GH_4P": {
+    "cx": 0.0,
+    "cy": 0.0,
+    "footprint": "Connector_JST:JST_GH_BM04B-GHS-TBT_1x04-1MP_P1.25mm_Vertical"
+  },
+  "JST_SH_4P": {
+    "cx": 0.0,
+    "cy": 0.0,
+    "footprint": "Connector_JST:JST_SH_BM04B-SRSS-TB_1x04-1MP_P1.00mm_Vertical"
+  },
+  "JST_XH_2P": {
+    "cx": 1.25,
+    "cy": 0.525,
+    "footprint": "Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical"
+  },
+  "JST_XH_3P": {
+    "cx": 2.5,
+    "cy": 0.525,
+    "footprint": "Connector_JST:JST_XH_B3B-XH-A_1x03_P2.50mm_Vertical"
+  },
+  "JST_XH_4P": {
+    "cx": 3.75,
+    "cy": 0.525,
+    "footprint": "Connector_JST:JST_XH_B4B-XH-A_1x04_P2.50mm_Vertical"
+  },
+  "LIR2032_Holder": {
+    "cx": 0.0,
+    "cy": 0.445,
+    "footprint": "Battery:BatteryHolder_Keystone_3034_1x20mm"
+  },
+  "M12_5Pin": {
+    "cx": 0.0,
+    "cy": -5.08,
+    "footprint": "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical"
+  },
+  "MicroHDMI": {
+    "cx": 0.0,
+    "cy": 1.35,
+    "footprint": "Connector_Video:HDMI_Micro-D_Molex_46765-1xxx"
+  },
+  "MicroSD_Socket_Push": {
+    "cx": 0.0,
+    "cy": 0.05,
+    "footprint": "Connector_Card:microSD_HC_Hirose_DM3D-SF"
+  },
+  "PinHeader_1x10_P2.54mm": {
+    "cx": 0.0,
+    "cy": -11.43,
+    "footprint": "Connector_PinHeader_2.54mm:PinHeader_1x10_P2.54mm_Vertical"
+  },
+  "PinHeader_1x2_P2.54mm": {
+    "cx": 0.0,
+    "cy": -1.27,
+    "footprint": "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical"
+  },
+  "PinHeader_1x3_P2.54mm": {
+    "cx": 0.0,
+    "cy": -2.54,
+    "footprint": "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical"
+  },
+  "PinHeader_1x4_P2.54mm": {
+    "cx": 0.0,
+    "cy": -3.81,
+    "footprint": "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical"
+  },
+  "PinHeader_1x6_P2.54mm": {
+    "cx": 0.0,
+    "cy": -6.35,
+    "footprint": "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical"
+  },
+  "PinHeader_1x8_P2.54mm": {
+    "cx": 0.0,
+    "cy": -8.89,
+    "footprint": "Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical"
+  },
+  "PinHeader_2x05_P1.27mm": {
+    "cx": 0.0,
+    "cy": 0.0,
+    "footprint": "Connector_PinHeader_1.27mm:PinHeader_2x05_P1.27mm_Vertical_SMD"
+  },
+  "PinHeader_2x10_P2.54mm": {
+    "cx": 1.27,
+    "cy": -11.43,
+    "footprint": "Connector_PinHeader_2.54mm:PinHeader_2x10_P2.54mm_Vertical"
+  },
+  "PinHeader_2x4_P2.54mm": {
+    "cx": 1.27,
+    "cy": -3.81,
+    "footprint": "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical"
+  },
+  "Pin_Header_2x40": {
+    "cx": 1.27,
+    "cy": -24.13,
+    "footprint": "Connector_PinHeader_2.54mm:PinHeader_2x20_P2.54mm_Vertical"
+  },
+  "QwiicConnector_4P": {
+    "cx": 0.0,
+    "cy": 0.0,
+    "footprint": "Connector_JST:JST_SH_BM04B-SRSS-TB_1x04-1MP_P1.00mm_Vertical"
+  },
+  "RJ11": {
+    "cx": 0.0,
+    "cy": -4.561,
+    "footprint": "Connector_RJ:RJ12_Amphenol_54601-x06_Horizontal"
+  },
+  "RJ45_Ethernet": {
+    "cx": 0.0,
+    "cy": -0.71,
+    "footprint": "Connector_RJ:RJ45_Wuerth_74980111211_Horizontal"
+  },
+  "RPi_HAT_Header_40P": {
+    "cx": 1.27,
+    "cy": -24.13,
+    "footprint": "Connector_PinHeader_2.54mm:PinHeader_2x20_P2.54mm_Vertical"
+  },
+  "S2B-PH-K-S(LF)(SN)": {
+    "cx": 1.0,
+    "cy": -2.45,
+    "footprint": "Connector_JST:JST_PH_S2B-PH-K_1x02_P2.00mm_Horizontal"
+  },
+  "SD_Card_Full": {
+    "cx": -0.0,
+    "cy": -8.328,
+    "footprint": "Connector_Card:SD_Kyocera_145638009211859+"
+  },
+  "SMA_EdgeMount_132289": {
+    "cx": 0.0,
+    "cy": 0.0,
+    "footprint": "Connector_Coaxial:SMA_Amphenol_132289_EdgeMount"
+  },
+  "ScrewTerminal_2P_5mm": {
+    "cx": 0.0,
+    "cy": 0.0,
+    "footprint": "TerminalBlock:TerminalBlock_MaiXu_MX126-5.0-02P_1x02_P5.00mm"
+  },
+  "ScrewTerminal_3P_5mm": {
+    "cx": 0.0,
+    "cy": 0.0,
+    "footprint": "TerminalBlock:TerminalBlock_MaiXu_MX126-5.0-03P_1x03_P5.00mm"
+  },
+  "Spring_Battery_AAA": {
+    "cx": 22.35,
+    "cy": 0.0,
+    "footprint": "Battery:BatteryHolder_Keystone_2466_1xAAA"
+  },
+  "U.FL-R-SMT-1": {
+    "cx": 0.0,
+    "cy": 0.0,
+    "footprint": "Connector_Coaxial:U.FL_Hirose_U.FL-R-SMT-1_Vertical"
+  },
+  "USB4085-GF-A": {
+    "cx": 2.975,
+    "cy": -4.025,
+    "footprint": "Connector_USB:USB_C_Receptacle_GCT_USB4085"
+  },
+  "USB_A_Female": {
+    "cx": 3.5,
+    "cy": -4.025,
+    "footprint": "Connector_USB:USB_A_Stewart_SS-52100-001_Horizontal"
+  },
+  "USB_B_Female": {
+    "cx": 4.025,
+    "cy": -2.975,
+    "footprint": "Connector_USB:USB_B_OST_USB-B1HSxx_Horizontal"
+  },
+  "USB_C_16Pin_Power_Only": {
+    "cx": 2.975,
+    "cy": -4.025,
+    "footprint": "Connector_USB:USB_C_Receptacle_GCT_USB4085"
+  },
+  "USB_C_24Pin_Full": {
+    "cx": 0.0,
+    "cy": 0.0,
+    "footprint": "Connector_USB:USB_C_Receptacle_GCT_USB4115-03-C"
+  }
+}

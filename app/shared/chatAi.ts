@@ -48,7 +48,32 @@ export const answerUserSchema = z.object({
   message: z.string().min(1),
 });
 
+export const designBoardInputSchema = z.object({
+  name: z.string().min(1).max(60),
+  brief: z.string().min(10),
+});
+
+export const designBoardOutputSchema = z.object({
+  status: z.enum(['success', 'error']),
+  message: z.string(),
+  projectId: z.string().optional(),
+  components: z.number().optional(),
+  nets: z.number().optional(),
+  placed: z.number().optional(),
+  traces: z.number().optional(),
+  unrouted: z.number().optional(),
+  errors: z.number().optional(),
+  warnings: z.number().optional(),
+  boardSize: z.string().optional(),
+});
+
 export const chatTools = {
+  design_board: tool({
+    description:
+      "Design the electronics in Synqit: create a project, run the schematic agent on the brief, then place and route the PCB. Use this whenever the user asks for a circuit, schematic, PCB, wiring, or names electronic parts (MCU, sensor, display, battery). Returns counts, not prose; the PCB and Schematic views fill in automatically.",
+    inputSchema: designBoardInputSchema,
+    outputSchema: designBoardOutputSchema,
+  }),
   build_parametric_model: tool({
     description:
       'Create or update the complete OpenSCAD CAD artifact. After the browser compiles it, inspect the returned multi-view preview sheet and call this tool again if the model needs another revision.',

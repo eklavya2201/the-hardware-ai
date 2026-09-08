@@ -8,6 +8,7 @@ import { useCachedAiChat } from '@/hooks/useCachedAiChat';
 import { useToast } from '@/hooks/use-toast';
 import { previewScadColoredViaToolWorker } from '@/worker/toolWorker';
 import { describeFacts, meshFacts, type MeshFacts } from '@/utils/meshFacts';
+import { designBoard } from '@/lib/synqitBoardAgent';
 import { apiUrl } from '@/services/api';
 import { messageRowToChatMessage, type ChatMessage } from '@/lib/aiMessages';
 import { collectStuckToolRecovery } from '@/components/chat/stuckToolRecovery';
@@ -256,7 +257,8 @@ export function ChatSession({
     }) => {
       if (
         toolCall.toolName !== 'build_parametric_model' &&
-        toolCall.toolName !== 'answer_user'
+        toolCall.toolName !== 'answer_user' &&
+        toolCall.toolName !== 'design_board'
       ) {
         return;
       }
@@ -283,6 +285,86 @@ export function ChatSession({
       const assistant =
         findAssistant(chat.messages as AppUIMessage[]) ??
         findAssistant(messagesRef.current);
+
+      if (toolCall.toolName === 'design_board') {
+        const input = toolCall.input as { name?: unknown; brief?: unknown } | null;
+        const name = typeof input?.name === 'string' ? input.name : '';
+        const brief = typeof input?.brief === 'string' ? input.brief : '';
+
+        const settle = async (output: {
+          status: 'success' | 'error';
+          message: string;
+          [k: string]: unknown;
+        }) => {
+          const part = {
+            type: 'tool-design_board',
+            toolCallId: toolCall.toolCallId,
+            state: 'output-available',
+            input: toolCall.input,
+            output,
+          } as AppUIMessage['parts'][number];
+          if (assistant) {
+            const nextParts = assistant.parts.map((existing) =>
+              existing.type === 'tool-design_board' &&
+              'toolCallId' in existing &&
+              existing.toolCallId === toolCall.toolCallId
+                ? part
+                : existing,
+            ) as AppUIMessage['parts'];
+            try {
+              await onToolOutput(assistant.id, nextParts);
+            } catch (persistError) {
+              console.warn('Failed to persist design_board output:', persistError);
+            }
+          }
+          chat.addToolOutput({
+            state: 'output-available',
+            tool: 'design_board',
+            toolCallId: toolCall.toolCallId,
+            output,
+          });
+        };
+
+        if (!name || !brief) {
+          await settle({
+            status: 'error',
+            message: 'design_board needs a project name and a brief describing the circuit.',
+          });
+          return;
+        }
+
+        try {
+          const r = await designBoard(name, brief);
+          await settle({
+            status: 'success',
+            projectId: r.projectId,
+            components: r.components,
+            nets: r.nets,
+            placed: r.placed,
+            traces: r.traces,
+            unrouted: r.unrouted,
+            errors: r.errors,
+            warnings: r.warnings,
+            boardSize: r.boardSize,
+            message:
+              `Synqit project "${r.name}" created: ${r.components} components, ${r.nets} nets, ` +
+              `${r.placed} placed on a ${r.boardSize ?? 'sized'} board, ${r.traces} traces, ` +
+              `${r.unrouted} unrouted, ${r.errors} errors, ${r.warnings} warnings. ` +
+              'The PCB and Schematic views now show it. Report these numbers honestly; ' +
+              'if the user also wants a case, build it around this board next.',
+          });
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          await settle({
+            status: 'error',
+            message:
+              msg === 'not_signed_in'
+                ? 'The user is not signed in to Synqit, so the board could not be created. Tell them to sign in to Synqit (the Continue with Synqit link) and ask again.'
+                : `Synqit could not design the board: ${msg}`,
+          });
+        }
+        return;
+      }
 
       if (toolCall.toolName === 'answer_user') {
         const output = answerUserInput(toolCall.input);

@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.local
+
+# SQLite
+voltron.db
+voltron.db-journal
+voltron.db-wal
+voltron.db-shm
+price_cache.json

@@ -13,7 +13,9 @@ feasibility plan for Synqit.
 
 | Path | What it is |
 |---|---|
-| `app/` | **The app.** React + TanStack Start + Supabase + OpenSCAD-WASM. Our changes: Azure OpenAI provider, Synqit rebrand, Synqit/Google sign-in, no-auth guest mode, `scripts/bootstrap.mjs` |
+| `app/` | **The studio** — the product's single UI. React + TanStack Start + Supabase + OpenSCAD-WASM, plus the Synqit views (schematic, PCB, BOM, build guide, library) drawn natively |
+| `backend/` | **The electronics engine** — Synqit's FastAPI service: schematic agent, 96 verifier rules, 23,941-part library, placement, routing, BOM, build guide, KiCad/Gerber/STEP exports |
+| `docs/ARCHITECTURE.md` | How the agents work: verbs, nouns, queries; the two-agent flow; the benchmark; the guardrails |
 | `docs/LOCAL_SETUP.md` | Full runbook: every change we made, every env var, what is and is not wired up, how sign-in works |
 | `docs/screenshots/` | Proof runs: phone stand generation, follow-up edit, exported STL + SCAD, rebranded UI, SSO |
 | `research/01-competitor-product-teardown.md` | The competitor: what it is, how it is built, pricing, API, changelog |

@@ -1,0 +1,13 @@
+(footprint "Synqit_MQ-2"
+  (version 20240108)
+  (generator "synqit")
+  (layer "F.Cu")
+  (descr "MQ-2 (authored by Synqit)")
+  (attr smd)
+  (pad "1" thru_hole circle (at -4.7500 -0.0000) (size 1.5240 1.5240) (drill 1.016) (layers "*.Cu" "*.Mask"))
+  (pad "2" thru_hole circle (at -3.3480 3.3480) (size 1.5240 1.5240) (drill 1.016) (layers "*.Cu" "*.Mask"))
+  (pad "3" thru_hole circle (at 3.3480 3.3480) (size 1.5240 1.5240) (drill 1.016) (layers "*.Cu" "*.Mask"))
+  (pad "4" thru_hole circle (at 4.7500 -0.0000) (size 1.5240 1.5240) (drill 1.016) (layers "*.Cu" "*.Mask"))
+  (pad "5" thru_hole circle (at -3.3480 -3.3480) (size 1.5240 1.5240) (drill 1.016) (layers "*.Cu" "*.Mask"))
+  (pad "6" thru_hole circle (at 3.3480 -3.3480) (size 1.5240 1.5240) (drill 1.016) (layers "*.Cu" "*.Mask"))
+)

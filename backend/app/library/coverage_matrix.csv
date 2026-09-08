@@ -1,0 +1,421 @@
+mpn,category,tier,archetype,datasheet_url,notes
+# ======================================================================
+# Coverage matrix — the 1000-part target backlog for the curation bot.
+# ----------------------------------------------------------------------
+# Columns:
+#   mpn            — manufacturer part number, exact
+#   category       — must match the LibraryPart category enum
+#   tier           — 1 (highest priority, US-student high-ROI), 2 (broader
+#                    coverage), 3 (nice-to-have / niche)
+#   archetype      — short slug describing what kind of project this part
+#                    unlocks (e.g. us_student_air_quality, hobby_smartwatch)
+#   datasheet_url  — direct PDF URL the bot will fetch; leave blank to skip
+#   notes          — free-form
+# Lines beginning with # are comments. Bot ignores rows with blank MPN.
+# ======================================================================
+#
+# Tier 1 — US-student high-ROI from docs/RESEARCH_US_STUDENTS.md §4
+SCD40,sensor,1,us_student_air_quality,https://cdn.sparkfun.com/assets/9/7/5/7/0/Sensirion_SCD4x_Datasheet.pdf,NDIR CO2 + humidity + temp
+SCD41,sensor,1,us_student_air_quality,https://cdn.sparkfun.com/assets/9/7/5/7/0/Sensirion_SCD4x_Datasheet.pdf,Higher-accuracy SCD4x variant
+PMS5003,sensor,1,us_student_air_quality,https://www.aqmd.gov/docs/default-source/aq-spec/resources-page/plantower-pms5003-manual_v2-3.pdf,Plantower PM1.0/2.5/10 particulate
+AD8232,sensor,1,us_student_biomed,https://cdn.sparkfun.com/datasheets/Sensors/Biometric/AD8232.pdf,Single-lead ECG AFE
+HX711,sensor,1,us_student_biomed,https://cdn.sparkfun.com/datasheets/Sensors/ForceFlex/hx711_english.pdf,24-bit ADC for load cells
+TMC2209,actuator,1,robotics_3d_printer,https://cdn-learn.adafruit.com/assets/assets/000/134/427/original/TMC2209_datasheet_rev1.09.pdf,Silent stepper driver
+ATSAMD51J19A,mcu,1,adafruit_feather,https://ww1.microchip.com/downloads/aemDocuments/documents/MCU32/ProductDocuments/DataSheets/SAM-D5x-E5x-Family-Data-Sheet-DS60001507.pdf,Adafruit Feather M4 chip
+MLX90614,sensor,1,us_student_thermometer,https://www.melexis.com/-/media/files/documents/datasheets/mlx90614-datasheet-melexis.pdf,IR thermometer I2C
+#
+# Tier 2 — broader US-student coverage
+RP2350,mcu,2,modern_pico,https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf,Pi Pico 2 chip
+NRF52840,mcu,2,ble_feather,local:NRF52840.pdf,Nordic BLE SoC
+PIC32MX250F128B,mcu,2,cornell_ece4760,local:PIC32MX250F128B.pdf,Cornell ECE 4760
+CH224K,interface,2,usb_c_pd,local:CH224K.pdf,USB-C PD trigger
+VNH5019,actuator,2,competitive_robotics,https://www.pololu.com/file/0J504/vnh5019.pdf,High-current H-bridge
+BTS7960,actuator,2,competitive_robotics,local:BTS7960.pdf,43A H-bridge half
+MAX30001,sensor,2,modern_biopotential,local:MAX30001.pdf,local datasheet
+GT911,interface,2,cap_touch,local:GT911.pdf,Goodix capacitive touch controller
+FT6206,interface,2,cap_touch,local:FT6206.pdf,FocalTech capacitive touch
+PN532,interface,2,nfc,https://cdn-shop.adafruit.com/datasheets/pn532ds.pdf,NFC reader/writer
+#
+# Tier 3 — niche / nice-to-have
+LTR390,sensor,3,uv_sensing,https://optoelectronics.liteon.com/upload/download/DS86-2015-0004/LTR-390UV_Final_%20DS_V1%201.pdf,UV-A + ambient light
+ENS160,sensor,3,modern_voc,https://www.sciosense.com/wp-content/uploads/2023/12/ENS160-Datasheet.pdf,Modern VOC replacement for CCS811
+BMP390,sensor,3,rocketry_altimeter,https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmp390-ds002.pdf,High-precision barometer
+#
+# ======================================================================
+# MCU expansion pass
+# ----------------------------------------------------------------------
+# Target: ~80 MCUs total. Existing library covers ~15. Add ~65 more.
+# ======================================================================
+STM32F405RGT6,mcu,2,stm32_higher_perf,https://cdn.sparkfun.com/assets/4/c/b/0/2/stm32f405rg-1851084.pdf,Cortex-M4 168 MHz w/ FPU
+STM32F446RET6,mcu,2,stm32_higher_perf,local:STM32F446RET6.pdf,Cortex-M4 180 MHz
+STM32G474RET6,mcu,2,stm32_modern,local:STM32G474RET6.pdf,Cortex-M4 170 MHz w/ HRTIM
+STM32L432KCU6,mcu,2,stm32_low_power,local:STM32L432KCU6.pdf,Cortex-M4 low power
+STM32H743ZIT6,mcu,3,stm32_high_perf,https://www.st.com/resource/en/datasheet/stm32h743zi.pdf,Cortex-M7 480 MHz
+STM32WB55RGV6,mcu,3,stm32_ble,https://www.st.com/resource/en/datasheet/stm32wb55rg.pdf,STM32 with BLE
+STM32U575ZIT6,mcu,3,stm32_ultra_low,https://www.st.com/resource/en/datasheet/stm32u575zi.pdf,Cortex-M33 ultra-low-power
+ATSAMD21G18A,mcu,2,arduino_zero,local:ATSAMD21G18A.pdf,Arduino Zero / Feather M0
+ATSAMD51N20A,mcu,3,feather_m4_express,https://ww1.microchip.com/downloads/aemDocuments/documents/MCU32/ProductDocuments/DataSheets/SAM-D5x-E5x-Family-Data-Sheet-DS60001507.pdf,Big SAMD51
+ATSAME54N20A,mcu,3,industrial_samd,https://ww1.microchip.com/downloads/aemDocuments/documents/MCU32/ProductDocuments/DataSheets/SAM-D5x-E5x-Family-Data-Sheet-DS60001507.pdf,SAME54 industrial
+NRF52832,mcu,2,nrf_ble_classic,local:NRF52832.pdf,Older nRF52 with BLE
+NRF52833,mcu,3,microbit_v2,https://docs.rs-online.com/f99e/A700000006639409.pdf,micro:bit v2 chip
+ESP32-S2,mcu,2,esp32_usb_native,https://www.espressif.com/sites/default/files/documentation/esp32-s2_datasheet_en.pdf,ESP32 with native USB
+ESP32-H2,mcu,3,thread_zigbee,https://www.espressif.com/sites/default/files/documentation/esp32-h2_datasheet_en.pdf,Thread/Zigbee SoC
+ESP32-C6,mcu,2,wifi6_iot,https://www.espressif.com/sites/default/files/documentation/esp32-c6_datasheet_en.pdf,Wi-Fi 6 + Thread + BLE
+PIC18F46K22,mcu,3,pic_classic,https://ww1.microchip.com/downloads/en/DeviceDoc/40001412G.pdf,Classic PIC18
+ATTINY1614,mcu,3,modern_tiny,https://ww1.microchip.com/downloads/en/DeviceDoc/ATtiny1614-16-17-DataSheet-DS40002204A.pdf,Modern AVR tinyAVR
+ATMEGA4809,mcu,3,nano_every,https://ww1.microchip.com/downloads/en/DeviceDoc/Atmega809-1609-3209-4809-48-Pin-40002016C.pdf,Arduino Nano Every chip
+RP2040W,mcu,3,pico_w,https://datasheets.raspberrypi.com/picow/pico-w-datasheet.pdf,RP2040+CYW43439 module — composite; may need custom entry
+GD32F303CCT6,mcu,3,gd32_alternative,https://www.gd32mcu.com/data/documents/datasheet/GD32F303xx_Datasheet_Rev1.9.pdf,GigaDevice STM32-alike — datasheet on gigadevice site
+W806,mcu,3,winner_micro,https://learnembeddedsystems.co.uk/wp-content/uploads/2022/02/W806-Datasheet-1.pdf,WinnerMicro Cortex-M3 — Chinese alternative
+CH32V307VCT6,mcu,3,risc_v_dev,https://ch32-riscv-ug.github.io/CH32V307/datasheet_en/CH32V20x_30xDS0.PDF,WCH RISC-V
+ESP8266EX,mcu,2,esp8266_legacy,https://www.espressif.com/sites/default/files/documentation/0a-esp8266ex_datasheet_en.pdf,Legacy ESP8266
+#
+# ======================================================================
+# Sensor expansion pass
+# ----------------------------------------------------------------------
+# Target ~250 sensors total. Existing covers ~30. Add ~220 more across:
+# air quality, biomed, env, IMU, optical, ToF, current, force, gas
+# ======================================================================
+# Air quality / gas
+MQ-2,sensor,2,gas_detection,https://www.pololu.com/file/0J309/MQ2.pdf,Combustible gas — generic Hanwei datasheet
+MQ-3,sensor,3,alcohol_breathalyzer,https://cdn.sparkfun.com/datasheets/Sensors/Biometric/MQ-3%20ver1.3%20-%20Manual.pdf,Alcohol vapor
+MQ-5,sensor,2,lpg_natural_gas,https://www.winsen-sensor.com/d/files/MQ-5.pdf,LPG/methane
+MQ-7,sensor,2,carbon_monoxide,https://www.pololu.com/file/0j313/mq7.pdf,Carbon monoxide
+MQ-135,sensor,2,air_quality_generic,https://www.winsen-sensor.com/d/files/PDF/Semiconductor%20Gas%20Sensor/MQ135%20%28Ver1.4%29%20-%20Manual.pdf,Air quality VOCs / CO2 (low accuracy)
+MH-Z19B,sensor,2,co2_winsen,https://www.winsen-sensor.com/d/files/infrared-gas-sensor/mh-z19b-co2-ver1_0.pdf,Winsen NDIR CO2 (cheaper alt to SCD40)
+SPS30,sensor,2,particulate_outdoor,https://cdn.sparkfun.com/assets/4/e/e/f/8/Sensirion_PM_Sensors_Datasheet_SPS30.pdf,Sensirion particulate
+SGP40,sensor,2,voc_index,https://cdn.sparkfun.com/assets/e/6/2/6/d/Sensirion_Gas_Sensors_SGP40_Datasheet.pdf,VOC index
+SGP41,sensor,3,voc_nox,https://sensirion.com/media/documents/5FE8673C/61E96F50/Sensirion_Gas_Sensors_Datasheet_SGP41.pdf,Newer SGP41 with NOx
+CCS811,sensor,3,eco2_voc,https://cdn-shop.adafruit.com/product-files/3566/3566_datasheet.pdf,Older eCO2 + VOC
+SCD30,sensor,2,co2_higher_acc,https://cdn.sparkfun.com/assets/4/8/8/7/7/Sensirion_CO2_Sensors_SCD30_Datasheet.pdf,NDIR CO2 + RH + T
+#
+# Environment
+SHT45,sensor,2,modern_temp_humidity,https://cdn.sparkfun.com/assets/9/7/7/a/d/SHT45-AD1B-R2_datasheet.pdf,Newer SHT4x
+HDC2080,sensor,3,ti_temp_humidity,https://www.ti.com/lit/ds/symlink/hdc2080.pdf,TI temp+humidity alt
+DPS310,sensor,3,infineon_baro,https://files.seeedstudio.com/products/101020812/res/DPS310-datasheet.pdf,Infineon barometer
+LPS22HB,sensor,3,st_pressure,https://www.st.com/resource/en/datasheet/lps22hb.pdf,ST pressure
+TMP117,sensor,3,precision_temp,https://www.ti.com/lit/ds/symlink/tmp117.pdf,±0.1°C accuracy temp
+DS3231M,sensor,3,rtc_mems,https://www.analog.com/media/en/technical-documentation/data-sheets/ds3231m.pdf,MEMS RTC
+PCF8523,sensor,3,low_power_rtc,"https://datasheet.octopart.com/PCF8523TS/1,118-NXP-Semiconductors-datasheet-12521144.pdf",Low-power RTC
+#
+# IMU / motion
+ICM-42688-P,sensor,2,modern_imu,https://media.digikey.com/pdf/Data%20Sheets/TDK%20PDFs/ICM-42688-P_DS_Rev1.2.pdf,Modern 6-axis IMU
+BMI323,sensor,3,bosch_modern_imu,https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmi323-ds000.pdf,Bosch modern IMU
+LSM6DSOX,sensor,2,st_imu_ml,local:LSM6DSOX.pdf,ST IMU with ML core
+LIS2MDL,sensor,3,st_magnetometer,https://www.st.com/resource/en/datasheet/lis2mdl.pdf,ST 3-axis magnetometer
+BNO055,sensor,2,fusion_imu,https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bno055-ds000.pdf,Sensor fusion 9-axis IMU
+BNO085,sensor,2,arvr_imu,https://www.ceva-ip.com/wp-content/uploads/2019/10/BNO080_085-Datasheet.pdf,AR/VR IMU
+#
+# Optical / light / proximity
+TSL2561,sensor,3,classic_lux,https://cdn-shop.adafruit.com/datasheets/TSL2561.pdf,Older lux sensor
+OPT3001,sensor,3,ti_lux,https://www.ti.com/lit/ds/symlink/opt3001.pdf,TI ambient light
+GP2Y1014AU0F,sensor,3,sharp_dust,https://cdn-shop.adafruit.com/product-files/4649/SHARP_GP2Y1014AU0F.pdf,Sharp optical dust
+VL53L0X,sensor,2,classic_tof,https://cdn.sparkfun.com/assets/8/9/9/a/6/VL53L0X_DS.pdf,Earlier ToF
+VL53L5CX,sensor,3,multizone_tof,https://www.st.com/resource/en/datasheet/vl53l5cx.pdf,Multi-zone ToF
+APDS-9301,sensor,3,older_light,https://www.farnell.com/datasheets/1816958.pdf,Older ambient light
+TCS34725,sensor,3,color_sensor,https://cdn-shop.adafruit.com/datasheets/TCS34725.pdf,RGB color sensor
+#
+# Biomed
+MAX86150,sensor,3,ppg_ecg_combo,https://www.farnell.com/datasheets/2552940.pdf,PPG + ECG combo
+MAX86916,sensor,3,wrist_hr,https://www.analog.com/media/en/technical-documentation/data-sheets/max86916.pdf,Wrist heart-rate optimised
+ADS1292R,sensor,3,2ch_ecg,https://www.ti.com/lit/ds/symlink/ads1292r.pdf,2-channel ECG AFE
+AD8233,sensor,3,low_power_ecg,https://www.analog.com/media/en/technical-documentation/data-sheets/AD8233.pdf,Low-power ECG
+AFE4490,sensor,3,pulse_oximeter,https://www.ti.com/lit/ds/symlink/afe4490.pdf,Pulse oximeter AFE
+#
+# Force / strain / load
+NAU7802,sensor,3,bridge_adc,https://media.digikey.com/pdf/Data%20Sheets/Nuvoton%20PDFs/NAU7802_Preliminary.pdf,Bridge ADC alt to HX711
+FSR402,sensor,3,force_resistor,https://cdn.sparkfun.com/assets/8/a/1/2/0/2010-10-26-DataSheet-FSR402-Layout2.pdf,Interlink force-sensing resistor
+#
+# Current / power
+INA260,sensor,3,higher_acc_power,https://www.ti.com/lit/ds/symlink/ina260.pdf,Combined shunt + monitor
+INA3221,sensor,3,3ch_power,https://www.ti.com/lit/ds/symlink/ina3221.pdf,3-channel power monitor
+ACS712,sensor,3,hall_current,https://www.allegromicro.com/-/media/files/datasheets/acs712-datasheet.ashx,Hall-effect current sensor
+#
+# ADC / DAC
+ADS1219,sensor,3,4ch_adc,https://www.ti.com/lit/ds/symlink/ads1219.pdf,24-bit 4-ch ADC
+MCP3208,sensor,3,8ch_adc_12b,https://ww1.microchip.com/downloads/en/devicedoc/21298e.pdf,12-bit 8-ch SPI ADC
+MCP4728,sensor,3,4ch_dac,https://ww1.microchip.com/downloads/en/devicedoc/22187e.pdf,4-ch 12-bit DAC
+#
+# Thermocouple / RTD
+MAX31856,sensor,3,thermocouple_universal,https://www.analog.com/media/en/technical-documentation/data-sheets/MAX31856.pdf,Universal thermocouple
+MAX31865,sensor,3,rtd_pt100,https://www.analog.com/media/en/technical-documentation/data-sheets/MAX31865.pdf,RTD (PT100/PT1000)
+#
+# ======================================================================
+# Power management expansion
+# ----------------------------------------------------------------------
+# Target ~100. Existing covers ~30. Add ~70 more.
+# ======================================================================
+LM7805,regulator,2,classic_linear,https://www.ti.com/lit/ds/symlink/lm7800.pdf,Linear 7805 — generic
+LM317T,regulator,2,adjustable_linear,https://www.ti.com/lit/ds/symlink/lm317.pdf,Adjustable linear
+LM2596,regulator,2,classic_buck,https://www.ti.com/lit/ds/symlink/lm2596.pdf,3A buck
+TPS54302,regulator,3,small_buck,https://www.ti.com/lit/ds/symlink/tps54302.pdf,3A 28V buck
+TPS61090,regulator,3,boost,https://www.ti.com/lit/ds/symlink/tps61090.pdf,Boost regulator
+TPS63070,regulator,3,buck_boost,https://www.ti.com/lit/ds/symlink/tps63070.pdf,Buck-boost
+LM2576,regulator,3,older_buck,https://www.ti.com/lit/ds/symlink/lm2576.pdf,Classic 3A switching
+MP2307,regulator,3,mini360_buck,https://cdn-shop.adafruit.com/datasheets/MP2307_r1.9.pdf,Chinese MP2307 buck (mini360 module)
+LM386,audio,3,classic_audio_amp,https://www.ti.com/lit/ds/symlink/lm386.pdf,Classic small audio amp
+#
+# Battery management
+MCP73833,charger,2,2_cell_charger,local:MCP73833.pdf,Linear charger
+BQ25895,charger,3,modern_charger,https://www.ti.com/lit/ds/symlink/bq25895.pdf,Modern charger
+BQ27441-G1,charger,3,fuel_gauge,https://www.ti.com/lit/ds/symlink/bq27441-g1.pdf,Modern fuel gauge
+CN3791,charger,3,solar_charger,https://www.laskakit.cz/user/related_files/dse-cn3791.pdf,MPPT solar charger
+BQ25504,charger,3,energy_harvest,https://www.ti.com/lit/ds/symlink/bq25504.pdf,Energy harvesting
+HUSB238,interface,2,usb_pd_sink,local:HUSB238.pdf,USB-C PD sink
+#
+# ======================================================================
+# Motor / actuator expansion
+# ----------------------------------------------------------------------
+TMC2208,actuator,2,silent_stepper,https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/5342/TMC2202_TMC2208_TMC2224_Rev1.13_5-26-22.pdf,Silent stepper
+TMC5160,actuator,3,big_stepper,https://www.trinamic.com/fileadmin/assets/Products/ICs_Documents/TMC5160_Datasheet_Rev1.18.pdf,High-current stepper
+DRV8316,actuator,3,bldc_foc,https://www.ti.com/lit/ds/symlink/drv8316.pdf,Integrated BLDC FOC
+MP6540,actuator,3,bldc_alt,https://www.farnell.com/datasheets/2914958.pdf,Alt BLDC driver
+MAX14870,actuator,3,small_dc_motor,https://www.analog.com/media/en/technical-documentation/data-sheets/MAX14870.pdf,Small DC motor driver
+MG996R,actuator,3,larger_servo,,High-torque hobby servo
+DS3225,actuator,3,digital_servo,,Digital metal-gear servo
+NEMA17,actuator,3,classic_stepper,,Generic NEMA17 stepper motor (no IC datasheet)
+#
+# ======================================================================
+# Wireless / comms
+# ----------------------------------------------------------------------
+RAK4630,interface,3,lorawan_module,https://alphamicro.net/wp-content/uploads/2024/06/RAK4630-Datasheet_20240619.pdf,LoRaWAN module
+WIOE5,interface,3,lorawan_alt,https://files.seeedstudio.com/products/114993120/Wio-E5-LE%20module%20datasheet_v1.0.pdf,Seeed LoRaWAN
+SIM7080G,interface,3,nb_iot,https://www.texim-europe.com/Cmsfile/SMM-SIM7080G-DS-190912-TE.pdf,SIMCom NB-IoT
+BG95,interface,3,quectel_lte_m,https://developer.quectel.com/en/wp-content/uploads/sites/2/2024/11/Quectel_BG95_Series_LPWA_Specification_V2.0.pdf,Quectel LTE-M / NB-IoT
+NEO-M9N,interface,3,modern_gps,https://content.u-blox.com/sites/default/files/NEO-M9N-00B_DataSheet_UBX-19014285.pdf,u-blox newer GPS
+A9G,interface,3,gsm_gps_combo,https://github.com/IoTReady/a9_gsm_gps_library/raw/main/doc/Datasheets/Ai-Thinker-A9G-GPRS-Series-Module-Datasheet.pdf,Ai-Thinker GSM+GPS combo
+HM-10,interface,3,ble_serial,https://www.rhydolabz.com/documents/37/datasheet%20HM-10.pdf,BLE serial module
+HM-11,interface,3,ble_serial_small,https://www.professorcad.co.uk/Bluetooth/HM-10_11_datasheet.pdf,Smaller BLE module
+#
+# ======================================================================
+# Display / touch
+# ----------------------------------------------------------------------
+SSD1331,display,3,small_color_oled,https://cdn-shop.adafruit.com/datasheets/SSD1331_1.2.pdf,0.96 color OLED
+ST7735,display,3,small_tft,https://www.displayfuture.com/Display/datasheet/controller/ST7735.pdf,"1.8"" TFT"
+ILI9341-3.2,display,3,touch_tft,https://cdn-shop.adafruit.com/datasheets/ILI9341.pdf,"3.2"" TFT with resistive touch"
+GT911-7,display,3,7in_touch,https://www.fortec-integrated.de/fileadmin/pdf/produkte/Touchcontroller/DDGroup/GT911_Datasheet.pdf,7-inch touch panel controller
+SH1106,display,3,oled_alt,https://www.pololu.com/file/0J1813/SH1106.pdf,Alt 128x64 OLED controller
+GDEH0213B72,display,3,eink_213,https://cursedhardware.github.io/epd-driver-ic/IL3897.pdf,"2.13"" e-paper"
+#
+# ======================================================================
+# Audio
+# ----------------------------------------------------------------------
+ES8388,audio,3,esp32_audio_codec,https://www.armdesigner.com/download/ES8388_datasheet.pdf,ESP32 audio codec
+WM8731,audio,3,classic_codec,https://cdn.sparkfun.com/datasheets/Dev/Arduino/Shields/WolfsonWM8731.pdf,Cirrus audio codec
+TPA3116D2,audio,3,class_d_50w,https://www.ti.com/lit/ds/symlink/tpa3116d2.pdf,50W Class-D
+SSM2167,audio,3,mic_preamp,https://www.analog.com/media/en/technical-documentation/data-sheets/SSM2167.pdf,Mic preamp
+MAX9744,audio,3,bigger_amp,https://www.analog.com/media/en/technical-documentation/data-sheets/MAX9744.pdf,20W stereo amp
+#
+# ======================================================================
+# Memory
+# ----------------------------------------------------------------------
+W25Q32JV,memory,3,smaller_flash,https://www.winbond.com/resource-files/w25q32jv%20spi%20revc%2008302016.pdf,32Mbit SPI flash
+W25Q256JV,memory,3,bigger_flash,https://www.winbond.com/resource-files/w25q256jv%20spi%20revb%2009202016.pdf,256Mbit SPI flash
+AT24C64,memory,3,smaller_eeprom,https://ww1.microchip.com/downloads/en/devicedoc/doc0336.pdf,64Kbit EEPROM
+MB85RC256V,memory,3,fram,https://www.farnell.com/datasheets/2343986.pdf,256Kbit FRAM
+#
+# ======================================================================
+# Interface / glue
+# ----------------------------------------------------------------------
+CH9102F,interface,3,usb_serial_modern,https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/Embedded/stamp%20isp/CH9102F.pdf,USB-serial alt to CP2102
+TJA1145,interface,3,modern_can,https://web.archive.org/web/2id_/https://www.nxp.com/docs/en/data-sheet/TJA1145.pdf,Modern partial-networking CAN
+SN65HVD230,interface,3,can_3v3,https://www.ti.com/lit/ds/symlink/sn65hvd230.pdf,3.3V CAN transceiver
+MCP23008,logic,3,8bit_io_expander,https://ww1.microchip.com/downloads/en/devicedoc/21919e.pdf,8-bit I/O expander
+PCA9685,interface,3,pwm_driver,https://cdn-shop.adafruit.com/datasheets/PCA9685.pdf,16-ch PWM driver
+TCA9548A,interface,3,i2c_mux,https://www.ti.com/lit/ds/symlink/tca9548a.pdf,I2C multiplexer
+LTC4316,interface,3,i2c_addr_translator,https://www.analog.com/media/en/technical-documentation/data-sheets/4316fa.pdf,I2C address translator
+#
+# ======================================================================
+# Op-amps / analog
+# ----------------------------------------------------------------------
+MCP6004,logic,3,quad_opamp,https://ww1.microchip.com/downloads/en/DeviceDoc/MCP6001-1R-1U-2-4-1-MHz-Low-Power-Op-Amp-DS20001733L.pdf,Quad rail-to-rail op-amp
+TL072,logic,3,classic_audio_opamp,https://www.ti.com/lit/ds/symlink/tl072.pdf,Audio op-amp
+LMV358,logic,3,low_voltage_opamp,https://www.ti.com/lit/ds/symlink/lmv358.pdf,Low-voltage op-amp
+INA126,sensor,3,instrumentation_amp,https://www.ti.com/lit/ds/symlink/ina126.pdf,Instrumentation amp
+AD623,sensor,3,low_power_inamp,https://www.analog.com/media/en/technical-documentation/data-sheets/AD623.pdf,Low-power instrumentation amp
+OPA2333,logic,3,zero_drift_opamp,https://www.ti.com/lit/ds/symlink/opa2333.pdf,Zero-drift op-amp
+LM393,logic,3,comparator,https://www.ti.com/lit/ds/symlink/lm393.pdf,Dual comparator
+#
+# ======================================================================
+# Connectors expansion
+# ----------------------------------------------------------------------
+USB_C_16Pin_Power_Only,connector,3,usb_c_power,,16-pin USB-C power-only receptacle
+USB_C_24Pin_Full,connector,3,usb_c_full,,Full 24-pin USB-C with diff pairs
+SD_Card_Full,connector,3,sd_card_full,,Full-size SD card socket
+HDMI_TypeA,connector,3,hdmi_full,,Full HDMI Type A
+HDMI_MicroD,connector,3,hdmi_micro,,Micro HDMI Type D
+Audio_Jack_3.5mm,connector,3,headphone_jack,,3.5mm TRRS audio jack
+DC_Jack_2.5mm,connector,3,dc_2_5mm,,2.5mm DC barrel
+RJ11,connector,3,phone_jack,,RJ11 telephone
+M12_5Pin,connector,3,industrial_m12,,M12 industrial sensor connector
+Pin_Header_2x40,connector,3,pi_gpio,,Pi GPIO header
+Spring_Battery_AAA,connector,3,battery_clip_aaa,,AAA battery clip
+Coin_Cell_CR1220,connector,3,coin_cell_small,,CR1220 holder
+FFC_30P_0.5mm,connector,3,ffc_lcd,,30-pin 0.5mm FFC (LCD connector)
+FPC_40P_0.5mm,connector,3,fpc_dsi,,40-pin 0.5mm FPC (DSI)
+MicroHDMI,connector,3,pi_zero_hdmi,,Micro HDMI for Pi Zero
+#
+# ======================================================================
+# Discrete: MOSFETs / BJTs / Diodes
+# ----------------------------------------------------------------------
+SI2302,transistor,3,small_n_mosfet,https://www.vishay.com/docs/68645/si2302cds.pdf,Small NMOS SOT-23
+SI2301,transistor,3,small_p_mosfet,https://www.vishay.com/docs/72066/si2301bds.pdf,Small PMOS SOT-23
+DMG2305UX,transistor,3,p_mosfet_sot23,https://www.diodes.com/assets/Datasheets/DMG2305UX.pdf,DMG2305UX P-MOS
+DMP3098L,transistor,3,p_mosfet_high_curr,https://www.diodes.com/datasheet/download/DMP3098L.pdf,Higher-current PMOS
+IRF3205,transistor,3,big_n_mosfet,https://www.infineon.com/dgdl/Infineon-IRF3205-DataSheet-v01_01-EN.pdf?fileId=5546d462533600a4015355def244190a,High-current NMOS TO-220
+AOD4184,transistor,3,n_mosfet_dpak,https://www.aosmd.com/res/datasheets/AOI4184.pdf,N-MOS DPAK
+2N7000,transistor,3,classic_small_mosfet,https://www.farnell.com/datasheets/2304304.pdf,Through-hole NMOS
+SS34,diode,3,3a_schottky,https://www.vishay.com/doc/?88751=,3A Schottky
+SS54,diode,3,5a_schottky,https://www.farnell.com/datasheets/1441695.pdf,5A Schottky
+1N5408,diode,3,3a_rectifier,https://www.farnell.com/datasheets/314353.pdf,3A rectifier
+B5819,diode,3,smd_schottky,https://www.rectron.com/public/product_datasheets/b5817w-b5819w.pdf,SMD Schottky 1A
+LL4148,diode,3,minimelf_signal,https://www.vishay.com/docs/85557/ll4148.pdf,MiniMELF signal diode
+MMSZ4684T1G,diode,3,zener_3v3,https://www.mccsemi.com/pdf/Products/MMSZ4678-MMSZ4716(SOD-123).pdf,Zener diode
+TLV70033,regulator,3,nano_ldo,https://www.ti.com/lit/ds/symlink/tlv700.pdf,Tiny 200mA LDO
+#
+# ======================================================================
+# Passive value expansion (E12 resistors, common capacitor values)
+# ----------------------------------------------------------------------
+# 0603 resistor E12 series for 100R-1M (key values commonly used by students)
+RC0603FR-0710RL,passive,3,resistor_e12,,10R 1% 0603
+RC0603FR-0733RL,passive,3,resistor_e12,,33R 1% 0603
+RC0603FR-07150RL,passive,3,resistor_e12,,150R 1% 0603
+RC0603FR-07270RL,passive,3,resistor_e12,,270R 1% 0603
+RC0603FR-07560RL,passive,3,resistor_e12,,560R 1% 0603
+RC0603FR-07820RL,passive,3,resistor_e12,,820R 1% 0603
+RC0603FR-072K7L,passive,3,resistor_e12,,2.7K 1% 0603
+RC0603FR-073K9L,passive,3,resistor_e12,,3.9K 1% 0603
+RC0603FR-075K6L,passive,3,resistor_e12,,5.6K 1% 0603
+RC0603FR-078K2L,passive,3,resistor_e12,,8.2K 1% 0603
+RC0603FR-0712KL,passive,3,resistor_e12,,12K 1% 0603
+RC0603FR-0715KL,passive,3,resistor_e12,,15K 1% 0603
+RC0603FR-0718KL,passive,3,resistor_e12,,18K 1% 0603
+RC0603FR-0727KL,passive,3,resistor_e12,,27K 1% 0603
+RC0603FR-0733KL,passive,3,resistor_e12,,33K 1% 0603
+RC0603FR-0739KL,passive,3,resistor_e12,,39K 1% 0603
+RC0603FR-0756KL,passive,3,resistor_e12,,56K 1% 0603
+RC0603FR-0782KL,passive,3,resistor_e12,,82K 1% 0603
+RC0603FR-07120KL,passive,3,resistor_e12,,120K 1% 0603
+RC0603FR-07150KL,passive,3,resistor_e12,,150K 1% 0603
+RC0603FR-07180KL,passive,3,resistor_e12,,180K 1% 0603
+RC0603FR-07390KL,passive,3,resistor_e12,,390K 1% 0603
+RC0603FR-07560KL,passive,3,resistor_e12,,560K 1% 0603
+RC0603FR-07820KL,passive,3,resistor_e12,,820K 1% 0603
+# Common 0402 sizes
+RC0402FR-07100KL,passive,3,resistor_0402,,100K 1% 0402
+RC0402FR-071KL,passive,3,resistor_0402,,1K 1% 0402
+RC0402FR-0747KL,passive,3,resistor_0402,,47K 1% 0402
+# Common cap values
+CL10C470JB8NNNC,passive,3,cap_npo,,47pF NP0 0603
+CL10C152JB8NNNC,passive,3,cap_x7r,,1.5nF X7R 0603
+CL10A475KP8NNNC,passive,3,cap_x5r,,4.7uF X5R 0603
+CL21A226MQQNNNE,passive,3,cap_bulk,,22uF X5R 0805
+CL31A476MQHNNNE,passive,3,cap_big,,47uF X5R 1206
+# Inductors
+LQH3NPN1R0NJ0,passive,3,inductor_1u,,1uH 0805 inductor
+LQH3NPN2R2NJ0,passive,3,inductor_2u2,,2.2uH 0805
+LQH3NPN330MJ0,passive,3,inductor_33u,,33uH 0805
+# Ferrites
+BLM18PG121SN1D,passive,3,ferrite,,Ferrite bead 120R 0805
+#
+# ======================================================================
+# SOMs / compute modules — for tablet/handheld carrier boards
+# ======================================================================
+RaspberryPi_CM4,mcu,2,pi_cm4_carrier,https://datasheets.raspberrypi.com/cm4/cm4-datasheet.pdf,Pi Compute Module 4 (composite SOM)
+RaspberryPi_CM5,mcu,2,pi_cm5_carrier,https://datasheets.raspberrypi.com/cm5/cm5-datasheet.pdf,Pi Compute Module 5 (composite SOM)
+NVIDIA_Jetson_Nano,mcu,3,jetson_carrier,https://openzeka.com/wp-content/uploads/2021/07/jetson-nano-module-datasheet-us-1031771-r3-web.pdf,Jetson Nano SOM
+Coral_Edge_TPU,mcu,3,coral_carrier,https://assets.alliedelec.com/v1619173985/Datasheets/7aaa588f88976e120671d8bb5c10ed96.pdf,Coral SOM
+#
+# ======================================================================
+# Logic / glue (74xx series)
+# ======================================================================
+SN74LVC2G14,logic,3,small_inverter,https://www.ti.com/lit/ds/symlink/sn74lvc2g14.pdf,Dual schmitt inverter
+SN74LVC1G17,logic,3,buffer,https://www.ti.com/lit/ds/symlink/sn74lvc1g17.pdf,Schmitt buffer
+SN74LV1T34,logic,3,single_buffer,https://www.ti.com/lit/ds/symlink/sn74lv1t34.pdf,1-bit level shifter
+SN74LVC8T245,logic,3,8bit_level_shift,https://www.ti.com/lit/ds/symlink/sn74lvc8t245.pdf,8-bit bidir level shifter
+TXB0104,logic,3,4bit_level_shift,https://www.ti.com/lit/ds/symlink/txb0104.pdf,4-bit auto-direction level shifter
+PCA9306,logic,3,i2c_level_shift,https://www.ti.com/lit/ds/symlink/pca9306.pdf,I2C level translator
+SN74HC04,logic,3,hex_inverter,https://www.ti.com/lit/ds/symlink/sn74hc04.pdf,Hex inverter
+SN74HC14,logic,3,hex_schmitt,https://www.ti.com/lit/ds/symlink/sn74hc14.pdf,Hex Schmitt inverter
+SN74HC74,logic,3,dual_flipflop,https://www.ti.com/lit/ds/symlink/sn74hc74.pdf,Dual D flip-flop
+NE556,logic,3,dual_timer,https://www.ti.com/lit/ds/symlink/na556.pdf,Dual 555 timer
+TLC555,logic,3,cmos_555,https://www.ti.com/lit/ds/symlink/tlc555.pdf,CMOS 555
+#
+# ======================================================================
+# Specialty: protection / TVS
+# ======================================================================
+TPD4S012,protection,3,usb_esd,https://www.ti.com/lit/ds/symlink/tpd4s012.pdf,USB ESD protection
+SP724,protection,3,classic_esd,https://datasheet.octopart.com/SP724AHTG-Littelfuse-datasheet-622385.pdf,Classic ESD
+PESD3V3L4UF,protection,3,low_cap_esd,https://static.chipdip.ru/lib/558/DOC012558662.pdf,Low-cap ESD diode array
+TVS_15V,protection,3,15v_tvs,,Generic 15V TVS
+#
+# ======================================================================
+# That's the seeded matrix. Goal is to reach ~1000 — add more rows
+# bottom-up as you discover gaps. The bot will work through whatever
+# rows have datasheet_url filled.
+# ======================================================================
+DS3231,logic,1,rtc_datalogger,https://cdn-shop.adafruit.com/product-files/3013/DS3231.pdf,Precision RTC — classic datalogger pairing
+ADS1115,interface,1,precision_adc,https://www.ti.com/lit/ds/symlink/ads1115.pdf,16-bit 4ch I2C ADC — every analog student project
+INA219,sensor,1,power_monitor,https://www.ti.com/lit/ds/symlink/ina219.pdf,I2C current/power monitor
+L293D,actuator,1,motor_driver_classic,https://www.ti.com/lit/ds/symlink/l293d.pdf,Classic dual H-bridge — intro robotics staple
+TCRT5000,sensor,1,line_follower,https://www.vishay.com/docs/83760/tcrt5000.pdf,Reflective IR pair — line-follower robots
+SRD-05VDC-SL-C,actuator,1,relay_switching,,Songle 5V relay — switch mains-ish loads (find PDF)
+TM1637,display,1,7seg_clock,https://www.makerguides.com/wp-content/uploads/2019/08/TM1637-Datasheet.pdf,4-digit 7-seg driver — clock projects (Titan Micro PDF mirror needed)
+DRV8871,actuator,2,dc_motor,https://www.ti.com/lit/ds/symlink/drv8871.pdf,Single 3.6A H-bridge — modern L298 replacement
+TXS0108E,interface,2,level_shift,https://www.ti.com/lit/ds/symlink/txs0108e.pdf,8-bit bidirectional level shifter
+LM386,audio,2,audio_amp_classic,https://www.ti.com/lit/ds/symlink/lm386.pdf,Classic audio amp
+APDS9960,sensor,2,gesture_rgb,https://cdn.sparkfun.com/assets/learn_tutorials/3/2/1/Avago-APDS-9960-datasheet.pdf,Gesture + RGB + proximity
+SHT31-DIS,sensor,2,temp_humidity_pro,https://cdn-shop.adafruit.com/product-files/2857/Sensirion_Humidity_SHT3x_Datasheet_digital-767294.pdf,Sensirion T/RH — DHT22 upgrade path (PDF hash URL — verify)
+MPU9250,sensor,2,imu_9dof,https://cdn.sparkfun.com/assets/learn_tutorials/5/5/0/MPU9250REV1.0.pdf,9-DoF IMU (InvenSense PDF mirror needed)
+MAX7219,display,2,led_matrix,https://cdn-shop.adafruit.com/datasheets/MAX7219.pdf,8x8 LED matrix driver (ADI bot-blocked — local: PDF)
+ATTINY85-20PU,mcu,2,tiny_projects,https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-2586-AVR-8-bit-Microcontroller-ATtiny25-ATtiny45-ATtiny85_Datasheet.pdf,Microchip bot-blocked — needs local: PDF
+CH340G,interface,2,usb_uart,https://cdn.sparkfun.com/datasheets/Dev/Arduino/Other/CH340DS1.PDF,WCH USB-UART — every clone Nano (Chinese PDF mirror)
+SX1278,interface,2,lora_p2p,https://cdn-shop.adafruit.com/product-files/3179/sx1276_77_78_79.pdf,LoRa Ra-02 radio (Semtech PDF)
+MCP4725,interface,2,dac_audio,https://cdn-shop.adafruit.com/datasheets/mcp4725.pdf,12-bit I2C DAC (Microchip bot-blocked — local: PDF)
+DFPLAYER-MINI,audio,2,mp3_player,https://raw.githubusercontent.com/DFRobot/DFRobotDFPlayerMini/master/doc/FN-M16P+Embedded+MP3+Audio+Module+Datasheet.pdf,DFRobot MP3 module
+HC-12,interface,2,long_range_serial,https://www.elecrow.com/download/HC-12.pdf,433MHz long-range serial link
+TF-LUNA,sensor,2,lidar_ranging,https://files.seeedstudio.com/products/101990656/res/SJ-PM-TF-Luna+A01+Product+Manual.pdf,Benewake micro-LiDAR
+JSN-SR04T,sensor,2,waterproof_ultrasonic,https://www.makerguides.com/wp-content/uploads/2019/02/JSN-SR04T-Datasheet.pdf,Waterproof ultrasonic — tank level projects
+MG90S,actuator,2,metal_servo,https://components101.com/sites/default/files/component_datasheet/MG90S-Datasheet.pdf,Metal-gear micro servo
+AT24C256,memory,3,eeprom_logger,,I2C EEPROM (Microchip bot-blocked — local: PDF)
+ZMPT101B,sensor,3,ac_voltage,,AC voltage transformer module
+FS1000A,interface,3,rf433,,433MHz ASK TX/RX pair
+R307,sensor,3,fingerprint,,Optical fingerprint module
+OV7670,sensor,3,camera_basic,,Parallel camera — classic vision intro
+VS1053,audio,3,audio_codec,,MP3 codec
+MICS-5524,sensor,3,gas_voc,,CO/VOC MEMS gas sensor
+MAX44009,sensor,3,lux_meter,,I2C ambient light lux sensor
+AS7341,sensor,3,spectral,,11-channel spectral sensor
+ADXL362,sensor,3,ulp_accel,,Ultra-low-power accel (ADI bot-blocked — local: PDF)
+A02YYUW,sensor,3,waterproof_ultrasonic,,UART waterproof ultrasonic
+#
+# Tier 2 — Tier-1 parts batch (2026-08-19): load switch/eFuse, isolators, CAN/RS-485, RTCs, LED/BLDC drivers, thermal cams, radar/UWB modules
+TPS22918DBVR,regulator,2,load_switch,https://www.ti.com/lit/ds/symlink/tps22918.pdf,2A load switch SOT-23-6 — rail sequencing
+LM66100DCKR,regulator,2,ideal_diode,https://www.ti.com/lit/ds/symlink/lm66100.pdf,Ideal-diode ORing SC70-6
+ADUM1201ARZ,interface,2,digital_isolator,https://www.analog.com/media/en/technical-documentation/data-sheets/ADuM1200_1201.pdf,2-ch digital isolator SOIC-8 (ADI direct)
+ISO1050DUBR,interface,2,isolated_can,https://www.ti.com/lit/ds/symlink/iso1050.pdf,Isolated CAN transceiver SOP-8
+ATECC608A-SSHDA,memory,2,crypto_auth,https://ww1.microchip.com/downloads/en/DeviceDoc/ATECC608A-CryptoAuthentication-Device-Summary-Data-Sheet-DS40001977B.pdf,Crypto authentication SOIC-8 (summary datasheet)
+INA180A1IDBVR,sensor,2,current_sense_amp,https://www.ti.com/lit/ds/symlink/ina180.pdf,Current-sense amp 20V/V SOT-23-5
+INA240A1PWR,sensor,2,current_sense_amp,https://www.ti.com/lit/ds/symlink/ina240.pdf,Bidirectional PWM-rejecting CSA TSSOP-8
+BQ76920PWR,charger,2,bms_afe,https://www.ti.com/lit/ds/symlink/bq76920.pdf,3-5S battery monitor AFE TSSOP-20
+TPS2596,regulator,2,efuse,https://www.ti.com/lit/ds/symlink/tps2596.pdf,eFuse 2.7-19V (generic MPN — pick orderable suffix at review)
+LAN8720AI-CP,interface,2,ethernet_phy,https://ww1.microchip.com/downloads/en/DeviceDoc/00002165B.pdf,10/100 Ethernet PHY QFN-24 RMII
+SX1262IMLTRT,interface,2,lora,https://cdn.sparkfun.com/assets/6/b/5/1/4/SX1262_datasheet.pdf,LoRa sub-GHz transceiver QFN-24 (SparkFun PDF mirror)
+MPR121QR2,interface,2,cap_touch,https://www.nxp.com/docs/en/data-sheet/MPR121.pdf,12-ch capacitive touch QFN-20 (NXP direct)
+HT16K33,display,2,led_driver,https://cdn-shop.adafruit.com/datasheets/ht16K33v110.pdf,16x8 LED matrix + key scan I2C SOP-28 (Adafruit mirror)
+TLC59711PWPR,display,2,led_driver,https://www.ti.com/lit/ds/symlink/tlc59711.pdf,12-ch 16-bit PWM LED driver HTSSOP-20
+PCF8563T,logic,2,rtc,https://www.nxp.com/docs/en/data-sheet/PCF8563.pdf,I2C RTC SO-8 (NXP direct)
+RV-3028-C7,logic,2,rtc,https://www.microcrystal.com/fileadmin/Media/Products/RTC/Datasheet/RV-3028-C7.pdf,Ultra-low-power I2C RTC C7 package (Micro Crystal)
+DRV8302DCAR,actuator,2,bldc_gate_driver,https://www.ti.com/lit/ds/symlink/drv8302.pdf,3-phase BLDC gate driver HTSSOP-56
+IR2104SPBF,actuator,2,half_bridge_driver,https://components101.com/sites/default/files/component_datasheet/IR2104-Datasheet.pdf,600V half-bridge driver SOIC-8 (components101 mirror)
+MAX17055EWL,charger,2,fuel_gauge,https://www.analog.com/media/en/technical-documentation/data-sheets/MAX17055.pdf,ModelGauge m5 fuel gauge WLP-9 (ADI direct)
+CD4051BM,logic,2,analog_mux,https://www.ti.com/lit/ds/symlink/cd4051b.pdf,8-ch analog mux SOIC-16
+TS5A3159DBVR,logic,2,analog_switch,https://www.ti.com/lit/ds/symlink/ts5a3159.pdf,1-ohm SPDT analog switch SOT-23-6
+REF5025AIDR,logic,2,vref,https://www.ti.com/lit/ds/sbos410o/sbos410o.pdf,2.5V precision reference SOIC-8 (REF50xx family PDF)
+MCP2551-I/SN,interface,2,can_transceiver,https://ww1.microchip.com/downloads/en/DeviceDoc/20001667G.pdf,High-speed CAN transceiver SOIC-8 (Microchip direct)
+SN65HVD75,interface,2,rs485,https://www.ti.com/lit/ds/symlink/sn65hvd75.pdf,3.3V RS-485 transceiver SOIC-8
+AMG8833,sensor,2,thermal_camera,https://cdn.sparkfun.com/assets/4/1/c/0/1/Grid-EYE_Datasheet.pdf,Panasonic Grid-EYE 8x8 IR array (SparkFun mirror)
+MLX90640ESF,sensor,2,thermal_camera,https://www.melexis.com/-/media/files/documents/datasheets/mlx90640-datasheet-melexis.pdf,32x24 IR thermal array TO-39 (Melexis direct)
+HLK-LD2410,sensor,2,presence_radar,https://seengreat.com/upload/file/86/HLK+LD2410+Life+Presence+Sensor+Module+Manual+V1.03(220629).pdf,24GHz human-presence radar module (manual V1.03 mirror; sudo.is v1.02 PDF yields lone surrogates in pypdf text)
+OV2640,sensor,2,camera_module,https://www.uctronics.com/download/cam_module/OV2640DS.pdf,2MP camera module 24-pin FPC (sensor DS — module pinout may be absent)
+DWM1000,interface,2,uwb_module,https://raw.githubusercontent.com/cvra/uwb-beacon-board/master/datasheets/Decawave-DWM1000.pdf,Decawave UWB module (GitHub raw mirror)

@@ -1,0 +1,11 @@
+(footprint "TouchPad_D12mm"
+  (version 20240108)
+  (generator "synqit")
+  (layer "F.Cu")
+  (descr "Capacitive touch electrode: 12 mm round copper pad, kept under the soldermask (authored by Synqit)")
+  (tags "touch electrode capacitive button pad")
+  (attr smd exclude_from_pos_files exclude_from_bom)
+  (fp_circle (center 0 0) (end 6.5 0) (stroke (width 0.05) (type default)) (fill none) (layer "F.CrtYd"))
+  (fp_circle (center 0 0) (end 6.0 0) (stroke (width 0.1) (type default)) (fill none) (layer "F.Fab"))
+  (pad "1" smd circle (at 0 0) (size 12 12) (layers "F.Cu"))
+)

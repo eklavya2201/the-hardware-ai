@@ -1,0 +1,10 @@
+(footprint "Synqit_TSOP38238"
+  (version 20240108)
+  (generator "synqit")
+  (layer "F.Cu")
+  (descr "TSOP38238 (authored by Synqit)")
+  (attr smd)
+  (pad "1" thru_hole circle (at -2.5400 0.0000) (size 1.6000 1.6000) (drill 0.8) (layers "*.Cu" "*.Mask"))
+  (pad "2" thru_hole circle (at 0.0000 0.0000) (size 1.6000 1.6000) (drill 0.8) (layers "*.Cu" "*.Mask"))
+  (pad "3" thru_hole circle (at 2.5400 0.0000) (size 1.6000 1.6000) (drill 0.8) (layers "*.Cu" "*.Mask"))
+)

@@ -1,0 +1,12 @@
+(footprint "Synqit_Rotary_Encoder_EC11"
+  (version 20240108)
+  (generator "synqit")
+  (layer "F.Cu")
+  (descr "Rotary_Encoder_EC11 (authored by Synqit)")
+  (attr smd)
+  (pad "A" thru_hole circle (at -2.5000 -3.5000) (size 1.8000 1.8000) (drill 1.0) (layers "*.Cu" "*.Mask"))
+  (pad "C" thru_hole circle (at 0.0000 -3.5000) (size 1.8000 1.8000) (drill 1.0) (layers "*.Cu" "*.Mask"))
+  (pad "B" thru_hole circle (at 2.5000 -3.5000) (size 1.8000 1.8000) (drill 1.0) (layers "*.Cu" "*.Mask"))
+  (pad "D" thru_hole circle (at -2.5000 3.5000) (size 1.8000 1.8000) (drill 1.0) (layers "*.Cu" "*.Mask"))
+  (pad "E" thru_hole circle (at 2.5000 3.5000) (size 1.8000 1.8000) (drill 1.0) (layers "*.Cu" "*.Mask"))
+)

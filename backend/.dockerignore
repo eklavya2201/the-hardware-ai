@@ -1,0 +1,13 @@
+ngspice-46_64/
+voltron.db
+voltron.db-*
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+tests/
+.env
+.env.*

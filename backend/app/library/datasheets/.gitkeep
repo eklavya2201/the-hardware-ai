@@ -1,0 +1,4 @@
+# Datasheet PDFs for the curation bot's local: fetch live here but are NOT committed
+# (third-party copyrighted files). Download them per docs/tier3-curation-handoff.md
+# and docs/CURATION_BOT.md, save as <MPN>.pdf, then point coverage_matrix.csv at
+# local:<MPN>.pdf. This folder is kept in the tree via .gitkeep so the path exists.

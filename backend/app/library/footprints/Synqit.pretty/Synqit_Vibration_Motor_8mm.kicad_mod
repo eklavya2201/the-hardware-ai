@@ -1,0 +1,9 @@
+(footprint "Synqit_Vibration_Motor_8mm"
+  (version 20240108)
+  (generator "synqit")
+  (layer "F.Cu")
+  (descr "Vibration_Motor_8mm (authored by Synqit)")
+  (attr smd)
+  (pad "1" smd roundrect (at -3.0000 0.0000) (size 2.0000 3.0000) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25))
+  (pad "2" smd roundrect (at 3.0000 0.0000) (size 2.0000 3.0000) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25))
+)

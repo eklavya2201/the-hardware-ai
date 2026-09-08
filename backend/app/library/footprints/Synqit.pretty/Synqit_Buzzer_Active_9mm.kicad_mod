@@ -1,0 +1,9 @@
+(footprint "Synqit_Buzzer_Active_9mm"
+  (version 20240108)
+  (generator "synqit")
+  (layer "F.Cu")
+  (descr "Buzzer_Active_9mm (authored by Synqit)")
+  (attr smd)
+  (pad "1" thru_hole circle (at -3.2500 0.0000) (size 1.6000 1.6000) (drill 0.9) (layers "*.Cu" "*.Mask"))
+  (pad "2" thru_hole circle (at 3.2500 0.0000) (size 1.6000 1.6000) (drill 0.9) (layers "*.Cu" "*.Mask"))
+)

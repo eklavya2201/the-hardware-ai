@@ -1,0 +1,13 @@
+(footprint "Synqit_BH1750FVI-TR"
+  (version 20240108)
+  (generator "synqit")
+  (layer "F.Cu")
+  (descr "BH1750FVI-TR (authored by Synqit)")
+  (attr smd)
+  (pad "1" smd roundrect (at -1.2500 -0.9500) (size 0.7000 0.4500) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25))
+  (pad "2" smd roundrect (at -1.2500 -0.0000) (size 0.7000 0.4500) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25))
+  (pad "3" smd roundrect (at -1.2500 0.9500) (size 0.7000 0.4500) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25))
+  (pad "4" smd roundrect (at 1.2500 0.9500) (size 0.7000 0.4500) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25))
+  (pad "5" smd roundrect (at 1.2500 0.0000) (size 0.7000 0.4500) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25))
+  (pad "6" smd roundrect (at 1.2500 -0.9500) (size 0.7000 0.4500) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25))
+)

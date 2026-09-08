@@ -1,11 +1,13 @@
-# Render Blueprint for Synqit CAD (the studio in app/).
-# Dashboard -> New -> Blueprint -> this repo. Fill the sync:false secrets when asked.
-# The app serves under /cad; "/" redirects there.
+# Render Blueprint for the whole product: the studio (app/) and the
+# electronics engine it drives (backend/). Dashboard -> New -> Blueprint.
+# The live studio was created through the Render API, so this file documents
+# the shape; see docs/DEPLOY_RENDER.md for what is actually running.
 services:
+  # ---------------------------------------------------------------- studio
   - type: web
     name: synqit-cad
     runtime: node
-    plan: starter            # 512 MB; the OpenSCAD work runs in the browser, the server is light
+    plan: free              # starter ($7) removes the 15-minute sleep
     rootDir: app
     buildCommand: npm ci --ignore-scripts && npm run build
     startCommand: node .output/server/index.mjs
@@ -15,15 +17,15 @@ services:
       - key: NODE_VERSION
         value: 22.14.0
       - key: ENVIRONMENT
-        value: local          # bypasses the upstream billing service; every user has 3M tokens
-      # --- Supabase (hosted project; create at supabase.com, Project Settings -> API) ---
+        value: local        # bypasses the upstream billing service
+      # Supabase (hosted project: conversations, auth, preview storage)
       - key: VITE_SUPABASE_URL
         sync: false
       - key: VITE_SUPABASE_ANON_KEY
         sync: false
       - key: SUPABASE_SERVICE_ROLE_KEY
         sync: false
-      # --- LLM ---
+      # LLM
       - key: AZURE_RESOURCE_NAME
         value: aatreus
       - key: AZURE_OPENAI_API_KEY
@@ -32,29 +34,69 @@ services:
         value: gpt-5.1,gpt-5-pro
       - key: VITE_DEFAULT_MODEL
         value: azure/gpt-5.1
-      # --- Synqit (production backend; CORS already allows *.onrender.com with credentials) ---
+      # The electronics engine below. Point these at the API service's URL.
       - key: SYNQIT_API_BASE
-        value: https://api.synqit.in/api
+        fromService:
+          name: synqit-api
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
       - key: VITE_SYNQIT_API_BASE
-        value: https://api.synqit.in/api
+        sync: false         # same URL + "/api" — VITE_* must be literal at build time
       - key: VITE_SYNQIT_APP_URL
         value: https://synqit.in
-      - key: SYNQIT_APP_URL
-        value: https://synqit.in
-      # --- URLs of this service (set after the first deploy shows the URL) ---
       - key: WEBHOOK_BASE_URL
-        sync: false           # e.g. https://synqit-cad.onrender.com
-      # --- No-auth evaluation mode (shared guest). Remove both to require sign-in. ---
+        sync: false
+      # No-auth evaluation mode (shared guest). Remove both to require sign-in.
       - key: VITE_GUEST_EMAIL
         value: guest@synqit.in
       - key: VITE_GUEST_PASSWORD
-        sync: false           # the password you gave scripts/seed-remote.mjs
-      # --- Optional ---
+        sync: false
+      # Optional
       - key: VITE_GOOGLE_CLIENT_ID
-        sync: false           # Synqit's Google client id; add the Render origin in Google console first
+        sync: false
       - key: NEXAR_CLIENT_ID
         sync: false
       - key: NEXAR_CLIENT_SECRET
         sync: false
-      - key: VITE_SENTRY_ENVIRONMENT
-        value: production
+
+  # ------------------------------------------------- electronics engine
+  # FastAPI: the schematic agent, 96 verifier rules, the 23,941-part library,
+  # placement, routing, BOM, build guide, KiCad/Gerber/STEP exports.
+  # Docker, because it needs KiCad, FreeRouting and the CAD kernel.
+  - type: web
+    name: synqit-api
+    runtime: docker
+    plan: standard          # the image is ~4.5 GB; 512 MB RAM is not enough
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    autoDeployTrigger: commit
+    disk:
+      name: synqit-data
+      mountPath: /data      # voltron.db and the library working set
+      sizeGB: 5
+    envVars:
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: COOKIE_SECURE
+        value: "1"
+      - key: OPENAI_API_KEY
+        sync: false         # the Azure key
+      - key: OPENAI_BASE_URL
+        value: https://aatreus.openai.azure.com
+      - key: OPENAI_MODEL
+        value: gpt-5.1
+      - key: OPENAI_API_VERSION
+        value: 2024-12-01-preview
+      - key: CORS_ORIGINS
+        sync: false         # the studio's URL, e.g. https://synqit-cad.onrender.com
+      - key: CAD_APP_ORIGINS
+        sync: false         # same, for the /auth/handoff allow-list
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: MOUSER_API_KEY
+        sync: false
+      - key: DIGIKEY_CLIENT_ID
+        sync: false
+      - key: DIGIKEY_CLIENT_SECRET
+        sync: false
