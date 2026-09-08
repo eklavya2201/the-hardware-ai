@@ -1,8 +1,18 @@
 # Running the whole product on AWS
 
 One EC2 box serves everything: the studio people use, the engine that designs
-the boards, and Caddy in front. `synqit.in` is the studio. There is no Render
-service and no CloudFront/S3 front end any more.
+the boards, and Caddy in front. `synqit.in` is the studio.
+
+**Live since 2026-09-08.** `synqit.in` and `www.synqit.in` are A records for
+`3.111.115.126` and Caddy holds their certificates; the CloudFront
+distribution and its S3 bucket are still there but no longer in the path. The
+two Render services are suspended. The engine kept its database: 53 users and
+106 projects came through the switch, and the library still serves all 23,941
+parts.
+
+Verified on the live site after the cut-over: the studio loads, the engine
+answers through the studio's own origin, and the identity exchange provisions
+an engine account and lists that person's projects.
 
 ## What is on the box
 
@@ -78,6 +88,9 @@ The engine image is built on the box, as it already is — it is unchanged from
 what runs there today apart from the additions in this repo.
 
 ## Deploy
+
+`deploy/aws/ship.sh` does the first two steps from a machine with Docker;
+`deploy/aws/deploy.sh` does the rest on the box.
 
 1. Copy this repo to the box at `~/the-hardware-ai`.
 2. Fill in `deploy/aws/studio.env` (from `studio.env.example`) and copy the

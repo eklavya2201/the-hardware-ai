@@ -44,9 +44,19 @@ docker compose build api
 
 say "stopping the old stack"
 # Frees 80/443 and releases the database volume. Its files stay on the box.
-( cd ~/synqit/deploy/aws && docker compose down ) || true
+# NOT `~`: this runs under sudo, where ~ is /root and the cd silently fails,
+# leaving the old Caddy holding 443 and two engines on one SQLite file.
+OLD_STACK="/home/${SUDO_USER:-ec2-user}/synqit/deploy/aws"
+if [ -d "$OLD_STACK" ]; then
+  ( cd "$OLD_STACK" && docker compose down ) || true
+else
+  echo "no old stack at $OLD_STACK — nothing to stop"
+fi
 
 say "starting engine, studio and caddy"
+# Images are pre-built, so the build args are unused; declare them anyway so
+# compose does not warn about unset variables.
+export VITE_SUPABASE_URL="${VITE_SUPABASE_URL:-}" VITE_SUPABASE_ANON_KEY="${VITE_SUPABASE_ANON_KEY:-}"
 docker compose up -d
 
 say "waiting for health"

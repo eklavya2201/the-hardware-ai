@@ -13,6 +13,7 @@ name: synqit
 services:
   # The engine: schematic agent, part library, placement, routing, exports.
   api:
+    image: synqit-api:latest
     build:
       context: ../../backend
       # Rebases on the image already on the box rather than reinstalling
@@ -33,6 +34,10 @@ services:
   # the engine. Server routes are not optional here, so this is a Node server
   # rather than a static bundle.
   studio:
+    # Built off the box and loaded with `docker load` -- see deploy/aws/ship.sh.
+    # Naming the image means `compose up` uses it instead of trying to build
+    # the studio here, which this box does not have the memory to do.
+    image: synqit-studio:latest
     build:
       context: ../../app
       dockerfile: Dockerfile
