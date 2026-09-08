@@ -15,7 +15,9 @@ services:
   api:
     build:
       context: ../../backend
-      dockerfile: Dockerfile
+      # Rebases on the image already on the box rather than reinstalling
+      # KiCad, FreeRouting and the CAD kernel. See the file for why.
+      dockerfile: Dockerfile.overlay
     restart: unless-stopped
     env_file:
       - ./backend.env

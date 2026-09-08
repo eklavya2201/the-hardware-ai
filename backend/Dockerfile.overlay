@@ -1,0 +1,19 @@
+# The engine, as an overlay on the image already built on the box.
+#
+# backend/Dockerfile installs KiCad, FreeRouting and the OpenCASCADE kernel:
+# about 4.5 GB and twenty-odd minutes, on a two-core box with no spare memory
+# and 6.7 GB of disk left. Nothing in those layers has changed -- only Python
+# source has -- so this rebases the app on the existing image and copies the
+# code over it. Seconds, and no risk of filling the disk mid-deploy.
+#
+# Requires aws-api:latest to be present (it is what serves api.synqit.in
+# today). On a fresh box, build ./Dockerfile once instead and then use this.
+ARG BASE_IMAGE=aws-api:latest
+FROM ${BASE_IMAGE}
+
+COPY app /app/app
+COPY requirements.txt /app/requirements.txt
+
+# Cheap safety net: if the base image predates a dependency this code needs,
+# fail here rather than at import time in production.
+RUN pip install --no-cache-dir -q -r /app/requirements.txt
