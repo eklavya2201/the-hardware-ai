@@ -94,26 +94,39 @@ Both agents get facts back, not just images.
 
 ## Does it actually save anything
 
-Measured, not asserted. `backend/scripts/bench_agent_tokens.py` runs the same
-five turns twice, once with the query tools hidden and once with them on, on
-the same model, and records token usage from the provider's own counters plus
-output quality from the verifier.
+**On the evidence so far: no, and the earlier claim that it did was noise.**
 
-| | baseline | with queries | change |
-|---|---|---|---|
-| prompt tokens | 3,202,739 | 1,631,883 | −49% |
-| model calls | 81 | 40 | −51% |
-| wall time | 443 s | 257 s | −42% |
-| verifier errors | 0 | 0 | same |
-| warnings | 24 | 19 | −21% |
-| edits that landed | 1 of 2 | 2 of 2 | better |
+`backend/scripts/bench_agent_tokens.py` runs the same five turns in two modes —
+query tools hidden, query tools on — and records token usage from the
+provider's own counters plus output quality from the verifier.
 
-Honest reading: the win is real on this sample but it did not come from the
-agent calling queries — it called them three times in ten runs. It came from
-finishing in fewer turns, because the prompt rules stopped it wandering. One
-repetition per prompt, so treat it as direction, not a measured constant. The
-next step is making the agent actually reach for the eyes during a fresh
-build, then re-running with more repetitions.
+The first run (one repetition, 2026-09-08) showed −49% prompt tokens for the
+query mode. Repeating it with two repetitions the same day gave **+5%**:
+
+| | baseline | with queries |
+|---|---|---|
+| prompt tokens | 5,896,971 | 6,176,313 (+5%) |
+| model calls | 145 | 150 (+3%) |
+| wall time | 764 s | 700 s (−8%) |
+| verifier errors | 0 | 0 |
+| warnings | 52 | 48 (−8%) |
+
+The saving did not survive replication, so it should not be quoted. What
+explains both numbers is variance: the same prompt in the same mode, run
+twice, ranged from 162k to 562k prompt tokens — a **3.5× spread**, far larger
+than the effect anyone is trying to measure. At this sample size the benchmark
+cannot resolve a difference of this size in either direction.
+
+A prompt change that made the agent actually call its queries (33 → 75 across
+ten runs) was measured separately and cost 42% more prompt tokens, 37% more
+model calls and 33% more warnings, for a 6% reduction in unconnected pins.
+Asking more was the mechanism, not the goal; the goal was fewer tokens or
+better boards, and neither happened.
+
+So the honest state is: the query tools are a good idea for a reason that is
+still unproven here — a number is exact where a picture is not — and the
+instrument needs fixing (more repetitions, or a way to damp the variance)
+before any token claim is made from it.
 
 ## Guardrails, each with a test
 
