@@ -1079,26 +1079,38 @@ def search_parts(
     demand_log.record(query, category, len(results), [p.mpn for p in results],
                       getattr(project, "id", None))
     del project
+    # A QUERY (read-only): one compact row per part — mpn, category, package,
+    # a one-line description and the specs that decide a pick (voltage range,
+    # interfaces, pin count, ballpark cost). Never the pin table: add_component
+    # returns that for the part actually chosen.
     return (
         {
             "count": len(results),
+            "fields": "mpn, category, package, description, v=[min,max], "
+                      "pins, interfaces, unitCost, alternatives",
             "parts": [
                 {
                     "mpn": p.mpn,
-                    "description": p.description,
                     "category": p.category,
                     "package": p.package,
-                    "unitCost": p.unitCost,
-                    "jlcStock": p.jlcStock,
-                    "voltageMin": p.voltageMin,
-                    "voltageMax": p.voltageMax,
-                    "alternatives": p.alternatives,
+                    "description": _one_line(p.description, 90),
+                    "v": [p.voltageMin, p.voltageMax]
+                         if (p.voltageMin is not None or p.voltageMax is not None) else None,
+                    "pins": len(p.pins),
+                    "interfaces": p.interfaces[:4] or None,
+                    "unitCost": p.unitCost or None,
+                    "alternatives": p.alternatives[:3] or None,
                 }
                 for p in results
             ],
         },
         None,  # search doesn't mutate IR — no diff entry
     )
+
+
+def _one_line(text: str | None, cap: int) -> str:
+    t = " ".join((text or "").split())
+    return t if len(t) <= cap else t[: cap - 1] + "…"
 
 
 def _mcu_component(project: Project, refdes: str | None = None) -> Component | None:
@@ -1344,15 +1356,23 @@ def unacknowledge_finding(project: Project, *, issue_id: str) -> tuple[dict[str,
 
 
 def run_drc(project: Project) -> tuple[dict[str, Any], DiffEntry | None]:
+    """Run every schematic rule (a VERB: it rewrites project.issues). The
+    result is the compact `list_issues` view — errors first, capped — not a
+    dump of every issue with every field: that dump was the largest tool
+    output of a build turn (~3-4k tokens on a 20-part board) and the model
+    only ever needs the id, the rule, the refdes/net and one line."""
+    from app.services import queries  # lazy: queries imports tools
+
     issues = verifier.run_all(project)
     project.issues = issues
     project.drcErrorCount = sum(1 for i in issues if i.severity == "error")
+    view = queries.list_issues(project, limit=40)
     return (
         {
             "issue_count": len(issues),
             "errors": project.drcErrorCount,
             "warnings": sum(1 for i in issues if i.severity == "warning"),
-            "issues": [i.model_dump() for i in issues],
+            **view,
         },
         None,
     )
@@ -1561,10 +1581,15 @@ def dispatch(
 ) -> tuple[dict[str, Any], DiffEntry | None]:
     fn = TOOLS.get(name)
     if fn is None:
-        # Mechanical tools (Week 3 / 5.4) share the same dispatch surface so the
-        # agent mutates the mechanical IR only through tools, same contract as
-        # the electrical side. Lazy import breaks the tools<->mechanical cycle.
-        from app.services import mechanical_tools
+        # Queries (services/queries.py) are the agent's eyes: read-only, no
+        # diff entry, never raise — an unknown refdes answers a JSON error with
+        # the known ones. Mechanical tools (Week 3 / 5.4) share the same
+        # dispatch surface so the agent mutates the mechanical IR only through
+        # tools, same contract as the electrical side. Lazy imports break the
+        # tools<->queries/mechanical cycles.
+        from app.services import mechanical_tools, queries
+        if name in queries.QUERIES:
+            return queries.run(project, name, args), None
         if name in mechanical_tools.MECHANICAL_TOOLS:
             return mechanical_tools.dispatch(project, name, args)
         raise ToolError(f"Unknown tool {name!r}.")

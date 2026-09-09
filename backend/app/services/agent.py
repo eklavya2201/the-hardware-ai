@@ -28,8 +28,9 @@ from app.models import (
     DiffEntry,
     Project,
     ToolCallSummary,
+    VerifierIssue,
 )
-from app.services import claim_validator, library, store, tools
+from app.services import claim_validator, library, queries, store, tools
 
 
 @dataclass
@@ -653,6 +654,35 @@ make sure the design includes the listed essentials:
     * final message: the STEP/DIR/EN GPIO map, the microstep setting, the
       per-module current-limit (VREF) note
 
+ASK, DON'T GUESS — the QUERY tools are your eyes. They are read-only, exact
+and cheap (a few hundred tokens); assuming is not, and a picture is not.
+- Before you `connect` a pin you did not add in THIS turn, call
+  `get_pin_net(refdes, pin)` (is it already on a net? which?). For a part
+  from an earlier turn, `get_component(refdes)` gives its whole pin/net table.
+- After wiring an IC, `list_unconnected_pins()`: supply and ground pins come
+  first — an unwired power pin is a bug, an unused GPIO is not.
+- `get_net(name)` when a net's members or routing state matter (which MCU
+  pin it reaches, routed or not, how much is still unrouted).
+- After every `run_drc` and BEFORE saying the design is done, call
+  `list_issues(severity="error")`; fix what it lists, run_drc, query again.
+  A reply that claims "no errors" without having read list_issues is a guess.
+- Before reasoning about the PCB or the enclosure: `get_board_summary()`
+  (size, layers, parts per side, holes, rats), `list_unrouted_ratlines()`,
+  `get_part_envelope(refdes)` (real footprint box + height), `list_cutouts()`
+  and `list_keepouts()`.
+NEVER ask for, describe, or reason from a rendered image or screenshot of the
+schematic, the board or the 3D view. Every fact in such a picture is available
+exactly through a query at a fraction of the tokens; a picture only says it
+less precisely. Queries change nothing — call them freely, act on what they
+answer, and never state a connection you have not confirmed exists.
+NO UNVERIFIED STATUS CLAIMS. Do not write that a pin is connected, a net is
+routed, the board fits, or that there are "no errors" / "0 errors" unless a
+query in THIS turn returned exactly that: list_issues for errors,
+get_net / list_unrouted_ratlines for routing, get_pin_net /
+list_unconnected_pins for connections, get_board_summary / get_part_envelope
+for fit. The app checks this: a status claim with no query behind it is
+flagged as an unverified claim in the Review panel.
+
 DO NOT STOP EARLY. Never end a build turn to ask the user a question while
 the design is unwired or DRC has errors: pick a reasonable default, state the
 assumption in one sentence, and FINISH (all power/ground/signal wiring, then
@@ -1171,6 +1201,185 @@ TOOL_SCHEMAS = [
 ]
 
 
+def _query(name: str, description: str, props: dict, required: list[str] | None = None) -> dict:
+    """Schema for a QUERY — read-only, compact JSON, never a diff. Kept apart
+    from the verbs so the surface reads verb / noun / query (docs/AGENT_SURFACE.md)."""
+    return _fn(
+        name,
+        "QUERY (read-only, cheap): " + description,
+        {"type": "object", "properties": props, "required": required or [],
+         "additionalProperties": False},
+    )
+
+
+_REFDES = {"type": "string", "description": "component designator, e.g. U1"}
+_PAGE = {
+    "offset": {"type": "integer", "description": "first row (default 0)"},
+    "limit": {"type": "integer", "description": "rows per page (default 40, max 200)"},
+}
+_PAGED = "Paged: total/offset/truncated/next_offset; pass offset to continue."
+
+QUERY_SCHEMAS = [
+    _query(
+        "get_component",
+        "one part in full: mpn, value, category, footprint, body size and "
+        "height (mm), its pins as [number, name, type, net|null], and its "
+        "board position if placed. Use it instead of re-reading the design "
+        "state for a part added in an earlier turn. " + _PAGED,
+        {"refdes": _REFDES, **_PAGE}, ["refdes"],
+    ),
+    _query(
+        "get_pin_net",
+        "is this pin on a net, and which? pin may be a number, name or alias. "
+        "Ask BEFORE connecting a pin you did not just add.",
+        {"refdes": _REFDES, "pin": {"type": "string"}}, ["refdes", "pin"],
+    ),
+    _query(
+        "list_unconnected_pins",
+        "pins on no net as [pin, name, type], supply/ground pins first (those "
+        "are the bugs; an unused GPIO is not). Optional refdes narrows to one "
+        "part. " + _PAGED,
+        {"refdes": _REFDES, **_PAGE},
+    ),
+    _query(
+        "list_components",
+        "compact roster [refdes, mpn, value, category, side]. " + _PAGED,
+        dict(_PAGE),
+    ),
+    _query(
+        "get_net",
+        "one net: role (power/gnd/signal), pins as [refdes, pin, name, type], "
+        "the MCU pin it reaches, routed or not, trace/via/rats counts and the "
+        "unrouted length in mm. " + _PAGED,
+        {"name": {"type": "string", "description": "net name, e.g. VCC_3V3"}, **_PAGE}, ["name"],
+    ),
+    _query(
+        "list_nets",
+        "compact roster [name, role, pin count, routed|null]. " + _PAGED,
+        dict(_PAGE),
+    ),
+    _query(
+        "list_issues",
+        "verifier findings compactly (id, severity, rule, refdes/net, one-line "
+        "message) with counts and open/acknowledged totals. Filter by severity "
+        "or a rule prefix (R21, PCB_, MECH_). Call it after run_drc and before "
+        "saying the design is done. " + _PAGED,
+        {"severity": {"type": "string", "enum": ["error", "warning", "info"]},
+         "rule": {"type": "string"}, **_PAGE},
+    ),
+    _query(
+        "list_unrouted_ratlines",
+        "unrouted connections on the board, longest first, each named by its "
+        "pads (U1.12-R3.1) with length in mm. " + _PAGED,
+        dict(_PAGE),
+    ),
+    _query(
+        "get_board_summary",
+        "the board at a glance: outline shape/size/thickness, layer count and "
+        "planes, mounting holes, parts per side, parts bounding box, tallest "
+        "part, routing counts, recorded form factor, enclosure. Read it before "
+        "reasoning about placement, size or the enclosure.",
+        {},
+    ),
+    _query(
+        "get_part_envelope",
+        "the rectangles a placed part occupies on the board (the same boxes the "
+        "overlap rule and the STEP export use) plus its height; an unplaced part "
+        "answers its footprint/courtyard size.",
+        {"refdes": _REFDES}, ["refdes"],
+    ),
+    _query("list_holes", "mounting holes {id, x, y, d, plated, standoff}. " + _PAGED, dict(_PAGE)),
+    _query(
+        "get_hole",
+        "one mounting hole by id, with the nearest placed part and its clearance in mm.",
+        {"id": {"type": "string", "description": "hole id, e.g. mh-1a2b3c4d"}}, ["id"],
+    ),
+    _query("list_cutouts", "enclosure-wall openings {id, refdes, edge, box}. " + _PAGED, dict(_PAGE)),
+    _query("list_keepouts", "keep-out zones {id, layer, box, reason}. " + _PAGED, dict(_PAGE)),
+]
+TOOL_SCHEMAS += QUERY_SCHEMAS
+
+
+# --------------------------------------------------------------------------- #
+# Queries on/off (benchmark switch) + the per-turn usage accumulator
+# --------------------------------------------------------------------------- #
+# SYNQIT_AGENT_QUERIES=0 hides the query tools and strips the "ask, don't
+# guess" rule from the prompt — the pre-queries agent, kept so
+# scripts/bench_agent_tokens.py can measure both modes on the same prompts.
+# Default on. Nothing else reads it.
+QUERIES_ENV = "SYNQIT_AGENT_QUERIES"
+_QUERY_RULE_START = "ASK, DON'T GUESS"
+_QUERY_RULE_END = "DO NOT STOP EARLY"
+
+
+def queries_enabled() -> bool:
+    return os.environ.get(QUERIES_ENV, "1").strip().lower() not in ("0", "false", "off", "no")
+
+
+def query_rule_text() -> str:
+    """The prompt text the query round added (budgeted: see regression_agent_queries)."""
+    return SYSTEM_PROMPT[SYSTEM_PROMPT.index(_QUERY_RULE_START):SYSTEM_PROMPT.index(_QUERY_RULE_END)]
+
+
+def active_system_prompt() -> str:
+    return SYSTEM_PROMPT if queries_enabled() else SYSTEM_PROMPT.replace(query_rule_text(), "")
+
+
+def active_tool_schemas() -> list[dict]:
+    if queries_enabled():
+        return TOOL_SCHEMAS
+    return [t for t in TOOL_SCHEMAS if t["function"]["name"] not in queries.QUERIES]
+
+
+# Token/tool accounting for the CURRENT agent.run (reset at its start). Read by
+# the benchmark; never shown to the model. The smallest hook that records
+# what the OpenAI client already returns.
+USAGE: dict[str, int] = {}
+
+
+def reset_usage() -> None:
+    USAGE.clear()
+    USAGE.update(prompt_tokens=0, completion_tokens=0, cached_tokens=0, llm_calls=0,
+                 tool_calls=0, tool_output_chars=0, queries=0, queries_denied=0,
+                 tool_errors=0, state_guesses=0)
+
+
+reset_usage()
+
+
+# A tool call the agent made on a false belief about state it could have read.
+# These are the failures the read tools exist to prevent, so they are what a
+# read-tool experiment has to count -- tokens never showed anything.
+#
+# "already on net" / "would short the rails": connect() refusing a pin the
+# agent believed was free. R21 was the commonest defect in the prompt sweep,
+# 12 hits in 12 builds. "does not exist": a refdes or pin it assumed was there.
+_STATE_GUESS_MARKERS = (
+    "is already on net",
+    "would short the rails",
+    "does not exist",
+    "no such",
+)
+
+
+def _record_tool_error(message: str) -> None:
+    USAGE["tool_errors"] += 1
+    low = message.lower()
+    if any(m in low for m in _STATE_GUESS_MARKERS):
+        USAGE["state_guesses"] += 1
+
+
+def _record_usage(completion) -> None:
+    u = getattr(completion, "usage", None)
+    if u is None:
+        return
+    USAGE["llm_calls"] += 1
+    USAGE["prompt_tokens"] += int(getattr(u, "prompt_tokens", 0) or 0)
+    USAGE["completion_tokens"] += int(getattr(u, "completion_tokens", 0) or 0)
+    det = getattr(u, "prompt_tokens_details", None)
+    USAGE["cached_tokens"] += int(getattr(det, "cached_tokens", 0) or 0) if det else 0
+
+
 def has_api_key(llm=None) -> bool:
     return bool((llm.api_key if llm is not None else None) or os.environ.get("OPENAI_API_KEY"))
 
@@ -1324,6 +1533,8 @@ def run(project: Project, user_text: str, llm=None) -> Iterator[AgentEvent]:
 
     `llm` is an optional services.llm_config.LlmRuntime: the calling user's own
     key/model (bring-your-own-model). None = the server's OPENAI_* env."""
+    reset_usage()
+    turn_start = len(project.chat)
     user_msg = ChatMessage(id=f"msg-{uuid.uuid4().hex[:8]}", role="user", text=user_text)
     project.chat.append(user_msg)
     yield AgentEvent("user_message", user_msg.model_dump())
@@ -1385,6 +1596,11 @@ def run(project: Project, user_text: str, llm=None) -> Iterator[AgentEvent]:
     # downgraded to a Missing Item and annotated in the message, so chat can
     # never present an ungrounded connection as fact. Runs on both paths.
     _validate_final_claims(project)
+
+    # Status claims ("0 errors", "fully routed", "fits") must be backed by a
+    # query made in THIS turn — the verbs / nouns / queries rule's honesty half.
+    if has_api_key(llm):
+        _flag_unverified_status_claims(project, turn_start)
 
     # DRC-status guard (beta review #6): the message may not claim a clean
     # design while the verifier still reports blocking errors.
@@ -1495,6 +1711,65 @@ def _validate_final_claims(project: Project) -> None:
     existing = {i.id for i in project.issues}
     project.issues.extend(i for i in claim_issues if i.id not in existing)
     project.drcErrorCount = sum(1 for i in project.issues if i.severity == "error")
+
+
+# Status claims that need a query behind them (verbs / nouns / queries rule,
+# 2026-09-07). Each: label, the claim pattern, the queries that can back it.
+# Deliberately narrow phrases — a false flag on ordinary prose would teach the
+# user to ignore the real ones.
+_STATUS_CLAIMS: list[tuple[str, re.Pattern[str], frozenset[str]]] = [
+    ("errors",
+     re.compile(r"\b(?:no|zero|0|without(?: any)?)\s+(?:blocking\s+|drc\s+|remaining\s+|open\s+)?"
+                r"(?:errors?|issues?|findings?)\b|\bdrc[- ]clean\b|\bpasses\s+drc\b|\bclean\s+drc\b",
+                re.IGNORECASE),
+     frozenset({"list_issues"})),
+    ("routing",
+     re.compile(r"\b(?:fully|completely|all|100\s*%)\s+routed\b|\bno\s+(?:unrouted|airwires?|rats)\b"
+                r"|\b(?:0|zero)\s+(?:unrouted|airwires?|rats)\b", re.IGNORECASE),
+     frozenset({"list_unrouted_ratlines", "get_net", "list_nets", "get_board_summary"})),
+    ("connections",
+     re.compile(r"\b(?:all|every)\s+(?:the\s+)?(?:pins?|signals?|nets?|connections?|power\s+pins?)\s+"
+                r"(?:are\s+|is\s+)?(?:now\s+)?(?:connected|wired)\b"
+                r"|\beverything\s+is\s+(?:connected|wired)\b|\bfully\s+(?:connected|wired)\b"
+                r"|\bno\s+(?:unconnected|floating|unwired)\s+pins?\b", re.IGNORECASE),
+     frozenset({"list_unconnected_pins", "get_pin_net", "get_component", "get_net"})),
+    ("fit",
+     re.compile(r"\b(?:fits|will\s+fit|fit\s+comfortably)\s+(?:in|inside|within|on|under|the|a)\b"
+                r"|\bboard\s+fits\b|\beverything\s+fits\b", re.IGNORECASE),
+     frozenset({"get_board_summary", "get_part_envelope"})),
+]
+
+
+def _flag_unverified_status_claims(project: Project, turn_start: int) -> None:
+    """Flag a status claim in this turn's assistant text that no query in this
+    turn backs — as a WARNING in the Review panel, never by rewriting the text.
+    The IR-vs-prose sibling of claim_validator (connections, values) and R73
+    (user-stated parts): those check WHAT was said against the design; this
+    checks that a verdict was READ, not assumed."""
+    turn = [m for m in project.chat[turn_start:] if m.role == "assistant"]
+    if not turn:
+        return
+    text = "\n".join(m.text or "" for m in turn)
+    asked = {c.tool for m in turn for c in m.toolCalls}
+    new = []
+    for label, pattern, backing in _STATUS_CLAIMS:
+        hit = pattern.search(text)
+        if hit is None or asked & backing:
+            continue
+        quote = hit.group(0)
+        new.append(VerifierIssue(
+            id=f"LLM_status:{label}",
+            severity="warning",
+            message=(f"The reply says \"{quote}\" but no {' / '.join(sorted(backing))} query was "
+                     f"made this turn, so that is an assumption, not a reading. The Review "
+                     f"panel shows the real state."),
+            rule="LLM_unverified_status",
+            source="llm",
+        ))
+    if not new:
+        return
+    existing = {i.id for i in project.issues}
+    project.issues.extend(i for i in new if i.id not in existing)
 
 
 # How the agent should fix each rule family, keyed by rule-id prefix. Surfaced in
@@ -1645,7 +1920,9 @@ def _build_fixup_prompt(errors, turn_index: int) -> str:
     """Format the rule-based DRC errors into a corrective prompt for the agent."""
     lines = [
         "DRC found blocking errors after your previous turn. Fix them with "
-        "tool calls only — do NOT explain. After your fixes, call run_drc again. "
+        "tool calls only — do NOT explain. Check a pin with get_pin_net before "
+        "moving it. After your fixes, call run_drc, then list_issues to read "
+        "what is left. "
         "The design already contains everything in CURRENT DESIGN STATE — fix "
         "the listed errors on the EXISTING parts; never re-add parts, arrays "
         "or requirements that are already there.",
@@ -1818,6 +2095,7 @@ def _run_stub(project: Project, user_text: str) -> Iterator[AgentEvent]:
             if diff:
                 diff_entries.append(diff)
         except tools.ToolError as e:
+            _record_tool_error(str(e))
             yield AgentEvent("error", {"name": name, "args": args, "error": str(e)})
 
     tools.recompute_bom(project)
@@ -1852,6 +2130,8 @@ def _run_openai(project: Project, user_text: str, llm=None) -> Iterator[AgentEve
     model = _model_name(llm)
 
     messages = _build_message_history(project, user_text)
+    # Loop guard: at most queries.QUERY_BUDGET_PER_TURN questions per turn.
+    budget = queries.QueryBudget()
     diff_entries: list[DiffEntry] = []
     tool_summaries: list[ToolCallSummary] = []
     final_text_parts: list[str] = []
@@ -1865,9 +2145,10 @@ def _run_openai(project: Project, user_text: str, llm=None) -> Iterator[AgentEve
         completion = client.chat.completions.create(
             model=model,
             messages=messages,
-            tools=TOOL_SCHEMAS,
+            tools=active_tool_schemas(),
             tool_choice="auto",
         )
+        _record_usage(completion)
         choice = completion.choices[0]
         msg = choice.message
 
@@ -1909,21 +2190,32 @@ def _run_openai(project: Project, user_text: str, llm=None) -> Iterator[AgentEve
                 ToolCallSummary(tool=name, args=args, rationale=step_intent)
             )
             try:
-                result, diff = tools.dispatch(project, name, args)
+                denied = budget.take(name)
+                if denied is not None:
+                    result, diff = denied, None
+                    USAGE["queries_denied"] += 1
+                else:
+                    result, diff = tools.dispatch(project, name, args)
                 if diff:
                     diff_entries.append(diff)
                 yield AgentEvent(
                     "tool_use",
                     {"name": name, "args": args, "result": result},
                 )
+                content = json.dumps(result, default=str)
+                USAGE["tool_calls"] += 1
+                USAGE["tool_output_chars"] += len(content)
+                if name in queries.QUERIES:
+                    USAGE["queries"] += 1
                 messages.append(
                     {
                         "role": "tool",
                         "tool_call_id": call.id,
-                        "content": json.dumps(result, default=str),
+                        "content": content,
                     }
                 )
             except tools.ToolError as e:
+                _record_tool_error(str(e))
                 yield AgentEvent(
                     "error", {"name": name, "args": args, "error": str(e)}
                 )
@@ -2001,7 +2293,7 @@ def _build_message_history(project: Project, user_text: str) -> list[dict]:
     messages: list[dict] = [
         {
             "role": "system",
-            "content": SYSTEM_PROMPT + "\n\n" + _library_index_for_prompt(),
+            "content": active_system_prompt() + "\n\n" + _library_index_for_prompt(),
         },
     ]
     for m in project.chat[:-1]:  # exclude the freshly-appended user message

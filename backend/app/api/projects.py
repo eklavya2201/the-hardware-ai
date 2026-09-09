@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import secrets
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 from fastapi.responses import PlainTextResponse, Response
 from sse_starlette.sse import EventSourceResponse
@@ -31,6 +31,7 @@ from app.services import (
     llm_critic,
     offers,
     posthog_client,
+    queries,
     search_log,
     store,
     tools,
@@ -320,6 +321,35 @@ def net_detail(
     if detail is None:
         raise HTTPException(404, f"Net {net_name!r} not found in this project")
     return detail
+
+
+@router.get("/projects/{project_id}/q")
+def list_queries(project_id: str, share: str | None = None,
+                 user: UserRow | None = Depends(current_user_optional)) -> dict:
+    """The query surface (docs/AGENT_SURFACE.md): the same read-only questions
+    the in-app agent asks, for an external agent. Each answers compact JSON."""
+    _readable_project(project_id, user, share)
+    return {
+        "queries": {name: (fn.__doc__ or "").splitlines()[0].strip()
+                    for name, fn in queries.QUERIES.items()},
+        "usage": "GET /api/projects/{id}/q/{name}?arg=value (e.g. /q/get_component?refdes=U1)",
+    }
+
+
+@router.get("/projects/{project_id}/q/{name}")
+def run_query(project_id: str, name: str, request: Request, share: str | None = None,
+              user: UserRow | None = Depends(current_user_optional)) -> dict:
+    """Run one query. Query-string args are the tool's keyword args (integers
+    coerced); unknown names/args answer a JSON error with the known ones, not
+    a 4xx — a query never fails, it answers. Read-only, so it is readable
+    through a share link exactly like the summary."""
+    project = _readable_project(project_id, user, share)
+    args = {}
+    for k, v in request.query_params.items():
+        if k == "share":
+            continue
+        args[k] = int(v) if v.lstrip("-").isdigit() else v
+    return queries.run(project, name, args)
 
 
 @router.post("/projects/{project_id}/run-drc", response_model=Project)
