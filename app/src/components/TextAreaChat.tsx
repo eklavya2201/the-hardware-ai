@@ -48,6 +48,7 @@ import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
 import { useMutation } from '@tanstack/react-query';
 import { uploadFile } from '@/lib/studioData';
+import { ingestDatasheet } from '@/lib/synqitApi';
 import { ModelSelector } from '@/components/ModelSelector';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -899,6 +900,44 @@ ${text}
     let hasInvalidImages = false;
     let hasInvalidItems = false;
     const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB limit
+
+    // A datasheet is not an attachment, it is a part. The engine reads the
+    // PDF and proposes a LibraryPart; the proposal goes into the composer for
+    // a human to accept, because an ingested part is never auto-committed.
+    const pdfs = newItems.filter((f) => f.type === 'application/pdf');
+    for (const pdf of pdfs) {
+      toast({ title: `Reading ${pdf.name}...` });
+      try {
+        const { proposed } = await ingestDatasheet(pdf);
+        if (!proposed?.mpn) {
+          toast({
+            title: 'No part found in that PDF',
+            description: 'It may not be a datasheet, or the pages may be scanned images.',
+            variant: 'destructive',
+          });
+          continue;
+        }
+        const lines = [
+          `From the datasheet ${pdf.name}:`,
+          `  part: ${proposed.mpn}`,
+          proposed.description ? `  description: ${proposed.description}` : '',
+          proposed.category ? `  category: ${proposed.category}` : '',
+          proposed.package ? `  package: ${proposed.package}` : '',
+          Array.isArray(proposed.pins) ? `  pins: ${proposed.pins.length}` : '',
+          'Use this part in the design.',
+        ].filter(Boolean);
+        window.dispatchEvent(
+          new CustomEvent(INSERT_EVENT, { detail: lines.join(String.fromCharCode(10)) }),
+        );
+        toast({ title: `${proposed.mpn} read from the datasheet` });
+      } catch (err) {
+        toast({
+          title: 'Could not read that datasheet',
+          description: err instanceof Error ? err.message : 'Unknown error',
+          variant: 'destructive',
+        });
+      }
+    }
 
     const validImages = await Promise.all(
       newItems.map(async (file) => {

@@ -122,6 +122,19 @@ export function BoardActions() {
             >
               Download Gerbers (.zip)
             </a>
+            {/* The real populated board — outline, component bodies, real
+                positions — so an enclosure is built around the hardware
+                rather than a placeholder box. */}
+            <a
+              href={`${SYNQIT_API_BASE}/projects/${encodeURIComponent(project.id)}/export/step`}
+              className="block rounded-md border border-sq-neutral-600 px-3 py-2 text-center text-xs text-sq-text-secondary hover:border-sq-blue hover:text-sq-text-primary"
+            >
+              Download the 3D board (.step)
+            </a>
+            <p className="pt-1 text-[11px] leading-relaxed text-sq-text-secondary">
+              The STEP file is the real board with its components. Open it in your CAD
+              tool to build a case that actually fits.
+            </p>
             <a
               href={`${SYNQIT_APP_URL}/projects/${encodeURIComponent(project.id)}`}
               target="_blank"

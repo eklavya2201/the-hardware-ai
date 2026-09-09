@@ -588,6 +588,33 @@ def export_kicad_project(
     )
 
 
+@router.get("/projects/{project_id}/export/step")
+def export_board_step(
+    project_id: str,
+    user: UserRow = Depends(current_user),
+):
+    """The populated board as a STEP solid, for designing an enclosure around
+    the real hardware instead of a placeholder box.
+
+    409 rather than 500 when the board is not placed or KiCad is absent: both
+    are ordinary states with an obvious next action, and the studio falls back
+    to the envelope brief."""
+    project = store.get_project(project_id, user_id=user.id)
+    if not project:
+        raise HTTPException(404, f"Project {project_id} not found")
+    try:
+        data = export.board_step(project)
+    except export.KicadPcbError as exc:
+        raise HTTPException(409, str(exc))
+    return Response(
+        content=data,
+        media_type="model/step",
+        headers={
+            "Content-Disposition": f'attachment; filename="{project_id}.step"'
+        },
+    )
+
+
 @router.get("/projects/{project_id}/export/gerbers")
 def export_gerbers(
     project_id: str,

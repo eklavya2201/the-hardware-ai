@@ -47,3 +47,36 @@ export async function getSynqitSession(): Promise<SynqitSession> {
 export async function signOutOfSynqit(): Promise<void> {
   await fetch(SYNQIT_SESSION_URL, { method: 'DELETE', credentials: 'include' });
 }
+
+/** A part proposed from a datasheet, for the person to accept or edit. */
+export type ProposedPart = {
+  mpn?: string;
+  description?: string;
+  category?: string;
+  package?: string;
+  footprint?: string;
+  pins?: unknown[];
+  [k: string]: unknown;
+};
+
+/**
+ * Read a datasheet PDF into a proposed library part.
+ *
+ * The engine has done this all along (`extract_text_from_pdf` -> `ingest`);
+ * nothing in the studio ever called it, so dropping a datasheet in the
+ * composer did nothing. It proposes and never commits: the part reaches the
+ * conversation as text for a human to accept, which is the rule the library
+ * has always had about ingested parts.
+ */
+export async function ingestDatasheet(
+  file: File,
+): Promise<{ success: boolean; proposed: ProposedPart | null; notes?: string[] }> {
+  const form = new FormData();
+  form.append("file", file, file.name);
+  const res = await synqitFetch("/library/ingest", { method: "POST", body: form });
+  if (!res.ok) {
+    const detail = (await res.json().catch(() => ({}))) as { detail?: string };
+    throw new Error(detail.detail || `The engine could not read that PDF (${res.status}).`);
+  }
+  return (await res.json()) as { success: boolean; proposed: ProposedPart | null; notes?: string[] };
+}
