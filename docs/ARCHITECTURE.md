@@ -171,6 +171,41 @@ still unproven here — a number is exact where a picture is not — and the
 instrument needs fixing (more repetitions, or a way to damp the variance)
 before any token claim is made from it.
 
+## The prompt trim, also rejected
+
+The obvious next move was to cut the per-call payload. It is 117,118
+characters — 44.6k of rules, 48.8k of library index, 23.7k of tool schemas —
+and **60% of the rules block is 26 project archetype recipes**, of which at
+most one describes the board in front of you. Lifting them out of the cached
+prefix and matching them per conversation cut the payload 24%.
+
+| | full prompt | trimmed |
+|---|---|---|
+| prompt tokens | 5,896,971 | 5,504,067 (−7%) |
+| model calls | 145 | 171 (+18%) |
+| cost | $4.18 | $3.84 (−8%) |
+| warnings | 52 | 39 (−25%) |
+| unconnected pins | 173 | 145 (−16%) |
+| **verifier errors** | **0** | **5** |
+
+A 24% smaller payload produced a 7% token saving, because the call count rose
+18% and each call replays the whole prefix. And errors went from 0 to 5 —
+every one of roughly thirty prior turns, both modes, both repetitions, had
+been exactly zero. Warnings and unconnected pins improved, but errors are the
+hard gate: a warning is a review item, an error is a board you cannot ship.
+Reverted, and kept as a stash on the branch.
+
+### What the three experiments agree on
+
+Queries on (+5% tokens), forcing the agent to use them (+42%), and trimming
+the prompt (+18% calls) all failed the same way: **less context means more
+round trips, and a round trip costs more than the context it saved.** A
+cached prefix token costs $0.50/M here and 96-98% of the prompt is cached;
+an extra model call replays all 29,000 of them. For this agent the economics
+run opposite to the intuition — keep the context fat and finish in fewer
+turns. Anything that trades context for a question has to beat that, and so
+far nothing has.
+
 ## Guardrails, each with a test
 
 Not promises — `backend/scripts/regression_agent_queries.py`, 77 checks. The
