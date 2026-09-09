@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 import json
+import logging
 import secrets
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 from fastapi.responses import PlainTextResponse, Response
 from sse_starlette.sse import EventSourceResponse
+
+log = logging.getLogger(__name__)
 
 from app.models import (
     ChatRequest,
@@ -150,6 +153,22 @@ def delete_project(
     return {"deleted": project_id}
 
 
+def _blocking_error_ids(project) -> set[str]:
+    """The errors that stop a board being usable, by stable id.
+
+    Same exclusions the agent's own fix-up loop uses: LLM_ findings are
+    advisory, and R35/PCB_/MECH_ have no schematic-tool remedy, so none of
+    them should trigger a rollback of work the agent did correctly."""
+    return {
+        i.id
+        for i in (project.issues or [])
+        if i.id
+        and i.severity == "error"
+        and i.rule
+        and not i.rule.startswith(("LLM_", "PCB_", "MECH_", "R35"))
+    }
+
+
 @router.post("/projects/{project_id}/chat")
 def chat(
     project_id: str,
@@ -170,6 +189,12 @@ def chat(
         user.email, "ai_prompt", {"project_id": project_id, "length": len(body.text)}
     )
 
+    # Captured BEFORE the run: the commit in the `finally` below makes this
+    # turn's own state the head, so afterwards there is nothing safe to roll
+    # back to. A turn that makes the board worse can then be undone.
+    baseline_commit = history.head_commit_id(project_id)
+    before_errors = _blocking_error_ids(project)
+
     def stream():
         try:
             for event in agent.run(project, body.text, llm=llm_config.runtime_for_user(user)):
@@ -186,6 +211,32 @@ def chat(
                 message=f"Chat: {body.text[:120]}",
                 author="agent",
             )
+
+            # Did this turn break something that was working? The bad state is
+            # committed above first, so it stays inspectable, and the revert is
+            # itself a commit -- nothing is lost either way. Only fires when
+            # there is a baseline to return to, so a first build that comes out
+            # imperfect is never thrown away.
+            introduced = _blocking_error_ids(project) - before_errors
+            if introduced and baseline_commit:
+                try:
+                    restored = history.revert_to(project_id, baseline_commit)
+                    project.ir = restored.ir
+                    project.board = restored.board
+                    project.issues = restored.issues
+                    yield {
+                        "event": "reverted",
+                        "data": json.dumps(
+                            {
+                                "reason": "the change introduced blocking errors",
+                                "introduced": sorted(introduced)[:10],
+                                "restored_to": baseline_commit,
+                            }
+                        ),
+                    }
+                except Exception as exc:  # never let a failed revert kill the turn
+                    log.warning("revert after regression failed: %s", exc)
+
             yield {"event": "snapshot", "data": project.model_dump_json()}
 
     return EventSourceResponse(stream())

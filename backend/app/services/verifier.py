@@ -21,6 +21,7 @@ from __future__ import annotations
 import re
 
 from app.models import Component, LibraryPart, Pin, PinType, Project, VerifierIssue
+from app.services.flow_rules import R82_flow_loop_direction
 from app.services import erc_matrix, ipc, library, pin_safety
 
 
@@ -6207,6 +6208,7 @@ def R81_duplicate_controller(project: Project) -> list[VerifierIssue]:
 
 
 ALL_RULES = [
+    R82_flow_loop_direction,
     R01_decoupling_cap,
     R02_i2c_pullups,
     R03_no_floating_en,

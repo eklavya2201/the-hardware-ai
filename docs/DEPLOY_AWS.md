@@ -137,3 +137,33 @@ admin area. The studio has a creations list and the board views, and reaches
 projects through the composer's **Board** button. Nothing is lost on the engine
 side — the projects and the API are unchanged — but those screens do not exist
 in the studio yet.
+
+## Adding a model
+
+The picker shows what this deployment can actually reach, so a model has to
+be switched on in two places or not at all -- listing one we have no key for
+is how Fable and Opus came to sit in the menu doing nothing.
+
+**Another Azure deployment (GPT-6 Astra, and anything after it).** The
+catalogue entry and the price row already exist, so this is one variable:
+
+```sh
+# deploy/aws/studio.env
+VITE_AZURE_DEPLOYMENTS=gpt-5.1,gpt-5-pro,gpt-6-astra
+VITE_DEFAULT_MODEL=azure/gpt-6-astra      # optional: make it the default
+```
+
+The deployment name must match the one in the Azure resource exactly. VITE_*
+values are baked into the client at build time, so the studio image has to be
+rebuilt -- an env change alone will not show it.
+
+**A different provider (Anthropic, Google).** Set its key in `studio.env` and
+add the provider to the allow-list:
+
+```sh
+ANTHROPIC_API_KEY=...
+VITE_ENABLED_PROVIDERS=azure,anthropic
+```
+
+Then rebuild and ship the studio image as above. Until both are set the
+provider stays out of the picker, which is deliberate.

@@ -115,6 +115,16 @@ def get_commit(commit_id: str) -> dict | None:
         }
 
 
+def head_commit_id(project_id: str) -> str | None:
+    """The current head, for use as a baseline BEFORE a turn runs.
+
+    The chat endpoint commits in a `finally`, so by the time a turn ends its
+    own mutated state is already the head and `parent_id` on the new row is
+    not a safe thing to roll back to. Capture this first."""
+    with SessionLocal() as session:
+        return _latest_commit_id(session, project_id)
+
+
 def revert_to(project_id: str, commit_id: str) -> Project:
     """Restore the project state to the snapshot at `commit_id` and write a
     new commit recording the revert. Returns the restored Project."""
