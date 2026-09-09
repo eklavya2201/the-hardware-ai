@@ -19,7 +19,7 @@ see [How the halves fit](#how-the-halves-fit).
 | **Stack on the box** | one Docker Compose project, `synqit`: `api` (engine) + `studio` + `caddy` (TLS) |
 | **Database** | SQLite on the external volume `aws_synqit-data`. 57 users, 116 projects, 17 studio conversations |
 | **Default model** | `azure/gpt-5.1` on the `aatreus` Azure OpenAI resource |
-| **Active branch** | `agent-surface`. `main` is **11 commits behind** and is not what is deployed |
+| **Active branch** | `agent-surface`. `main` is behind and is **not** what is deployed; `git log --oneline main..agent-surface` shows the gap |
 | **Remotes** | `origin` = `eklavya2201/the-hardware-ai`, `company` = `Jdhroov/Synqit`. Both carry `agent-surface` |
 | **Render** | gone. Services suspended, `render.yaml` and `docs/DEPLOY_RENDER.md` are dead files |
 | **Supabase** | gone. Removed entirely (97 files, −9,644 lines). Remaining mentions in the code are historical comments |
@@ -121,7 +121,7 @@ In the order I would do them.
    the prompt, and only then are we measuring that.
 2. **Fix local development.** `app/scripts/bootstrap.mjs` is entirely
    Supabase-based and therefore dead. Nothing has replaced it.
-3. **Merge `agent-surface` into `main`.** 11 commits, all deployed and live.
+3. **Merge `agent-surface` into `main`.** Everything on it is deployed and live.
 4. **Rotate every credential pasted into chat.** Render API keys, the Supabase
    personal access token. They are in transcripts.
 5. **Get Nexar (Octopart) credentials**, and either fix or retire the Mouser key
