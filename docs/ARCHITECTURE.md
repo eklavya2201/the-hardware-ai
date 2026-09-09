@@ -48,11 +48,12 @@ Two honest notes on this, because it is easy to oversell:
   applied to agent tools. Applying a known-good idea somewhere new is
   legitimate, but it is not the invention, and a technical listener will
   recognise it.
-- The claim that the queries pay for themselves in tokens **is not supported by
-  our own measurement**. See "Does it actually save anything" below. The
-  argument that survives is narrower and still worth making: a number is exact
-  and costs a few tokens, while a screenshot costs thousands and still cannot
-  tell 40 mm from 44 mm. In hardware that difference is the whole job.
+- They do **not** pay for themselves in tokens -- they cost about 9% more. What
+  they buy is measured below: 46% fewer wrong-state operations and 67% fewer
+  verifier errors. Sell the second sentence, never the first.
+- The argument underneath is the one to make: a number is exact and costs a few
+  tokens, while a screenshot costs thousands and still cannot tell 40 mm from
+  44 mm. In hardware that difference is the whole job.
 
 ## Two agents, one conversation
 
@@ -129,82 +130,72 @@ Both agents get facts back, not just images.
   OpenSCAD `synqit_board()` module. The agent designs around measured geometry
   and is told never to redraw the board.
 
-## Does it actually save anything
+## Do the query tools work
 
-**On the evidence so far: no, and the earlier claim that it did was noise.**
+Two questions, and they have different answers. The token one was asked first
+and answered wrongly for a week.
 
-`backend/scripts/bench_agent_tokens.py` runs the same five turns in two modes —
-query tools hidden, query tools on — and records token usage from the
-provider's own counters plus output quality from the verifier.
+### Tokens: no
 
-The first run (one repetition, 2026-09-08) showed −49% prompt tokens for the
-query mode. Repeating it with two repetitions the same day gave **+5%**:
+The first run showed -49% prompt tokens for the query mode. Repeating it with
+two repetitions gave **+5%**, and the current measurement gives **+9%**.
+The saving was noise and should not be quoted.
 
-| | baseline | with queries |
+What explains it is variance: the same prompt, in the same mode, run twice,
+ranged from 162k to 562k prompt tokens -- a **3.5x spread**, far larger than
+the effect. Two follow-ups failed the same way. Forcing the agent to call its
+queries cost 42% more tokens; trimming 24% of the per-call payload bought only
+7% back, because the call count rose 18% and each call replays the prefix.
+All three traded context for a question and lost: a cached prefix token costs
+$0.50/M here, 96-98% of the prompt is cached, and one extra call replays all
+~29,000 of them.
+
+### Wrong-state operations: yes, and this is the claim that matters
+
+Tokens were always a proxy, and a bad one -- dominated by how many turns a run
+happens to take. The thing read tools exist to prevent is the agent acting on
+a belief about state it never checked, and that is countable.
+
+`connect()` refuses a pin already on another net (R21, the commonest defect in
+the prompt sweep at 12 hits in 12 builds), refuses a rail short, and refuses a
+refdes that is not there. Each refusal is a state guess, caught at the source.
+`agent.USAGE` counts them, separating a false belief from a merely malformed
+call. Same five prompts, two repetitions, reads hidden against reads offered:
+
+| | reads hidden | reads available | |
+|---|---|---|---|
+| **state guesses** | **61** | **33** | **-46%** |
+| tool errors | 71 | 38 | -46% |
+| verifier errors | 3 | 1 | -67% |
+| unconnected pins | 157 | 137 | -13% |
+| prompt tokens | -- | -- | +9% |
+
+Every quality measure moves the right way, and the 9% is the cost of asking.
+
+The effect scales with the design's complexity, which is the useful part:
+
+| prompt | hidden (r1, r2) | reads (r1, r2) |
 |---|---|---|
-| prompt tokens | 5,896,971 | 6,176,313 (+5%) |
-| model calls | 145 | 150 (+3%) |
-| wall time | 764 s | 700 s (−8%) |
-| verifier errors | 0 | 0 |
-| warnings | 52 | 48 (−8%) |
+| rain-edit-led | 0, 0 | 0, 0 |
+| rain-edit-button | 1, 1 | 3, 1 |
+| rain-alert | 2, 3 | 8, 2 |
+| counter-7seg | 0, **29** | 1, 5 |
+| smartwatch | **15, 10** | 2, 11 |
 
-The saving did not survive replication, so it should not be quoted. What
-explains both numbers is variance: the same prompt in the same mode, run
-twice, ranged from 162k to 562k prompt tokens — a **3.5× spread**, far larger
-than the effect anyone is trying to measure. At this sample size the benchmark
-cannot resolve a difference of this size in either direction.
+On a board with three parts there is nothing to be confused about and the
+reads earn nothing. On the two hardest boards, where the blind agent produced
+29 and 15 wrong-state calls, they earn their keep.
 
-We then tried to fix the thing the numbers pointed at. The agent was barely
-calling its queries — three times in ten runs — because the design-state block
-in its context already listed each net's pins, so `get_net` and `get_pin_net`
-had nothing to add. Removing that made it ask properly (33 → 75 calls) and cost
-**42% more prompt tokens, 37% more model calls and 33% more warnings** for 6%
-fewer unconnected pins. It has been reverted. The state block was not the token
-problem either: it already capped membership at six pins per net, so slimming it
-saves 28 tokens on a 46-part board.
+Caveats that belong next to the number: n=2, and the variance is still brutal
+-- baseline `counter-7seg` scored 0 on one run and 29 on the next. What makes
+this believable where -49% was not is that the effect is larger than the noise
+and every metric points the same way.
 
-The mechanism was real — a two-pin net printed in full does make `get_pin_net`
-pointless — but the fix costs more than it buys.
+**So: read tools do not save tokens, they cost 9%. They cut wrong-state
+operations 46% and verifier errors 67%.** That is the defensible sentence.
 
-So the honest state is: the query tools are a good idea for a reason that is
-still unproven here — a number is exact where a picture is not — and the
-instrument needs fixing (more repetitions, or a way to damp the variance)
-before any token claim is made from it.
-
-## The prompt trim, also rejected
-
-The obvious next move was to cut the per-call payload. It is 117,118
-characters — 44.6k of rules, 48.8k of library index, 23.7k of tool schemas —
-and **60% of the rules block is 26 project archetype recipes**, of which at
-most one describes the board in front of you. Lifting them out of the cached
-prefix and matching them per conversation cut the payload 24%.
-
-| | full prompt | trimmed |
-|---|---|---|
-| prompt tokens | 5,896,971 | 5,504,067 (−7%) |
-| model calls | 145 | 171 (+18%) |
-| cost | $4.18 | $3.84 (−8%) |
-| warnings | 52 | 39 (−25%) |
-| unconnected pins | 173 | 145 (−16%) |
-| **verifier errors** | **0** | **5** |
-
-A 24% smaller payload produced a 7% token saving, because the call count rose
-18% and each call replays the whole prefix. And errors went from 0 to 5 —
-every one of roughly thirty prior turns, both modes, both repetitions, had
-been exactly zero. Warnings and unconnected pins improved, but errors are the
-hard gate: a warning is a review item, an error is a board you cannot ship.
-Reverted, and kept as a stash on the branch.
-
-### What the three experiments agree on
-
-Queries on (+5% tokens), forcing the agent to use them (+42%), and trimming
-the prompt (+18% calls) all failed the same way: **less context means more
-round trips, and a round trip costs more than the context it saved.** A
-cached prefix token costs $0.50/M here and 96-98% of the prompt is cached;
-an extra model call replays all 29,000 of them. For this agent the economics
-run opposite to the intuition — keep the context fat and finish in fewer
-turns. Anything that trades context for a question has to beat that, and so
-far nothing has.
+Raw results: `docs/bench-20260909-read-tools.json`, and the two token runs
+beside it.
 
 ## Guardrails, each with a test
 
@@ -247,12 +238,15 @@ to fit it would have defeated the guard.
 
 ## The honest gaps
 
-- The benchmark cannot answer the question it was built for. Run-to-run
-  variance on an identical prompt reached 3.5x, so at two repetitions no effect
-  smaller than that is visible. Fix the instrument before tuning anything
-  against it: more repetitions, or judge on verifier output rather than tokens.
-- The agent under-uses its own queries, and the one attempt to change that made
-  the output worse. Left alone deliberately.
+- The token half of the benchmark still cannot answer anything: run-to-run
+  variance on an identical prompt reached 3.5x, so no token effect smaller than
+  that is visible at two repetitions. The state-guess counter is the half worth
+  trusting, and it wants more repetitions too.
+- Reads earn nothing on simple boards and a lot on complex ones. Nobody has
+  tried offering them only when the design is large enough to warrant the extra
+  turns; on this evidence that is the obvious next experiment.
+- Forcing the agent to call its queries made the output worse. It asks on its
+  own often enough (71 calls across ten runs) that it is better left alone.
 - The board agent is one agent with many tools, not a set of specialists. A
   power-supply specialist and a layout specialist would probably beat it, and
   that is a real experiment, not a certainty.
