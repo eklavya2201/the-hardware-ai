@@ -1413,6 +1413,7 @@ export async function handleAiChatRequest(req: Request) {
       : thinkingEnabled
         ? 32000
         : 16000,
+    systemPrompt(conversation).length,
   );
 
   const result = streamText({

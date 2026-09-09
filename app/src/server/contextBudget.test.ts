@@ -7,6 +7,7 @@ import {
   inputTokenBudget,
   isContextOverflowError,
   liftToolResultImages,
+  measure,
   stringifiesToolResultContent,
 } from './contextBudget';
 
@@ -125,8 +126,7 @@ describe('compactModelMessages', () => {
   it('drops old renders before it touches anything else', () => {
     const result = compactModelMessages(longSession(20), 120_000);
 
-    // Renders are the whole bill here: no script touched, no turn dropped.
-    assert.equal(result.applied.length, 1);
+    // Renders go first, whatever else the ceiling then forces.
     assert.match(result.applied[0], /^inspection-sheets:/);
     assert.ok(result.after <= 120_000);
 
@@ -315,5 +315,111 @@ describe('liftToolResultImages', () => {
     );
     assert.ok(index > 0);
     assert.equal(result.messages[index - 1].role, 'tool');
+  });
+});
+
+/**
+ * The incident, replayed.
+ *
+ * Conversation 6c1c91fa on 2026-09-09: eight messages, 4.5 KB of OpenSCAD,
+ * four inspection sheets. Azure refused it with "Input tokens exceed the
+ * configured limit of 272000 tokens. Your messages resulted in 298293
+ * tokens." The sheet sizes below were read off the production disk; base64
+ * is four characters for every three bytes.
+ */
+const INCIDENT_SHEET_BYTES = [72_991, 90_362, 88_432, 89_080];
+const INCIDENT_REPORTED_TOKENS = 298_293;
+
+function incidentBranch(): ModelMessage[] {
+  const messages: ModelMessage[] = [
+    { role: 'user', content: 'apple logo' },
+  ];
+  INCIDENT_SHEET_BYTES.forEach((bytes, i) => {
+    messages.push({
+      role: 'assistant',
+      content: [
+        {
+          type: 'tool-call',
+          toolCallId: `call-${i}`,
+          toolName: 'build_parametric_model',
+          input: {
+            title: 'apple_logo',
+            version: `v${i}`,
+            // The real scripts were 115 to 1,674 characters.
+            code: 'x'.repeat(1_200),
+          },
+        },
+      ],
+    } as unknown as ModelMessage);
+    messages.push({
+      role: 'tool',
+      content: [
+        {
+          type: 'tool-result',
+          toolCallId: `call-${i}`,
+          toolName: 'build_parametric_model',
+          output: {
+            type: 'content',
+            value: [
+              { type: 'text', text: 'Model facts: bounding box 128 x 140.89 x 2 mm.' },
+              {
+                type: 'media',
+                data: 'b'.repeat(Math.floor((bytes * 4) / 3)),
+                mediaType: 'image/png',
+              },
+            ],
+          },
+        },
+      ],
+    } as unknown as ModelMessage);
+  });
+  return messages;
+}
+
+describe('the 2026-09-09 incident', () => {
+  it('is measured within sight of what the provider actually billed', () => {
+    // The calibration, pinned to production. The old estimator said 8,000
+    // for these four renders; Azure billed 298,293 for this branch plus the
+    // rebuild it was in the middle of. If a future change makes this number
+    // drift low again, this test is where it shows up.
+    const asAzureSendsIt = measure(incidentBranch(), {
+      toolResultImagesAreBlocks: false,
+    });
+    const ratio = asAzureSendsIt.tokens / INCIDENT_REPORTED_TOKENS;
+    assert.ok(
+      ratio > 0.6 && ratio < 1.4,
+      `estimated ${asAzureSendsIt.tokens}, provider billed ${INCIDENT_REPORTED_TOKENS} (ratio ${ratio.toFixed(2)})`,
+    );
+
+    // And the branch alone already breaks the budget, so the ladder fires
+    // on this shape even without the lift.
+    assert.ok(asAzureSendsIt.tokens > inputTokenBudget('azure', 64_000, 30_000));
+  });
+
+  it('is under the window once the images are lifted', () => {
+    const budget = inputTokenBudget('azure', 64_000, 30_000);
+    const lifted = liftToolResultImages(incidentBranch());
+    const size = measure(lifted.messages);
+
+    assert.ok(size.tokens < budget, `${size.tokens} vs budget ${budget}`);
+    // The guarantee, not the estimate.
+    assert.ok(size.ceiling < 272_000, `ceiling ${size.ceiling}`);
+  });
+
+  it('cannot be sent over the window even if the estimate is wrong', () => {
+    // A branch that is nothing but one enormous blob: no stage of the ladder
+    // has anything to drop, so only the final gate can save it.
+    const messages: ModelMessage[] = [
+      { role: 'user', content: 'z'.repeat(4_000_000) },
+    ];
+    const budget = 50_000;
+    const result = compactModelMessages(messages, budget);
+    const size = measure(result.messages);
+
+    assert.ok(result.applied.includes('forced'));
+    assert.ok(size.ceiling <= budget, `ceiling ${size.ceiling} > ${budget}`);
+    // A token never consumes less than a character, so this is a proof that
+    // the request fits, not a hope.
+    assert.ok(size.ceiling <= 272_000);
   });
 });

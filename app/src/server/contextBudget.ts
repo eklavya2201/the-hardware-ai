@@ -40,6 +40,9 @@ import type { ModelMessage } from 'ai';
 /** Rough token count for text. Four characters per token is close enough. */
 const CHARS_PER_TOKEN = 4;
 
+/** Characters per token in a long unbroken string: base64, a hash, a blob. */
+const DENSE_CHARS_PER_TOKEN = 2;
+
 /**
  * Flat cost for one image. The inspection sheet is always 1536x1536, which
  * bills around 1.6k tokens on OpenAI and ~3k on Anthropic; the exact number
@@ -71,6 +74,7 @@ const BUILD_TOOL = 'build_parametric_model';
 export function inputTokenBudget(
   provider: string,
   maxOutputTokens: number,
+  systemPromptChars = 0,
 ): number {
   // Context windows, in tokens, for the families this app can select.
   const window =
@@ -79,47 +83,14 @@ export function inputTokenBudget(
       : provider === 'anthropic'
         ? 200_000
         : 272_000; // Azure OpenAI gpt-5.x, the limit in the original report.
-  const margin = 40_000; // system prompt, tool schemas, and slack.
-  return Math.max(50_000, window - maxOutputTokens - margin);
-}
-
-function textTokens(text: string): number {
-  return Math.ceil(text.length / CHARS_PER_TOKEN);
-}
-
-/** Estimated input tokens for a set of model messages. */
-export function estimateTokens(messages: ModelMessage[]): number {
-  let total = 0;
-  for (const message of messages) {
-    total += 4; // per-message envelope
-    const content = message.content as unknown;
-    if (typeof content === 'string') {
-      total += textTokens(content);
-      continue;
-    }
-    if (!Array.isArray(content)) continue;
-    for (const part of content as Array<Record<string, unknown>>) {
-      total += partTokens(part);
-    }
-  }
-  return total;
-}
-
-function partTokens(part: Record<string, unknown>): number {
-  switch (part.type) {
-    case 'text':
-    case 'reasoning':
-      return textTokens(String(part.text ?? ''));
-    case 'image':
-    case 'file':
-      return IMAGE_TOKENS;
-    case 'tool-call':
-      return textTokens(JSON.stringify(part.input ?? {})) + 8;
-    case 'tool-result':
-      return toolResultTokens(part.output as ToolOutput | undefined);
-    default:
-      return textTokens(JSON.stringify(part));
-  }
+  // The system prompt is measured rather than guessed at -- it is the largest
+  // thing outside the messages, and it changes whenever the prompt is edited.
+  const system = Math.ceil(systemPromptChars / CHARS_PER_TOKEN);
+  const toolSchemas = 8_000; // zod schemas, not serializable to a real count
+  return Math.max(
+    50_000,
+    window - maxOutputTokens - system - toolSchemas - 4_000,
+  );
 }
 
 type ContentValuePart =
@@ -133,22 +104,146 @@ type ToolOutput =
   | { type: 'content'; value: ContentValuePart[] }
   | { type: string; [key: string]: unknown };
 
-function toolResultTokens(output: ToolOutput | undefined): number {
-  if (!output) return 0;
-  if (output.type === 'content' && Array.isArray(output.value)) {
-    let total = 0;
-    for (const item of output.value as ContentValuePart[]) {
-      total +=
-        item.type === 'text'
-          ? textTokens(String((item as { text?: string }).text ?? ''))
-          : IMAGE_TOKENS;
+/**
+ * The size of a request, measured two ways.
+ *
+ * This module used to add up a guess per part type -- so much for a text
+ * part, a flat 2,000 for anything that looked like an image. That is the
+ * shape of estimator that fails silently: it can only see the costs it was
+ * told to look for, and it charged 8,000 tokens for four renders the
+ * provider charged about 150,000 for. The conversation sailed under budget
+ * and the request was refused twice.
+ *
+ * So measurement is inverted here. Serialize the message and count every
+ * character, which cannot miss a field nobody anticipated, then subtract
+ * only what we can PROVE the provider sends as a compact image block. The
+ * default is safe and the discount is explicit.
+ *
+ * `chars` also gives a real guarantee, not an estimate. A BPE token always
+ * consumes at least one character, so a payload of N characters can never
+ * be more than N tokens. Keep `chars + imageTokens` under the window and
+ * the request cannot overflow, whatever the tokenizer does.
+ */
+export type Size = {
+  /** Serialized characters, excluding base64 that travels as an image. */
+  chars: number;
+  /** Images sent as a compact block, and what they cost. */
+  images: number;
+  imageTokens: number;
+  /** Realistic estimate: what we expect the provider to bill. */
+  tokens: number;
+  /** Upper bound the provider cannot exceed. */
+  ceiling: number;
+};
+
+/**
+ * Whether a tool result's images reach the provider as image blocks.
+ *
+ * On the OpenAI chat API they do not -- the output is JSON-stringified, so
+ * the base64 is text and must be counted as text. `liftToolResultImages`
+ * removes that case before we ever measure, but the flag keeps the two
+ * facts from drifting apart.
+ */
+export type MeasureOptions = { toolResultImagesAreBlocks?: boolean };
+
+export function measure(
+  messages: ModelMessage[],
+  options: MeasureOptions = {},
+): Size {
+  const toolImagesAreBlocks = options.toolResultImagesAreBlocks ?? true;
+  let chars = 0;
+  let images = 0;
+
+  for (const message of messages) {
+    chars += JSON.stringify(message)?.length ?? 0;
+
+    const content = message.content as unknown;
+    if (!Array.isArray(content)) continue;
+    for (const part of content as Array<Record<string, unknown>>) {
+      // A user-message image is always a real block on every provider.
+      if (part.type === 'image' || part.type === 'file') {
+        images += 1;
+        chars -= blobLength(part.data ?? part.image);
+        continue;
+      }
+      if (part.type !== 'tool-result' || !toolImagesAreBlocks) continue;
+      const output = part.output as ToolOutput | undefined;
+      if (output?.type !== 'content' || !Array.isArray(output.value)) continue;
+      for (const item of output.value as ContentValuePart[]) {
+        if (!isImagePart(item)) continue;
+        images += 1;
+        chars -= blobLength((item as { data?: unknown }).data);
+      }
     }
-    return total;
   }
-  const value = (output as { value?: unknown }).value;
-  return textTokens(
-    typeof value === 'string' ? value : JSON.stringify(value ?? {}),
-  );
+
+  chars = Math.max(0, chars);
+  const dense = Math.min(chars, denseChars(messages, toolImagesAreBlocks));
+  const imageTokens = images * IMAGE_TOKENS;
+  return {
+    chars,
+    images,
+    imageTokens,
+    tokens:
+      Math.ceil((chars - dense) / CHARS_PER_TOKEN) +
+      Math.ceil(dense / DENSE_CHARS_PER_TOKEN) +
+      imageTokens,
+    ceiling: chars + imageTokens,
+  };
+}
+
+/**
+ * Characters in strings a tokenizer cannot break into words.
+ *
+ * Prose runs about four characters to a token. Base64, a hash, a data URL --
+ * anything long with no whitespace -- runs closer to two, because there are
+ * no word boundaries to merge on. That difference is not academic: the
+ * incident's 454,485 characters of base64 come to 113k tokens at four and
+ * 227k at two, and the provider billed 298,293 for that request plus the
+ * rebuild it was in the middle of. Counting them as prose is how a payload
+ * over the window looked comfortably under it.
+ */
+function denseChars(
+  messages: ModelMessage[],
+  toolImagesAreBlocks: boolean,
+): number {
+  let total = 0;
+  const walk = (node: unknown, key: string | number | null) => {
+    if (typeof node === 'string') {
+      // Skip the blobs already discounted as image blocks.
+      if (toolImagesAreBlocks && key === 'data') return;
+      if (node.length > 512 && !/\s/.test(node.slice(0, 512))) {
+        total += node.length;
+      }
+      return;
+    }
+    if (Array.isArray(node)) {
+      node.forEach((item, i) => walk(item, i));
+      return;
+    }
+    if (node && typeof node === 'object') {
+      for (const [k, v] of Object.entries(node)) walk(v, k);
+    }
+  };
+  for (const message of messages) walk(message, null);
+  return total;
+}
+
+/** Serialized length of a base64 payload, whatever shape it arrived in. */
+function blobLength(data: unknown): number {
+  return typeof data === 'string' ? data.length : 0;
+}
+
+/**
+ * Realistic token estimate. Kept as its own name because that is what the
+ * ladder reports; `measure` is the thing to reach for when the guarantee
+ * matters.
+ */
+export function estimateTokens(
+  messages: ModelMessage[],
+  options: MeasureOptions = {},
+): number {
+  return measure(messages, options).tokens;
 }
 
 function isImagePart(part: ContentValuePart): boolean {
@@ -303,14 +398,21 @@ export function compactModelMessages(
   messages: ModelMessage[],
   budget: number,
 ): CompactionResult {
-  const before = estimateTokens(messages);
-  if (before <= budget) {
+  const size = measure(messages);
+  const before = size.tokens;
+  // Two conditions, and both have to hold. `tokens` is what we expect to be
+  // billed. `ceiling` is what the provider cannot exceed whatever its
+  // tokenizer does, because a token never consumes less than a character.
+  // The second is the one that makes this a guarantee: an estimate can be
+  // wrong, and twice now it was.
+  const fits = (s: Size) => s.tokens <= budget && s.ceiling <= budget;
+  if (fits(size)) {
     return { messages, before, after: before, applied: [] };
   }
 
   let working = messages;
   const applied: string[] = [];
-  const under = () => estimateTokens(working) <= budget;
+  const under = () => fits(measure(working));
 
   // Stage 1 -- stale inspection sheets, oldest first.
   {
@@ -382,7 +484,109 @@ export function compactModelMessages(
     if (dropped) applied.push(`turn-groups:${dropped}`);
   }
 
-  return { messages: working, before, after: estimateTokens(working), applied };
+  // Stage 5 -- the gate. Everything above is judgement about what matters
+  // least; this is arithmetic. If the payload still cannot be proved to fit,
+  // strip every remaining picture and then shorten the longest text there is,
+  // repeatedly, until it does. Losing detail is a bad outcome; a refused
+  // request the user cannot recover from is a worse one.
+  if (!under()) {
+    const forced = forceUnder(working, budget);
+    if (forced.changed) {
+      working = forced.messages;
+      applied.push('forced');
+    }
+  }
+
+  return { messages: working, before, after: measure(working).tokens, applied };
+}
+
+/**
+ * Shrink until the proof holds. Structure is preserved -- no message is
+ * removed, so no tool call loses its result -- and only the longest strings
+ * are cut, which is where any real excess has to be.
+ */
+function forceUnder(
+  messages: ModelMessage[],
+  budget: number,
+): { messages: ModelMessage[]; changed: boolean } {
+  let working = messages.map((message) =>
+    Array.isArray(message.content)
+      ? ({
+          ...message,
+          content: (message.content as Array<Record<string, unknown>>).map(
+            (part) =>
+              part.type === 'image' || part.type === 'file'
+                ? {
+                    type: 'text',
+                    text: '[image omitted to stay inside the context window]',
+                  }
+                : part,
+          ),
+        } as ModelMessage)
+      : message,
+  );
+  let changed = JSON.stringify(working) !== JSON.stringify(messages);
+
+  // Halve the longest string in the payload, over and over. Terminates: each
+  // pass strictly reduces the total, and the loop stops when nothing is left
+  // long enough to be worth cutting.
+  for (let pass = 0; pass < 200; pass += 1) {
+    const size = measure(working);
+    if (size.tokens <= budget && size.ceiling <= budget) break;
+    const site = longestString(working);
+    if (!site || site.length < 200) break;
+    working = replaceString(working, site.path, (value) =>
+      `${value.slice(0, Math.floor(value.length / 2))}
+[...truncated to stay inside the context window]`,
+    );
+    changed = true;
+  }
+
+  return { messages: working, changed };
+}
+
+type StringSite = { path: (string | number)[]; length: number };
+
+function longestString(messages: ModelMessage[]): StringSite | null {
+  let best: StringSite | null = null;
+  const walk = (node: unknown, path: (string | number)[]) => {
+    if (typeof node === 'string') {
+      if (!best || node.length > best.length) best = { path, length: node.length };
+      return;
+    }
+    if (Array.isArray(node)) {
+      node.forEach((item, i) => walk(item, [...path, i]));
+      return;
+    }
+    if (node && typeof node === 'object') {
+      for (const [key, value] of Object.entries(node)) {
+        walk(value, [...path, key]);
+      }
+    }
+  };
+  messages.forEach((message, i) => walk(message, [i]));
+  return best;
+}
+
+function replaceString(
+  messages: ModelMessage[],
+  path: (string | number)[],
+  rewrite: (value: string) => string,
+): ModelMessage[] {
+  const clone = structuredClone(messages) as unknown as Record<string, unknown>[];
+  let node: Record<string, unknown> | unknown[] = clone;
+  for (const key of path.slice(0, -1)) {
+    node = (node as Record<string, unknown>)[key as string] as Record<
+      string,
+      unknown
+    >;
+  }
+  const last = path[path.length - 1] as string;
+  const current = (node as Record<string, unknown>)[last];
+  if (typeof current === 'string') {
+    (node as Record<string, unknown>)[last] = rewrite(current);
+  }
+  return clone as unknown as ModelMessage[];
 }
 
 /**
