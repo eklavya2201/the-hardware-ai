@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCachedAiChat } from '@/hooks/useCachedAiChat';
 import { useToast } from '@/hooks/use-toast';
 import { previewScadColoredViaToolWorker } from '@/worker/toolWorker';
+import { assessModel, describeVerdict } from '@/utils/modelGate';
 import { describeFacts, meshFacts, type MeshFacts } from '@/utils/meshFacts';
 import { designBoard, layoutExistingBoard } from '@/lib/synqitBoardAgent';
 import { apiUrl } from '@/services/api';
@@ -667,6 +668,21 @@ export function ChatSession({
           'ISO' | 'FRONT' | 'BACK' | 'LEFT' | 'RIGHT' | 'TOP' | 'BOTTOM'
         > = ['ISO', 'FRONT', 'BACK', 'LEFT', 'RIGHT', 'TOP', 'BOTTOM'];
         const factsLine = facts ? `Model facts: ${describeFacts(facts)}. ` : '';
+
+        // The mechanical gate. The board side will not call a design done
+        // while 78 rules report errors; this is the same idea for geometry,
+        // over numbers meshFacts already measured. On a failure the result
+        // withholds permission to finish -- that withholding is the gate.
+        const gate = facts ? assessModel(facts) : null;
+        const gateLine = gate && gate.findings.length ? `${describeVerdict(gate)} ` : '';
+        const failed = gate?.verdict === 'fail';
+
+        const finishClause = failed
+          ? 'Do NOT give a final response yet: fix the errors above and call ' +
+            'build_parametric_model again with a corrected complete OpenSCAD script. ' +
+            'These are measurements of the geometry you produced, not opinions about it.'
+          : 'If all views satisfy the request, give a concise final response.';
+
         const output = {
           status: 'success' as const,
           inspection: {
@@ -674,11 +690,23 @@ export function ChatSession({
             imageAttached: inspectionUploaded,
           },
           ...(facts ? { facts } : {}),
-          message: inspectionUploaded
-            ? factsLine +
-              'Compilation successful. Check the facts against the requested dimensions and part count first, then inspect the multi-view render in this tool result against the user request from every visible angle. If any required feature is missing, wrong, too simple, disconnected, non-printable, hidden from some view, or visually unclear, call build_parametric_model again with a corrected complete OpenSCAD script. If all views satisfy the request, give a concise final response.'
-            : factsLine +
-              'Compilation successful, but the multi-view preview sheet was not available. Review the OpenSCAD you wrote against the user request. If anything is missing, wrong, too simple, disconnected, non-printable, or visually unclear, call build_parametric_model again with a corrected complete OpenSCAD script. If it satisfies the request, give a concise final response.',
+          ...(gate ? { verdict: gate.verdict, findings: gate.findings } : {}),
+          message:
+            gateLine +
+            factsLine +
+            (inspectionUploaded
+              ? 'Compilation successful. Check the facts against the requested dimensions ' +
+                'and part count first, then inspect the multi-view render in this tool ' +
+                'result against the user request from every visible angle. If any required ' +
+                'feature is missing, wrong, too simple, disconnected, non-printable, hidden ' +
+                'from some view, or visually unclear, call build_parametric_model again ' +
+                'with a corrected complete OpenSCAD script. '
+              : 'Compilation successful, but the multi-view preview sheet was not ' +
+                'available. Review the OpenSCAD you wrote against the user request. If ' +
+                'anything is missing, wrong, too simple, disconnected, non-printable, or ' +
+                'visually unclear, call build_parametric_model again with a corrected ' +
+                'complete OpenSCAD script. ') +
+            finishClause,
         };
 
         const successPart = {

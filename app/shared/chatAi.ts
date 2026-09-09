@@ -28,6 +28,19 @@ export const parametricCompileOutputSchema = z.object({
       bodies: z.number(),
     })
     .optional(),
+  // The mechanical gate's ruling on those facts. `fail` means the geometry is
+  // measurably wrong -- empty, zero-thickness, in pieces, or floating off the
+  // ground plane -- and the model may not report the build as finished.
+  verdict: z.enum(['pass', 'fail']).optional(),
+  findings: z
+    .array(
+      z.object({
+        id: z.string(),
+        severity: z.enum(['error', 'warning']),
+        message: z.string(),
+      }),
+    )
+    .optional(),
 });
 
 export const answerUserSchema = z.object({
