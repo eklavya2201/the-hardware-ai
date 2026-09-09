@@ -1341,7 +1341,7 @@ def reset_usage() -> None:
     USAGE.clear()
     USAGE.update(prompt_tokens=0, completion_tokens=0, cached_tokens=0, llm_calls=0,
                  tool_calls=0, tool_output_chars=0, queries=0, queries_denied=0,
-                 tool_errors=0, state_guesses=0,
+                 tool_errors=0, state_guesses=0, history_folded=0,
                  rules_fixed=0, rule_regressions=0, fixup_stalled=0)
 
 
@@ -1401,6 +1401,67 @@ MAX_FIXUP_TURNS = 3
 # truncation is surfaced loudly (chat note + agent_truncated event + DRC), so
 # raising this trades cost for completeness, never for honesty.
 MAX_AGENT_TURNS = 30
+
+# Input characters the message list may reach before stale tool results are
+# folded away. Four characters to a token, so this is roughly 160k input
+# tokens -- comfortably inside every window the app can select, and far above
+# what an ordinary build reaches.
+#
+# Without this the loop was unbounded in exactly the way the studio agent was:
+# 30 turns of query answers (a netlist, a component list on a 100-part board)
+# all re-sent on every call, until the provider refuses the request outright.
+# The board keeps changing under those answers, so the old ones are not merely
+# expensive -- they are wrong, and reading a stale netlist is precisely the
+# state-guess failure the read tools exist to prevent. Replacing them with an
+# instruction to ask again is therefore the cheap fix and the correct one.
+MAX_HISTORY_CHARS = 640_000
+
+# Newest tool results kept verbatim when the history is folded.
+KEEP_TOOL_RESULTS = 8
+
+_STALE_TOOL_RESULT = (
+    "[This answer was folded away to stay inside the context window. It "
+    "described the board at an earlier point in this turn and may no longer "
+    "be true. Call the query again if you need it.]"
+)
+
+
+def _history_chars(messages: list[dict]) -> int:
+    total = 0
+    for m in messages:
+        total += len(m.get("content") or "")
+        for call in m.get("tool_calls") or []:
+            total += len(call.get("function", {}).get("arguments") or "")
+    return total
+
+
+def _compact_history(messages: list[dict]) -> list[dict]:
+    """Fold stale tool results until the history fits.
+
+    Only `role: "tool"` content is touched, and only the older ones, so the
+    assistant's own reasoning and every tool_call/tool_result id pairing
+    survive intact -- an unmatched pair is a hard provider error.
+    """
+    if _history_chars(messages) <= MAX_HISTORY_CHARS:
+        return messages
+
+    tool_indices = [i for i, m in enumerate(messages) if m.get("role") == "tool"]
+    stale = tool_indices[: max(0, len(tool_indices) - KEEP_TOOL_RESULTS)]
+    if not stale:
+        return messages
+
+    out = list(messages)
+    folded = 0
+    for i in stale:
+        if len(out[i].get("content") or "") <= len(_STALE_TOOL_RESULT):
+            continue
+        out[i] = {**out[i], "content": _STALE_TOOL_RESULT}
+        folded += 1
+        if _history_chars(out) <= MAX_HISTORY_CHARS:
+            break
+    if folded:
+        USAGE["history_folded"] = USAGE.get("history_folded", 0) + folded
+    return out
 
 
 # --------------------------------------------------------------------------- #
@@ -2176,6 +2237,7 @@ def _run_openai(project: Project, user_text: str, llm=None) -> Iterator[AgentEve
     # the failure mode the LED-matrix beta review caught.
     truncated = True
     for _ in range(MAX_AGENT_TURNS):
+        messages = _compact_history(messages)
         completion = client.chat.completions.create(
             model=model,
             messages=messages,

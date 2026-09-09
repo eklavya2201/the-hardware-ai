@@ -35,6 +35,12 @@ import {
   resolveDanglingToolParts,
 } from './chatToolPersistence';
 import { NotSignedIn, studioStore, type StudioStore } from './studioStore';
+import {
+  compactModelMessages,
+  CONTEXT_OVERFLOW_MESSAGE,
+  inputTokenBudget,
+  isContextOverflowError,
+} from './contextBudget';
 
 /**
  * USD list price per **million** tokens, keyed by the same model IDs the
@@ -418,6 +424,57 @@ function jsonResponse(body: unknown, status: number) {
 
 const THINKING_BUDGET_TOKENS = 9000;
 const PARAMETRIC_MAX_OUTPUT_TOKENS = 64000;
+
+/**
+ * Inspection sheets and reference images fetched out of storage per request.
+ *
+ * `toModelOutput` and the image rehydration below both run over the WHOLE
+ * branch, so without a cap a long session downloaded and base64-encoded every
+ * render and every attachment it had ever produced -- on every single request,
+ * before anything decided whether the model would even see them. Set a little
+ * above what the compactor keeps, so a conversation that fits comfortably
+ * still shows the model everything it has.
+ */
+const HYDRATED_INSPECTION_SHEETS = 4;
+const HYDRATED_USER_IMAGES = 6;
+
+/** The newest N stored image ids referenced by file parts in a branch. */
+function newestImagePartIds(
+  messages: AppUIMessage[],
+  limit: number,
+): Set<string> {
+  const ids: string[] = [];
+  for (const message of messages) {
+    for (const part of message.parts) {
+      if (
+        part.type === 'file' &&
+        typeof part.mediaType === 'string' &&
+        part.mediaType.startsWith('image/') &&
+        !part.url.startsWith('data:')
+      ) {
+        const id = imageIdFromFilename(part.filename);
+        if (id) ids.push(id);
+      }
+    }
+  }
+  return new Set(ids.slice(-limit));
+}
+
+/** The newest N `build_parametric_model` tool call ids in a branch. */
+function newestBuildToolCallIds(
+  messages: AppUIMessage[],
+  limit: number,
+): Set<string> {
+  const ids: string[] = [];
+  for (const message of messages) {
+    for (const part of message.parts) {
+      if (part.type === 'tool-build_parametric_model' && part.toolCallId) {
+        ids.push(part.toolCallId);
+      }
+    }
+  }
+  return new Set(ids.slice(-limit));
+}
 
 type ChatProvider = 'anthropic' | 'azure' | 'google' | 'openrouter';
 
@@ -971,9 +1028,11 @@ async function downloadAsBase64(
 
 function parametricTools({
   previewPathForToolCall,
+  shouldAttachInspection,
   store,
 }: {
   previewPathForToolCall: (toolCallId: string) => string;
+  shouldAttachInspection: (toolCallId: string) => boolean;
   store: StudioStore;
 }) {
   return {
@@ -991,11 +1050,25 @@ function parametricTools({
         // ChatSession's `onToolCall`). If for any reason the upload
         // didn't land, `downloadAsBase64` returns null and we fall back
         // to text-only — never block the loop on a missing inspection sheet.
-        const downloaded = await downloadAsBase64(store, previewPathForToolCall(toolCallId));
+        // An older revision's sheet is superseded by the newest one and would
+        // be trimmed from the context anyway; skipping the download is the
+        // same decision made before paying for it.
+        const downloaded = shouldAttachInspection(toolCallId)
+          ? await downloadAsBase64(store, previewPathForToolCall(toolCallId))
+          : null;
         const views =
           output.inspection?.views.join(', ') ??
           'ISO, FRONT, BACK, LEFT, RIGHT, TOP, BOTTOM';
-        const text = `${output.message}\nRendered inspection views: ${views}.\nMulti-view inspection image attached: ${downloaded ? 'yes' : 'no'}.`;
+        // "no" used to cover two very different things: an upload that
+        // failed, and a sheet deliberately left behind because a newer one
+        // exists. Say which, so the model does not read a superseded
+        // revision as a broken render and rebuild to chase it.
+        const attached = downloaded
+          ? 'yes'
+          : shouldAttachInspection(toolCallId)
+            ? 'no'
+            : 'no (superseded by a later revision; the measured facts above still stand)';
+        const text = `${output.message}\nRendered inspection views: ${views}.\nMulti-view inspection image attached: ${attached}.`;
 
         if (downloaded) {
           return {
@@ -1099,14 +1172,6 @@ export async function handleAiChatRequest(req: Request) {
     return jsonResponse({ error: 'Billing service unavailable' }, 503);
   }
 
-  // One tool set. The "creative" lane generated meshes through fal.ai and
-  // stored them in the old database; it could not run without FAL_KEY, which
-  // no deployment sets, and it held most of what tied this app to that store.
-  const tools = parametricTools({
-    store,
-    previewPathForToolCall: (toolCallId) => `inspection-preview-${toolCallId}`,
-  });
-
   let branchMessages: AppUIMessage[];
   let leafRole: 'user' | 'assistant';
   try {
@@ -1127,6 +1192,27 @@ export async function handleAiChatRequest(req: Request) {
     });
     return jsonResponse({ error: 'Failed to load conversation branch' }, 500);
   }
+
+  // One tool set. The "creative" lane generated meshes through fal.ai and
+  // stored them in the old database; it could not run without FAL_KEY, which
+  // no deployment sets, and it held most of what tied this app to that store.
+  //
+  // Built after the branch loads because it needs to know which inspection
+  // sheets are still worth fetching. `toModelOutput` runs for EVERY persisted
+  // build result, so on a long session this downloaded and base64'd fifty
+  // 1536x1536 renders per request -- tens of megabytes of I/O and heap on a
+  // two-core box -- only for the compactor to drop all but the newest two
+  // before the request went out. Fetch the newest few and no more.
+  const recentBuildToolCallIds = newestBuildToolCallIds(
+    branchMessages,
+    HYDRATED_INSPECTION_SHEETS,
+  );
+  const tools = parametricTools({
+    store,
+    previewPathForToolCall: (toolCallId) => `inspection-preview-${toolCallId}`,
+    shouldAttachInspection: (toolCallId) =>
+      recentBuildToolCallIds.has(toolCallId),
+  });
 
   const leafMessageId = conversation.current_message_leaf_id;
 
@@ -1162,6 +1248,14 @@ export async function handleAiChatRequest(req: Request) {
   // (legacy rows that inlined base64) pass through untouched; anything we
   // can't resolve is dropped so a missing image never poisons the request
   // with an unfetchable URL.
+  //
+  // Bounded to the newest few: the download and the base64 encoding cost the
+  // same whether or not the image survives compaction, and an old branch full
+  // of attachments could put tens of megabytes on the heap per request.
+  const hydratableImageIds = newestImagePartIds(
+    branchMessages,
+    HYDRATED_USER_IMAGES,
+  );
   const hydratedMessages = await Promise.all(
     branchMessages.map(async (message) => ({
       ...message,
@@ -1178,6 +1272,15 @@ export async function handleAiChatRequest(req: Request) {
             }
             const imageId = imageIdFromFilename(part.filename);
             if (!imageId) return null;
+            if (!hydratableImageIds.has(imageId)) {
+              // Beyond the cap. Say the image existed rather than deleting it
+              // silently -- a reply that ignores an attachment it was never
+              // shown reads to the user as the model not looking.
+              return {
+                type: 'text' as const,
+                text: `[Earlier attached image${part.filename ? ` "${part.filename}"` : ''} is not included in this request; ask the user to re-attach it if you need to see it.]`,
+              };
+            }
             const downloaded = await downloadAsBase64(store, imageId);
             if (!downloaded) return null;
             return {
@@ -1295,13 +1398,53 @@ export async function handleAiChatRequest(req: Request) {
     leafRole === 'user' &&
     !forceBuildToolChoice;
 
+  // The input window this model will accept, minus the output pool. Every
+  // step is checked against it: the branch loaded from the database can
+  // already be over, and a 60-step parametric turn grows it further with a
+  // complete OpenSCAD script and a nine-view render per build.
+  const parametricTurn = conversation.type === 'parametric';
+  const budget = inputTokenBudget(
+    resolvedProvider,
+    parametricTurn
+      ? PARAMETRIC_MAX_OUTPUT_TOKENS
+      : thinkingEnabled
+        ? 32000
+        : 16000,
+  );
+
   const result = streamText({
     model: chatLanguageModel,
     providerOptions: chatProviderOptions,
     system: systemPrompt(conversation),
     messages: modelMessages,
     tools,
-    prepareStep: ({ stepNumber }) => {
+    prepareStep: ({ stepNumber, messages: stepMessages }) => {
+      // Shrink first, then apply the step-0 tool pinning below. Compaction is
+      // a no-op while the conversation fits, so short turns keep a byte-stable
+      // prefix and the prompt cache they depend on.
+      const compaction = compactModelMessages(stepMessages, budget);
+      if (compaction.applied.length) {
+        logError(
+          new Error('Compacted conversation to fit the model input window'),
+          {
+            functionName: 'ai-chat',
+            statusCode: 200,
+            userId: logContext.userId,
+            conversationId: logContext.conversationId,
+            additionalContext: {
+              stepNumber,
+              budget,
+              before: compaction.before,
+              after: compaction.after,
+              applied: compaction.applied.join(','),
+            },
+          },
+        );
+      }
+      const trimmed = compaction.applied.length
+        ? { messages: compaction.messages }
+        : {};
+
       if (
         conversation.type === 'parametric' &&
         leafRole === 'user' &&
@@ -1316,6 +1459,7 @@ export async function handleAiChatRequest(req: Request) {
         // thinking is on) — disable it here only; later steps keep the adaptive
         // thinking configured in buildChatModel.
         return {
+          ...trimmed,
           activeTools: ['build_parametric_model' as never],
           ...(forceBuildToolChoice
             ? {
@@ -1334,7 +1478,7 @@ export async function handleAiChatRequest(req: Request) {
             : {}),
         };
       }
-      return {};
+      return trimmed;
     },
     stopWhen: stepCountIs(conversation.type === 'parametric' ? 60 : 5),
     // Thinking and visible response tokens share this pool. With adaptive
@@ -1342,12 +1486,11 @@ export async function handleAiChatRequest(req: Request) {
     // spend 10k+ tokens before the answer starts — 32k keeps the visible
     // response from getting squeezed. We stream, so SDK HTTP timeouts aren't
     // a concern at this size.
-    maxOutputTokens:
-      conversation.type === 'parametric'
-        ? PARAMETRIC_MAX_OUTPUT_TOKENS
-        : thinkingEnabled
-          ? 32000
-          : 16000,
+    maxOutputTokens: parametricTurn
+      ? PARAMETRIC_MAX_OUTPUT_TOKENS
+      : thinkingEnabled
+        ? 32000
+        : 16000,
     abortSignal: req.signal,
     // Decouple our render cadence from the provider's native chunking.
     // OpenRouter (and the underlying provider) sometimes emits text in
@@ -1428,6 +1571,12 @@ export async function handleAiChatRequest(req: Request) {
           operation: 'ui_message_stream',
         },
       });
+      // A context overflow is the one provider failure a user can act on,
+      // and the raw provider string ("Input tokens exceed the configured
+      // limit of 272000 tokens") tells them nothing about what to do. The
+      // compactor should keep us under the window; if one message is itself
+      // larger than the budget it cannot, so say plainly what happened.
+      if (isContextOverflowError(error)) return CONTEXT_OVERFLOW_MESSAGE;
       const message = error instanceof Error ? error.message : String(error);
       return `Model call failed (${resolvedProvider}/${actualModelId}): ${message}`;
     },
