@@ -417,3 +417,124 @@ export const CONTEXT_OVERFLOW_MESSAGE =
   'This conversation has grown past what the model can read in one go. ' +
   'Start a new conversation to carry on — the board and the model you have ' +
   'built are saved and will still be there.';
+
+/**
+ * Providers that turn a `content` tool result into a JSON string.
+ *
+ * The OpenAI chat-completions API has no image block in a tool message, so
+ * @ai-sdk/openai does `contentValue = JSON.stringify(output.value)` and the
+ * whole base64 render travels as raw TEXT. Two things follow, and both were
+ * live on the default model:
+ *
+ *  - the model never saw the render. It was told to "inspect the multi-view
+ *    render in this tool result" and handed a hundred thousand characters of
+ *    base64. The multi-view inspection loop -- the CAD side's only visual
+ *    self-correction -- has been blind on this provider from the start, which
+ *    is why revisions of a simple shape wander instead of converging.
+ *  - one 89 KB sheet costs about 30k tokens instead of about 1.5k. Four of
+ *    them in a branch is 113k-151k tokens of gibberish, which is what pushed
+ *    a four-message conversation past a 272k window.
+ *
+ * Anthropic, Google and OpenRouter all map `image-data` to a real image
+ * block, so they keep the native path.
+ */
+export function stringifiesToolResultContent(provider: string): boolean {
+  return provider === 'azure';
+}
+
+/** Newest inspection sheets that keep their image when lifted. */
+const LIFTED_SHEETS = 2;
+
+/**
+ * Move images out of tool results and into user messages that follow them.
+ *
+ * A user message is the one place every provider accepts an image, so the
+ * render arrives as a picture the model can actually look at. Older sheets
+ * lose the image entirely -- the newest one describes the model that exists
+ * now, and the numbers measured from each of the others are in the text that
+ * stays behind.
+ */
+export function liftToolResultImages(messages: ModelMessage[]): {
+  messages: ModelMessage[];
+  lifted: number;
+} {
+  // Which tool results carry an image, so "the newest two" can be decided
+  // before any of them is rewritten.
+  const withImages: number[] = [];
+  messages.forEach((message, index) => {
+    if (message.role !== 'tool' || !Array.isArray(message.content)) return;
+    const parts = message.content as Array<Record<string, unknown>>;
+    if (
+      parts.some((part) => {
+        const output = part.output as ToolOutput | undefined;
+        return (
+          output?.type === 'content' &&
+          Array.isArray(output.value) &&
+          (output.value as ContentValuePart[]).some(isImagePart)
+        );
+      })
+    ) {
+      withImages.push(index);
+    }
+  });
+  if (withImages.length === 0) return { messages, lifted: 0 };
+
+  const keep = new Set(withImages.slice(-LIFTED_SHEETS));
+  const out: ModelMessage[] = [];
+  let lifted = 0;
+
+  messages.forEach((message, index) => {
+    if (!withImages.includes(index)) {
+      out.push(message);
+      return;
+    }
+
+    const images: ContentValuePart[] = [];
+    const parts = (message.content as Array<Record<string, unknown>>).map(
+      (part) => {
+        const output = part.output as ToolOutput | undefined;
+        if (
+          output?.type !== 'content' ||
+          !Array.isArray(output.value) ||
+          !(output.value as ContentValuePart[]).some(isImagePart)
+        ) {
+          return part;
+        }
+        const value = output.value as ContentValuePart[];
+        const text = value
+          .filter((item) => !isImagePart(item))
+          .map((item) => String((item as { text?: string }).text ?? ''))
+          .join('\n');
+        const note = keep.has(index)
+          ? '\n[The multi-view inspection sheet follows as an image in the next message.]'
+          : '\n[The inspection sheet for this earlier revision was omitted; the ' +
+            'measured facts above still describe it, and the newest render is ' +
+            'further down.]';
+        if (keep.has(index)) images.push(...value.filter(isImagePart));
+        return { ...part, output: { type: 'text', value: text + note } };
+      },
+    );
+
+    out.push({ ...message, content: parts } as ModelMessage);
+    lifted += 1;
+
+    if (images.length) {
+      out.push({
+        role: 'user',
+        content: [
+          {
+            type: 'text',
+            text: 'Multi-view inspection sheet for the model you just built. Check it against the request from every visible angle.',
+          },
+          ...images.map((image) => ({
+            type: 'file' as const,
+            mediaType: String((image as { mediaType?: string }).mediaType ?? 'image/png'),
+            data: String((image as { data?: string }).data ?? ''),
+          })),
+        ],
+      } as unknown as ModelMessage);
+    }
+  });
+
+  return { messages: out, lifted };
+}

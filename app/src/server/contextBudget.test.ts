@@ -6,6 +6,8 @@ import {
   estimateTokens,
   inputTokenBudget,
   isContextOverflowError,
+  liftToolResultImages,
+  stringifiesToolResultContent,
 } from './contextBudget';
 
 /** A build turn: the assistant's complete script, then its inspection sheet. */
@@ -226,5 +228,92 @@ describe('isContextOverflowError', () => {
     );
     assert.equal(isContextOverflowError(new Error('401 Unauthorized')), false);
     assert.equal(isContextOverflowError(null), false);
+  });
+});
+
+describe('stringifiesToolResultContent', () => {
+  it('names only the provider that has no image block in a tool message', () => {
+    // @ai-sdk/openai: `contentValue = JSON.stringify(output.value)`.
+    assert.equal(stringifiesToolResultContent('azure'), true);
+    // These three map image-data to a real image block; verified in their
+    // dist sources.
+    assert.equal(stringifiesToolResultContent('anthropic'), false);
+    assert.equal(stringifiesToolResultContent('google'), false);
+    assert.equal(stringifiesToolResultContent('openrouter'), false);
+  });
+});
+
+describe('liftToolResultImages', () => {
+  it('does nothing to a branch with no tool-result images', () => {
+    const messages: ModelMessage[] = [
+      { role: 'user', content: 'hello' },
+    ];
+    const result = liftToolResultImages(messages);
+    assert.equal(result.lifted, 0);
+    assert.equal(result.messages, messages);
+  });
+
+  it('moves the newest renders into user messages the model can see', () => {
+    const result = liftToolResultImages(longSession(4));
+
+    // Every tool result is now plain text, so nothing gets JSON-stringified
+    // into the prompt as base64.
+    for (const message of result.messages) {
+      if (message.role !== 'tool') continue;
+      for (const part of partsOfType([message], 'tool-result')) {
+        assert.equal((part.output as { type: string }).type, 'text');
+      }
+    }
+
+    // The newest two sheets survive as user-message images.
+    const carried = result.messages.filter(
+      (m) =>
+        m.role === 'user' &&
+        Array.isArray(m.content) &&
+        m.content.some((p) => p.type === 'file'),
+    );
+    assert.equal(carried.length, 2);
+    const serialized = JSON.stringify(carried);
+    assert.ok(serialized.includes('sheet3-'));
+    assert.ok(serialized.includes('sheet4-'));
+    assert.ok(!serialized.includes('sheet1-'));
+  });
+
+  it('keeps the measured facts beside every result it strips', () => {
+    const serialized = JSON.stringify(liftToolResultImages(longSession(4)).messages);
+    for (const revision of [1, 2, 3, 4]) {
+      assert.ok(
+        serialized.includes(`Model facts: bbox 40.0 x 20.0 x ${revision}.0 mm`),
+      );
+    }
+  });
+
+  it('collapses what the stringifying provider would have charged', () => {
+    // Measured the way @ai-sdk/openai does it: a `content` tool output is
+    // JSON.stringify'd, so every base64 character lands in the prompt as
+    // text. This is the arithmetic behind the 272k failure.
+    const charsInToolMessages = (messages: ModelMessage[]) =>
+      messages
+        .filter((m) => m.role === 'tool')
+        .reduce((total, m) => total + JSON.stringify(m.content).length, 0);
+
+    const messages = longSession(4);
+    const before = charsInToolMessages(messages);
+    const after = charsInToolMessages(liftToolResultImages(messages).messages);
+
+    assert.ok(before > 1_600_000, `${before} characters of base64 as text`);
+    assert.ok(after < 2_000, `${after} should be facts and a pointer only`);
+  });
+
+  it('leaves an image directly after the result it belongs to', () => {
+    const result = liftToolResultImages(longSession(2));
+    const index = result.messages.findIndex(
+      (m) =>
+        m.role === 'user' &&
+        Array.isArray(m.content) &&
+        m.content.some((p) => p.type === 'file'),
+    );
+    assert.ok(index > 0);
+    assert.equal(result.messages[index - 1].role, 'tool');
   });
 });

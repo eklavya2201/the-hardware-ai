@@ -40,6 +40,8 @@ import {
   CONTEXT_OVERFLOW_MESSAGE,
   inputTokenBudget,
   isContextOverflowError,
+  liftToolResultImages,
+  stringifiesToolResultContent,
 } from './contextBudget';
 
 /**
@@ -1403,6 +1405,7 @@ export async function handleAiChatRequest(req: Request) {
   // already be over, and a 60-step parametric turn grows it further with a
   // complete OpenSCAD script and a nine-view render per build.
   const parametricTurn = conversation.type === 'parametric';
+  const liftImages = stringifiesToolResultContent(resolvedProvider);
   const budget = inputTokenBudget(
     resolvedProvider,
     parametricTurn
@@ -1419,13 +1422,19 @@ export async function handleAiChatRequest(req: Request) {
     messages: modelMessages,
     tools,
     prepareStep: ({ stepNumber, messages: stepMessages }) => {
-      // Shrink first, then apply the step-0 tool pinning below. Compaction is
-      // a no-op while the conversation fits, so short turns keep a byte-stable
-      // prefix and the prompt cache they depend on.
-      const compaction = compactModelMessages(stepMessages, budget);
-      if (compaction.applied.length) {
+      // On the OpenAI chat API a tool result cannot hold an image, so the
+      // provider JSON-stringifies the whole thing and the render travels as
+      // base64 text: unreadable to the model and about twenty times the
+      // tokens. Move it to a user message, where every provider accepts an
+      // image. Then shrink, which is a no-op while the conversation fits, so
+      // short turns keep the byte-stable prefix the prompt cache needs.
+      const lift = liftImages
+        ? liftToolResultImages(stepMessages)
+        : { messages: stepMessages, lifted: 0 };
+      const compaction = compactModelMessages(lift.messages, budget);
+      if (lift.lifted || compaction.applied.length) {
         logError(
-          new Error('Compacted conversation to fit the model input window'),
+          new Error('Reshaped the conversation for the model input window'),
           {
             functionName: 'ai-chat',
             statusCode: 200,
@@ -1434,6 +1443,7 @@ export async function handleAiChatRequest(req: Request) {
             additionalContext: {
               stepNumber,
               budget,
+              lifted: lift.lifted,
               before: compaction.before,
               after: compaction.after,
               applied: compaction.applied.join(','),
@@ -1441,9 +1451,10 @@ export async function handleAiChatRequest(req: Request) {
           },
         );
       }
-      const trimmed = compaction.applied.length
-        ? { messages: compaction.messages }
-        : {};
+      const trimmed =
+        lift.lifted || compaction.applied.length
+          ? { messages: compaction.messages }
+          : {};
 
       if (
         conversation.type === 'parametric' &&
