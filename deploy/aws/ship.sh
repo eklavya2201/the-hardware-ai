@@ -12,15 +12,8 @@ KEY=${KEY:-$HOME/.ssh/synqit-ec2.pem}
 SSH="ssh -i $KEY -o StrictHostKeyChecking=no $HOST"
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 
-: "${VITE_SUPABASE_URL:?set VITE_SUPABASE_URL}"
-: "${VITE_SUPABASE_ANON_KEY:?set VITE_SUPABASE_ANON_KEY}"
-
 echo "=== building the studio image ==="
-docker build -t synqit-studio:latest \
-  --build-arg VITE_SUPABASE_URL="$VITE_SUPABASE_URL" \
-  --build-arg VITE_SUPABASE_ANON_KEY="$VITE_SUPABASE_ANON_KEY" \
-  --build-arg APP_BASE=/ \
-  "$ROOT/app"
+docker build -t synqit-studio:latest "$ROOT/app"
 
 echo "=== shipping the image (about 450 MB, gzipped in flight) ==="
 docker save synqit-studio:latest | gzip -1 | $SSH 'gunzip | sudo docker load'

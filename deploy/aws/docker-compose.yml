@@ -42,8 +42,6 @@ services:
       context: ../../app
       dockerfile: Dockerfile
       args:
-        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
-        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
         VITE_SYNQIT_APP_URL: https://synqit.in
         # The studio is the front door, so it is served at the root.
         APP_BASE: /
