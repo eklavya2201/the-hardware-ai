@@ -280,7 +280,7 @@ const AZURE_MODEL_CATALOG: Record<string, ModelConfig> = {
   },
 };
 
-export const PARAMETRIC_MODELS: ModelConfig[] = [
+const ALL_PARAMETRIC_MODELS: ModelConfig[] = [
   ...AZURE_DEPLOYMENTS.map(
     (d) =>
       AZURE_MODEL_CATALOG[d] ?? {
@@ -395,6 +395,35 @@ export const PARAMETRIC_MODELS: ModelConfig[] = [
     supportsVision: true,
   },
 ];
+
+/**
+ * Which providers this deployment can actually reach.
+ *
+ * The picker listed Anthropic and Google models on a deployment that only
+ * has an Azure key, so choosing one silently did nothing. A model you cannot
+ * select is a smaller disappointment than one that is offered and fails.
+ *
+ * Azure is always on because its deployments come from VITE_AZURE_DEPLOYMENTS.
+ * Add a provider here when its key is configured:
+ *   VITE_ENABLED_PROVIDERS=azure,anthropic,google
+ */
+const ENABLED_PROVIDERS = new Set(
+  ((import.meta.env.VITE_ENABLED_PROVIDERS as string | undefined) || "azure")
+    .split(",")
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean),
+);
+
+function providerKey(m: ModelConfig): string {
+  // Azure entries are identified by their id prefix; everything else by the
+  // provider label the catalogue already carries.
+  return m.id.startsWith("azure/") ? "azure" : (m.provider ?? "").toLowerCase();
+}
+
+export const PARAMETRIC_MODELS: ModelConfig[] = ALL_PARAMETRIC_MODELS.filter((m) =>
+  ENABLED_PROVIDERS.has(providerKey(m)),
+);
+
 
 export const CREATIVE_MODELS: ModelConfig[] = [
   {

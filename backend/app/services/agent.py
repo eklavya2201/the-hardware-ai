@@ -1341,7 +1341,8 @@ def reset_usage() -> None:
     USAGE.clear()
     USAGE.update(prompt_tokens=0, completion_tokens=0, cached_tokens=0, llm_calls=0,
                  tool_calls=0, tool_output_chars=0, queries=0, queries_denied=0,
-                 tool_errors=0, state_guesses=0)
+                 tool_errors=0, state_guesses=0,
+                 rules_fixed=0, rule_regressions=0, fixup_stalled=0)
 
 
 reset_usage()
@@ -1559,6 +1560,9 @@ def run(project: Project, user_text: str, llm=None) -> Iterator[AgentEvent]:
         if project.ir.components:
             tools.run_drc(project)
         # Self-correction loop — only on the real OpenAI path.
+        # `previous` carries the blocking-error id set from the turn before,
+        # so the loop can tell progress from a stall.
+        previous: frozenset[str] | None = None
         for fixup_turn in range(MAX_FIXUP_TURNS):
             errors = [
                 i for i in project.issues
@@ -1575,8 +1579,38 @@ def run(project: Project, user_text: str, llm=None) -> Iterator[AgentEvent]:
                 # mechanical IR / placement), so looping on them would only flail.
                 and not i.rule.startswith("MECH_")
             ]
+            current = frozenset(i.id for i in errors if i.id)
             if not errors:
                 break
+            # Is the loop getting anywhere? Compare this turn's blocking set
+            # with the last one. Three outcomes worth telling apart, and
+            # until now all three were invisible: a loop that fixed
+            # everything and a loop that changed nothing produced identical
+            # downstream behaviour and identical prose.
+            if previous is not None:
+                fixed = previous - current
+                introduced = current - previous
+                USAGE["rules_fixed"] += len(fixed)
+                USAGE["rule_regressions"] += len(introduced)
+                if current == previous:
+                    # Same errors, same ids: the turn achieved nothing and
+                    # another identical prompt will achieve nothing either.
+                    USAGE["fixup_stalled"] += 1
+                    yield AgentEvent(
+                        "fixup_verdict",
+                        {"verdict": "stalled", "errors": len(current), "turn": fixup_turn},
+                    )
+                    break
+                yield AgentEvent(
+                    "fixup_verdict",
+                    {
+                        "verdict": "regressed" if introduced else "progressing",
+                        "fixed": sorted(fixed),
+                        "introduced": sorted(introduced),
+                        "turn": fixup_turn,
+                    },
+                )
+            previous = current
             fixup_prompt = _build_fixup_prompt(errors, fixup_turn + 1)
             yield from _run_openai(project, fixup_prompt)
         # Enrich newly-added parts with richer descriptions before the caller

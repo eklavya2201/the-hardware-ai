@@ -839,9 +839,17 @@ ${text}
 
   const { mutateAsync: uploadImageAsync } = useMutation({
     mutationFn: async ({ file, id }: { file: File; id: string }) => {
-      // The engine stores it on the data volume and hands back an id; the
-      // preview below is read locally so the composer paints immediately.
-      await uploadFile(file, { kind: 'image', conversationId: conversation.id, filename: id });
+      // Store it under the SAME id the message part will reference.
+      // The attached part is named `<id>.png` and the server recovers the id
+      // from that filename to fetch the bytes; letting the engine mint its own
+      // id meant the lookup never matched and every uploaded image was
+      // silently dropped before the model saw it.
+      await uploadFile(file, {
+        kind: 'image',
+        conversationId: conversation.id,
+        fileId: id,
+        filename: `${id}.png`,
+      });
 
       const reader = new FileReader();
       const urlPromise = new Promise((resolve) => {

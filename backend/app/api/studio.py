@@ -434,3 +434,47 @@ def profile(user: UserRow = Depends(current_user)):
         "avatar_url": user.avatar_url,
         "is_admin": bool(user.is_admin),
     }
+
+
+# --- public read (share links) ------------------------------------------------
+#
+# A share link is opened by someone who does not own the conversation, and
+# often by someone who is not signed in at all. Every read above is
+# owner-only and answers 404 to exactly that person, which is why the shared
+# link showed "conversation not found" for the whole feature's life.
+#
+# These two endpoints are the only unauthenticated reads in the app. They
+# serve a conversation ONLY while its owner has set privacy to public, so the
+# share toggle is the access control, and an id alone is never enough.
+
+
+def _public(db, conversation_id: str) -> StudioConversationRow:
+    row = db.get(StudioConversationRow, conversation_id)
+    # Not-public is 404, not 403: a 403 would confirm the conversation exists.
+    if row is None or row.privacy != "public":
+        raise HTTPException(404, "No such conversation")
+    return row
+
+
+@router.get("/public/conversations/{conversation_id}", response_model=ConversationOut)
+def public_conversation(conversation_id: str):
+    with SessionLocal() as db:
+        return ConversationOut.of(_public(db, conversation_id))
+
+
+@router.get(
+    "/public/conversations/{conversation_id}/messages", response_model=list[MessageOut]
+)
+def public_messages(conversation_id: str):
+    with SessionLocal() as db:
+        _public(db, conversation_id)
+        rows = (
+            db.execute(
+                select(StudioMessageRow)
+                .where(StudioMessageRow.conversation_id == conversation_id)
+                .order_by(StudioMessageRow.created_at.asc())
+            )
+            .scalars()
+            .all()
+        )
+        return [MessageOut.of(r) for r in rows]

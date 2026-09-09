@@ -175,6 +175,21 @@ export function deleteMessage(conversationId: string, messageId: string) {
   );
 }
 
+/**
+ * A shared conversation, read without signing in.
+ *
+ * The owner-only reads answer 404 to exactly the person a share link is for,
+ * which is why every shared link showed "conversation not found". These serve
+ * a conversation only while its owner has it set to public.
+ */
+export function getPublicConversation(id: string) {
+  return call<StudioConversation>(`/public/conversations/${encodeURIComponent(id)}`);
+}
+
+export function listPublicMessages(id: string) {
+  return call<StudioMessage[]>(`/public/conversations/${encodeURIComponent(id)}/messages`);
+}
+
 // --- files ------------------------------------------------------------------
 
 /** The URL a browser can load a stored file from, same-origin like everything else. */

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SYNQIT_API_BASE } from '@/lib/synqitApi';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 /**
  * Synqit's curated part library, browsed natively in the studio. The index
@@ -49,6 +50,7 @@ function loadIndex(): Promise<Row[]> {
 }
 
 export function LibraryDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { toast } = useToast();
   const [rows, setRows] = useState<Row[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [q, setQ] = useState('');
@@ -101,6 +103,13 @@ export function LibraryDialog({ open, onClose }: { open: boolean; onClose: () =>
     ].filter(Boolean);
     window.dispatchEvent(new CustomEvent(INSERT_EVENT, { detail: lines.join('\n') }));
     onClose();
+    // Say what actually happened. This does not add the part to the design --
+    // it drafts the request -- and the gap between clicking and seeing nothing
+    // change was the whole complaint.
+    toast({
+      title: `${r.mpn} added to your message`,
+      description: 'Send it and the part is designed into the board.',
+    });
   };
 
   return (

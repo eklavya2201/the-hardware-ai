@@ -7,7 +7,7 @@ import { MeshPreview } from '@/components/viewer/MeshPreview';
 import { OpenSCADPreview } from '@/components/viewer/OpenSCADViewer';
 import { ConversationContext } from '@/contexts/ConversationContext';
 import { messageRowToChatMessage } from '@/lib/aiMessages';
-import { getConversation, listMessages } from '@/lib/studioData';
+import { getPublicConversation, listPublicMessages } from '@/lib/studioData';
 import { updateParameter } from '@/lib/utils';
 import parseParameters from '@shared/parseParameters';
 import type { AppUIMessage } from '@shared/chatAi';
@@ -49,7 +49,7 @@ export default function ShareView() {
     enabled: !!conversationId,
     queryFn: async () => {
       if (!conversationId) throw new Error('Conversation ID is required');
-      return (await getConversation(conversationId)) as unknown as Conversation;
+      return (await getPublicConversation(conversationId)) as unknown as Conversation;
     },
   });
 
@@ -57,7 +57,7 @@ export default function ShareView() {
     queryKey: ['share-messages', conversationId],
     enabled: !!conversationId && !!conversation,
     queryFn: async () => {
-      return (await listMessages(conversationId!)) as unknown as Message[];
+      return (await listPublicMessages(conversationId!)) as unknown as Message[];
     },
   });
 
