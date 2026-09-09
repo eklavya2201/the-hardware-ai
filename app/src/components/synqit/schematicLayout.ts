@@ -136,3 +136,96 @@ export function layout(components: SqComponent[], nets: SqNet[]): { placed: Plac
   return { placed, frames };
 }
 
+
+/**
+ * Where each net label sits, with overlaps resolved.
+ *
+ * Labels used to be placed at a fixed offset from their pin and drawn, with
+ * no idea what else was on the canvas. Two pins a few millimetres apart put
+ * two names on top of each other and both became unreadable.
+ *
+ * This is the standard fix from map and diagram rendering: give every label a
+ * rectangle, and when two collide push the later one along its own leader
+ * axis until it is clear. A left/right label slides vertically, a top/bottom
+ * label slides horizontally, so a label never drifts across its own symbol.
+ * The leader line then stretches to follow it, which is what tells the reader
+ * which pin a moved label belongs to.
+ */
+export type LabelAnchor = {
+  key: string;
+  x: number;
+  y: number;
+  side: string;
+  text: string;
+};
+
+export type PlacedLabel = LabelAnchor & {
+  /** Where the text ends up, after collisions are resolved. */
+  lx: number;
+  ly: number;
+  w: number;
+  h: number;
+};
+
+const LEADER = 6;      // pin to label
+const CHAR_W = 0.62;   // width of a monospace glyph, as a fraction of size
+const STEP = 0.9;      // how far to nudge per attempt, in label heights
+const MAX_NUDGE = 14;  // give up rather than push a label into the next block
+
+function overlaps(a: PlacedLabel, b: PlacedLabel): boolean {
+  // A hair of padding, so two labels never merely touch.
+  const pad = 0.4;
+  return (
+    a.lx - pad < b.lx + b.w &&
+    b.lx - pad < a.lx + a.w &&
+    a.ly - pad < b.ly + b.h &&
+    b.ly - pad < a.ly + a.h
+  );
+}
+
+export function placeNetLabels(anchors: LabelAnchor[], fontSize: number): PlacedLabel[] {
+  const h = fontSize * 1.15;
+  const placed: PlacedLabel[] = [];
+
+  // Deterministic order: same board, same picture, every render.
+  const ordered = [...anchors].sort((a, b) => a.y - b.y || a.x - b.x || a.key.localeCompare(b.key));
+
+  for (const a of ordered) {
+    const dir = a.side === "left" ? -1 : a.side === "right" ? 1 : 0;
+    const vdir = a.side === "top" ? -1 : a.side === "bottom" ? 1 : 0;
+    const w = Math.max(1, a.text.length) * fontSize * CHAR_W;
+
+    const baseX = a.x + dir * LEADER;
+    const baseY = a.y + vdir * LEADER;
+    // The text is anchored at its end for a left-facing label, so the box
+    // extends the other way.
+    const boxX = dir < 0 ? baseX - w : dir > 0 ? baseX : baseX - w / 2;
+
+    let candidate: PlacedLabel | null = null;
+    for (let n = 0; n <= MAX_NUDGE; n++) {
+      // Alternate above and below (or left and right) so a crowded pin does
+      // not push every one of its neighbours the same way.
+      const offset = Math.ceil(n / 2) * STEP * h * (n % 2 === 0 ? 1 : -1);
+      const slideY = vdir === 0 ? offset : 0;
+      const slideX = vdir === 0 ? 0 : offset;
+      const test: PlacedLabel = {
+        ...a,
+        lx: boxX + slideX,
+        ly: baseY - h / 2 + slideY,
+        w,
+        h,
+      };
+      if (!placed.some((q) => overlaps(test, q))) {
+        candidate = test;
+        break;
+      }
+    }
+    // Nowhere clear within the budget: draw it at its natural spot rather
+    // than flinging it across the sheet. Rare, and readable-ish beats lost.
+    placed.push(
+      candidate ?? { ...a, lx: boxX, ly: baseY - h / 2, w, h },
+    );
+  }
+  return placed;
+}
+

@@ -8,7 +8,7 @@ import {
   type SqComponent,
   type SqNet,
 } from '@/lib/synqitData';
-import { FRAME_TITLE, PAD, layout } from './schematicLayout';
+import { FRAME_TITLE, PAD, layout, placeNetLabels } from './schematicLayout';
 
 /**
  * Native, read-only schematic in the studio theme. Symbols are boxes with
@@ -52,6 +52,19 @@ export function SchematicView({ components, nets }: { components: SqComponent[];
   // Type is sized against the visible width, so it stays legible at any zoom.
   const fs = Math.max(3, view.w / 150);
 
+  // Every net label that is drawn as a name rather than a wire, with
+  // overlaps resolved before anything reaches the canvas.
+  const labels = useMemo(() => {
+    const anchors = netInfo.flatMap(({ n, color, ends, asWire }) =>
+      asWire
+        ? []
+        : ends.map((e, i) => ({ key: `${n.name}-${i}`, x: e.x, y: e.y, side: e.side, text: n.name, color })),
+    );
+    const byKey = new Map(anchors.map((a) => [a.key, a.color]));
+    return placeNetLabels(anchors, fs).map((l) => ({ ...l, color: byKey.get(l.key) ?? "#4b5563" }));
+  }, [netInfo, fs]);
+
+
   return (
     <div className="relative h-full w-full select-none bg-white">
       <svg
@@ -93,24 +106,35 @@ export function SchematicView({ components, nets }: { components: SqComponent[];
             />
           ) : null,
         )}
-        {netInfo.map(({ n, color, ends, asWire }) =>
-          !asWire
-            ? ends.map((e, i) => {
-                const dir = e.side === 'left' ? -1 : e.side === 'right' ? 1 : 0;
-                const vdir = e.side === 'top' ? -1 : e.side === 'bottom' ? 1 : 0;
-                const lx = e.x + dir * 6;
-                const ly = e.y + vdir * 6;
-                return (
-                  <g key={`${n.name}-${i}`} opacity={selected && selected !== n.name ? 0.25 : 1} onClick={() => !dragged() && setSelected(selected === n.name ? null : n.name)} style={{ cursor: 'pointer' }}>
-                    <line x1={e.x} y1={e.y} x2={lx} y2={ly} stroke={color} strokeWidth={0.7} />
-                    <text x={lx + dir * 1.2} y={ly + (vdir ? vdir * 3 : 0)} fontSize={fs} fill={color} textAnchor={dir < 0 ? 'end' : dir > 0 ? 'start' : 'middle'} dominantBaseline="middle">
-                      {n.name}
-                    </text>
-                  </g>
-                );
-              })
-            : null,
-        )}
+        {labels.map((l) => (
+          <g
+            key={l.key}
+            opacity={selected && selected !== l.text ? 0.25 : 1}
+            onClick={() => !dragged() && setSelected(selected === l.text ? null : l.text)}
+            style={{ cursor: "pointer" }}
+          >
+            {/* The leader follows the label to wherever it was pushed, so a
+                moved name still points at its own pin. */}
+            <line
+              x1={l.x}
+              y1={l.y}
+              x2={l.side === "left" ? l.lx + l.w : l.side === "right" ? l.lx : l.lx + l.w / 2}
+              y2={l.ly + l.h / 2}
+              stroke={l.color}
+              strokeWidth={0.7}
+            />
+            <text
+              x={l.side === "left" ? l.lx + l.w : l.lx}
+              y={l.ly + l.h / 2}
+              fontSize={fs}
+              fill={l.color}
+              textAnchor={l.side === "left" ? "end" : l.side === "right" ? "start" : "middle"}
+              dominantBaseline="middle"
+            >
+              {l.text}
+            </text>
+          </g>
+        ))}
         {placed.map((p) => (
           <g key={p.c.refdes}>
             <rect x={p.x} y={p.y} width={p.w} height={p.h} rx={1.5} fill="#fdf6cf" stroke="#8a2b2b" strokeWidth={0.7} />

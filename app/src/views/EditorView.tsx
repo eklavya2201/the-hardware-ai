@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/popover';
 import { ShareContent } from '@/components/ui/ShareContent';
 import { BoardActions } from '@/components/synqit/BoardActions';
-import { useSynqitProject } from '@/lib/synqitProject';
+import { hydrateSynqitProject, useSynqitProject } from '@/lib/synqitProject';
 import { OpenSCADPreview } from '@/components/viewer/OpenSCADViewer';
 import { MeshPreview } from '@/components/viewer/MeshPreview';
 import Loader from '@/components/viewer/Loader';
@@ -587,6 +587,13 @@ function ConversationEditor() {
   );
   const sharePreview = activePreview ?? persistedLatestPreview;
   const synqitProject = useSynqitProject();
+  // Adopt the board this conversation is linked to. Without it a different
+  // browser sees no board even though the conversation has one.
+  useEffect(() => {
+    if (conversation?.id) {
+      hydrateSynqitProject(conversation.id, conversation.settings as Record<string, unknown> | null);
+    }
+  }, [conversation?.id, conversation?.settings]);
 
   // The left panel holds Parameters, BOM and Build guide. It used to open only
   // for an OpenSCAD artifact, which meant a board with a BOM and a build guide

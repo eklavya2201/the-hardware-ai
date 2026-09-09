@@ -10,7 +10,7 @@
  * argument it runs the synthetic boards below, which is what CI does.
  */
 import { readFileSync } from 'node:fs';
-import { layout, FRAME_TITLE } from '../src/components/synqit/schematicLayout.ts';
+import { layout, FRAME_TITLE, placeNetLabels } from '../src/components/synqit/schematicLayout.ts';
 import { assignBlocks } from '../src/components/synqit/schematicBlocks.ts';
 
 let failures = 0;
@@ -78,6 +78,24 @@ function check(board) {
     if (!(s.x >= f.x && s.y >= f.y + FRAME_TITLE && s.x + s.w <= f.x + f.w && s.y + s.h <= f.y + f.h))
       fail(`${s.c.refdes} spills out of "${f.title}"`);
   }
+
+  // Net labels must not sit on top of one another -- the bug that made the
+  // schematic unreadable. Same anchors the view builds, same resolver.
+  const anchors = [];
+  for (const n of nets) {
+    const ends = n.pins.map(([r, p]) => placed.find((q) => q.c.refdes === r)?.pinPos.get(p)).filter(Boolean);
+    if (ends.length === 2 && n.pins.length === 2) continue; // drawn as a wire
+    ends.forEach((e, i) => anchors.push({ key: `${n.name}-${i}`, x: e.x, y: e.y, side: e.side, text: n.name }));
+  }
+  const labels = placeNetLabels(anchors, 3);
+  let clashes = 0;
+  for (let i = 0; i < labels.length; i++)
+    for (let j = i + 1; j < labels.length; j++) {
+      const a = labels[i], b = labels[j];
+      if (a.lx < b.lx + b.w && b.lx < a.lx + a.w && a.ly < b.ly + b.h && b.ly < a.ly + a.h) clashes++;
+    }
+  if (clashes) fail(`${clashes} net labels overlap`);
+  console.log(`  ${labels.length} net labels, ${clashes} overlapping`);
 
   for (const f of frames) console.log(`  ${f.title.padEnd(24)} ${placed.filter((p) => hit(f, p)).map((p) => p.c.refdes).join(' ').slice(0, 90)}`);
 }
