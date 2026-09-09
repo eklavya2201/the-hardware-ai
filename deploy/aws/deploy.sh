@@ -56,7 +56,6 @@ fi
 say "starting engine, studio and caddy"
 # Images are pre-built, so the build args are unused; declare them anyway so
 # compose does not warn about unset variables.
-export VITE_SUPABASE_URL="${VITE_SUPABASE_URL:-}" VITE_SUPABASE_ANON_KEY="${VITE_SUPABASE_ANON_KEY:-}"
 docker compose up -d
 
 say "waiting for health"
