@@ -17,7 +17,7 @@ COPY . .
 
 # VITE_* values are baked into the client bundle at build time, so they are
 # build args rather than runtime environment. Server-only secrets (the Azure
-# key, the Supabase service role) are NOT here -- they stay runtime env.
+# key, the shared studio/engine secret) are NOT here -- they stay runtime env.
 ARG VITE_SYNQIT_APP_URL=https://synqit.in
 ARG VITE_AZURE_DEPLOYMENTS=gpt-5.1,gpt-5-pro
 ARG VITE_DEFAULT_MODEL=azure/gpt-5.1
